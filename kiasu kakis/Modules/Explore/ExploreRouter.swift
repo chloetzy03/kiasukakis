@@ -16,12 +16,8 @@ final class ExploreRouter: ExploreRouterProtocol {
     }
 
     func showVenueDetails(venueID: String, venueName: String) {
-        // Replaced by the real Venue Details module in Milestone 3.
-        let placeholder = PlaceholderViewController(symbol: "fork.knife",
-                                                    heading: venueName,
-                                                    message: "Venue details arrive in Milestone 3.")
-        placeholder.title = venueName
-        placeholder.navigationItem.largeTitleDisplayMode = .never
-        viewController?.navigationController?.pushViewController(placeholder, animated: true)
+        guard let venue = DemoVenueData.venues.first(where: { $0.id == venueID }) else { return }
+        let details = VenueDetailsRouter.createModule(venue: venue)
+        viewController?.navigationController?.pushViewController(details, animated: true)
     }
 }

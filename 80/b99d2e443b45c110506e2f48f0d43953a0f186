@@ -1,0 +1,33 @@
+"kiasu kakis.xcodeproj/project.pbxproj"
+  s_d41b002607dd7e::t_22a5437c14f1b0 259,291
+"kiasu kakis/App/MainTabBarController.swift"
+  s_d41b002607dd7e::t_a778e59a2f851f 8
+"kiasu kakis/Modules/Explore/ExploreInteractor.swift"
+  s_d41b002607dd7e::t_f23c2619c7cf5a 1-20
+"kiasu kakis/Modules/Explore/ExplorePresenter.swift"
+  s_d41b002607dd7e::t_93787ac038d3ea 1-100
+"kiasu kakis/Modules/Explore/ExploreProtocols.swift"
+  s_d41b002607dd7e::t_bf174b25229cf9 1-53
+"kiasu kakis/Modules/Explore/ExploreRouter.swift"
+  s_d41b002607dd7e::t_4234a5306a2fc7 1-27
+"kiasu kakis/Modules/Explore/ExploreViewController.swift"
+  s_d41b002607dd7e::t_e720454913979d 1-287
+"kiasu kakis/Modules/Explore/VenuePreviewCardView.swift"
+  s_d41b002607dd7e::t_e2edd256bd022f 1-80
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "80b99d2e443b45c110506e2f48f0d43953a0f186",
+  "prompts": {},
+  "sessions": {
+    "s_d41b002607dd7e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "ba26ab60-f6fb-43da-9682-0320ae57b25e",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

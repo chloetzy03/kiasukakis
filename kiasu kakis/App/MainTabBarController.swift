@@ -5,10 +5,7 @@ final class MainTabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         viewControllers = [
-            makeTab(title: "Explore", symbol: "map",
-                    root: PlaceholderViewController(symbol: "map",
-                                                    heading: "Find your next spot",
-                                                    message: "Map-based queue discovery arrives in Milestone 2.")),
+            makeTab(title: "Explore", symbol: "map", root: ExploreRouter.createModule()),
             makeTab(title: "My Queues", symbol: "ticket",
                     root: PlaceholderViewController(symbol: "ticket",
                                                     heading: "No active tickets",

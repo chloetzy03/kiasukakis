@@ -65,7 +65,7 @@ final class VenuePreviewCardView: UIView {
         nameLabel.text = model.name
         subtitleLabel.text = model.subtitle
         waitLabel.text = model.waitText
-        waitLabel.textColor = model.waitColor
+        waitLabel.textColor = .label
         dot.backgroundColor = model.waitColor
         sourceLabel.text = model.sourceText
         queueLabel.text = model.queueText

@@ -98,8 +98,21 @@ final class ExplorePresenter: ExplorePresenterProtocol {
                                  name: listing.venue.name,
                                  latitude: listing.venue.latitude,
                                  longitude: listing.venue.longitude,
-                                 glyph: minutes.map { "\($0)" } ?? "?",
-                                 color: Theme.waitColor(forMinutes: minutes))
+                                 labelText: minutes.map { "\($0)m" } ?? "?",
+                                 symbolName: Self.symbolName(for: listing.venue.category),
+                                 fillColor: Theme.waitColor(forMinutes: minutes),
+                                 textColor: Theme.pinTextColor(forMinutes: minutes),
+                                 isPlaceDot: !listing.venue.isDemo && minutes == nil)
+    }
+
+    private static func symbolName(for category: VenueCategory) -> String {
+        switch category {
+        case .hawker: return "storefront"
+        case .restaurant: return "fork.knife"
+        case .cafe: return "cup.and.saucer.fill"
+        case .dessert: return "birthday.cake.fill"
+        case .attraction: return "star.fill"
+        }
     }
 
     private static func makePreview(_ listing: VenueListing) -> VenuePreviewViewModel {

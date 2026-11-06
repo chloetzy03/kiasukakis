@@ -117,7 +117,7 @@ extension JoinQueueViewController: JoinQueueViewProtocol {
     func show(_ model: JoinQueueViewModel) {
         venueLabel.text = model.venueName
         waitLabel.text = model.waitText
-        waitLabel.textColor = model.waitColor
+        waitLabel.textColor = .label
         waitDot.backgroundColor = model.waitColor
         aheadLabel.text = model.aheadText
         sourceLabel.text = model.sourceText

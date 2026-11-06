@@ -9,7 +9,7 @@ enum Theme {
     // Wait-time colours. Unknown is grey so missing data is never read as "0 min".
     static let waitShort = UIColor(hex: 0x2E9E5B)
     static let waitMedium = UIColor(hex: 0xF5A623)
-    static let waitLong = UIColor(hex: 0xFF5A36)
+    static let waitLong = UIColor(hex: 0xE8590C)
     static let waitUnknown = UIColor.systemGray
 
     static func waitColor(forMinutes minutes: Int?) -> UIColor {
@@ -19,6 +19,12 @@ enum Theme {
         case 15..<30: return waitMedium
         default: return waitLong
         }
+    }
+
+    // Amber is light, so text on it is dark; white stays readable on the other colours.
+    static func pinTextColor(forMinutes minutes: Int?) -> UIColor {
+        guard let minutes, (15..<30).contains(minutes) else { return .white }
+        return UIColor(hex: 0x3A2A00)
     }
 
     static func color(for status: QueueStatus) -> UIColor {

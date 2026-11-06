@@ -198,7 +198,7 @@ extension VenueDetailsViewController: VenueDetailsViewProtocol {
         categoryLabel.text = model.categoryText.uppercased()
         addressLabel.text = model.address
         waitLabel.text = model.waitText
-        waitLabel.textColor = model.waitColor
+        waitLabel.textColor = .label
         waitDot.backgroundColor = model.waitColor
         sourceLabel.text = model.sourceText
         updatedLabel.text = model.updatedText

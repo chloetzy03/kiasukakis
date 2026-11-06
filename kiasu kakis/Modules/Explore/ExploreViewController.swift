@@ -292,16 +292,11 @@ extension ExploreViewController: MKMapViewDelegate {
 
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         guard let annotation = annotation as? VenueAnnotation else { return nil }
-        let id = "VenuePin"
-        let marker = (mapView.dequeueReusableAnnotationView(withIdentifier: id) as? MKMarkerAnnotationView)
-            ?? MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: id)
-        marker.annotation = annotation
-        marker.markerTintColor = annotation.pin.color
-        marker.glyphText = annotation.pin.glyph
-        marker.titleVisibility = .hidden
-        marker.canShowCallout = false
-        marker.displayPriority = .required
-        return marker
+        let pinView = (mapView.dequeueReusableAnnotationView(withIdentifier: WaitPinView.reuseID) as? WaitPinView)
+            ?? WaitPinView(annotation: annotation, reuseIdentifier: WaitPinView.reuseID)
+        pinView.annotation = annotation
+        pinView.configure(with: annotation.pin)
+        return pinView
     }
 
     func mapView(_ mapView: MKMapView, didSelect annotation: MKAnnotation) {

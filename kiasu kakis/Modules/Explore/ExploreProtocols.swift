@@ -7,8 +7,12 @@ struct VenuePinViewModel: Equatable {
     let name: String
     let latitude: Double
     let longitude: Double
-    let glyph: String
-    let color: UIColor
+    let labelText: String
+    let symbolName: String?
+    let fillColor: UIColor
+    let textColor: UIColor
+    // Real places with no queue data are drawn as small grey dots instead of pills.
+    let isPlaceDot: Bool
 }
 
 // What the bottom preview card shows.

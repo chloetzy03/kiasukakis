@@ -14,6 +14,7 @@ struct VenueDetailsViewModel {
     let statusMessage: String
     let statusColor: UIColor
     let canJoin: Bool
+    let hasActiveTicket: Bool
     let isSaved: Bool
 }
 
@@ -23,6 +24,7 @@ protocol VenueDetailsViewProtocol: AnyObject {
 
 protocol VenueDetailsPresenterProtocol: AnyObject {
     func viewDidLoad()
+    func viewWillAppear()
     func didTapSave()
     func didTapJoin()
     func didTapOpenInMaps()
@@ -32,10 +34,12 @@ protocol VenueDetailsInteractorProtocol: AnyObject {
     var venue: Venue { get }
     var snapshot: QueueSnapshot { get }
     var isSaved: Bool { get }
+    var activeTicket: QueueTicket? { get }
     func toggleSaved()
 }
 
 protocol VenueDetailsRouterProtocol: AnyObject {
     func openInMaps(_ venue: Venue)
     func showJoinQueue(for venue: Venue)
+    func showTicket(ticketID: UUID)
 }

@@ -23,11 +23,13 @@ final class VenueDetailsRouter: VenueDetailsRouterProtocol {
     }
 
     func showJoinQueue(for venue: Venue) {
-        // Replaced by the real Join Queue module in Milestone 4.
-        let alert = UIAlertController(title: "Join demo queue",
-                                      message: "Joining a demo queue arrives in Milestone 4.",
-                                      preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        viewController?.present(alert, animated: true)
+        let join = JoinQueueRouter.createModule(venue: venue) { [weak self] ticketID in
+            self?.showTicket(ticketID: ticketID)
+        }
+        viewController?.present(join, animated: true)
+    }
+
+    func showTicket(ticketID: UUID) {
+        (viewController?.tabBarController as? MainTabBarController)?.showTicket(ticketID)
     }
 }

@@ -2,19 +2,26 @@ import UIKit
 
 final class MainTabBarController: UITabBarController {
 
+    private enum Tab: Int { case explore, myQueues, saved }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         viewControllers = [
             makeTab(title: "Explore", symbol: "map", root: ExploreRouter.createModule()),
-            makeTab(title: "My Queues", symbol: "ticket",
-                    root: PlaceholderViewController(symbol: "ticket",
-                                                    heading: "No active tickets",
-                                                    message: "Join a demo queue from a venue and it will show up here.")),
+            makeTab(title: "My Queues", symbol: "ticket", root: MyQueuesRouter.createModule()),
             makeTab(title: "Saved", symbol: "bookmark",
                     root: PlaceholderViewController(symbol: "bookmark",
                                                     heading: "No saved venues yet",
                                                     message: "Bookmark venues to find them quickly later."))
         ]
+    }
+
+    // Jumps to My Queues and opens the given ticket.
+    func showTicket(_ ticketID: UUID) {
+        selectedIndex = Tab.myQueues.rawValue
+        guard let nav = viewControllers?[Tab.myQueues.rawValue] as? UINavigationController else { return }
+        nav.popToRootViewController(animated: false)
+        nav.pushViewController(TicketDetailRouter.createModule(ticketID: ticketID), animated: false)
     }
 
     private func makeTab(title: String, symbol: String, root: UIViewController) -> UINavigationController {

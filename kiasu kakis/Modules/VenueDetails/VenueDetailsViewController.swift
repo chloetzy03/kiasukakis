@@ -25,6 +25,11 @@ final class VenueDetailsViewController: UIViewController {
         presenter.viewDidLoad()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        presenter.viewWillAppear()
+    }
+
     // MARK: - Layout
 
     private func buildLayout() {
@@ -170,9 +175,9 @@ extension VenueDetailsViewController: VenueDetailsViewProtocol {
         statusMessageLabel.text = model.statusMessage
 
         var config = joinButton.configuration
-        config?.title = model.canJoin ? "Join demo queue" : model.statusTitle
+        config?.title = model.hasActiveTicket ? "View my ticket" : (model.canJoin ? "Join demo queue" : model.statusTitle)
         joinButton.configuration = config
-        joinButton.isEnabled = model.canJoin
+        joinButton.isEnabled = model.canJoin || model.hasActiveTicket
 
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: model.isSaved ? "bookmark.fill" : "bookmark"),

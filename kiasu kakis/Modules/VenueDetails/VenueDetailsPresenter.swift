@@ -12,6 +12,7 @@ final class VenueDetailsPresenter: VenueDetailsPresenterProtocol {
     }
 
     func viewDidLoad() { render() }
+    func viewWillAppear() { render() }
 
     func didTapSave() {
         interactor.toggleSaved()
@@ -19,6 +20,10 @@ final class VenueDetailsPresenter: VenueDetailsPresenterProtocol {
     }
 
     func didTapJoin() {
+        if let ticket = interactor.activeTicket {
+            router.showTicket(ticketID: ticket.id)
+            return
+        }
         guard interactor.venue.queueSupport == .demoSupported else { return }
         router.showJoinQueue(for: interactor.venue)
     }
@@ -67,6 +72,7 @@ final class VenueDetailsPresenter: VenueDetailsPresenterProtocol {
             statusMessage: status.message,
             statusColor: status.color,
             canJoin: venue.queueSupport == .demoSupported,
+            hasActiveTicket: interactor.activeTicket != nil,
             isSaved: interactor.isSaved))
     }
 }

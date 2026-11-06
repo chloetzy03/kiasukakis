@@ -19,6 +19,14 @@ enum Theme {
         }
     }
 
+    static func color(for status: QueueStatus) -> UIColor {
+        switch status {
+        case .waiting: return .systemBlue
+        case .almostYourTurn: return waitMedium
+        case .called: return waitShort
+        case .completed, .cancelled, .expired: return .systemGray
+        }
+    }
 }
 
 extension UIColor {

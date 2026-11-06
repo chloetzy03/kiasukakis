@@ -1,4 +1,5 @@
 import UIKit
+import MapKit
 
 // Glue: reacts to user actions, asks the interactor for data, formats it for the view.
 final class ExplorePresenter: ExplorePresenterProtocol {
@@ -50,6 +51,25 @@ final class ExplorePresenter: ExplorePresenterProtocol {
         view?.showPreview(nil)
     }
 
+    func didTapSearchArea(in region: MKCoordinateRegion) {
+        view?.showSearching(true)
+        Task { [weak self] in
+            guard let self else { return }
+            do {
+                let added = try await interactor.discoverPlaces(in: region)
+                refresh()
+                view?.showSearching(false)
+                if added == 0 {
+                    view?.showMessage(title: "No new places",
+                                      message: "No new food places were found here. Try zooming out or moving the map.")
+                }
+            } catch {
+                view?.showSearching(false)
+                view?.showMessage(title: "Couldn't search", message: "Check your internet connection and try again.")
+            }
+        }
+    }
+
     func didTapPreview() {
         guard let id = selectedID, let listing = interactor.listing(id: id) else { return }
         router.showVenueDetails(venueID: id, venueName: listing.venue.name)
@@ -95,7 +115,7 @@ final class ExplorePresenter: ExplorePresenterProtocol {
         switch listing.venue.queueSupport {
         case .demoSupported: queue = "Demo virtual queue available"
         case .closed: queue = "Queue closed"
-        case .unsupported: queue = "Remote queue not supported"
+        case .unsupported: queue = listing.venue.isDemo ? "Remote queue not supported" : "Real place from Apple Maps · no queue data"
         }
         return VenuePreviewViewModel(id: listing.venue.id,
                                      name: listing.venue.name,

@@ -1,4 +1,5 @@
 import UIKit
+import MapKit
 
 // What the screen needs to show a map pin.
 struct VenuePinViewModel: Equatable {
@@ -33,6 +34,8 @@ protocol ExploreViewProtocol: AnyObject {
     func showPreview(_ preview: VenuePreviewViewModel?)
     func showEmptyState(_ message: String?)
     func showOfflineBanner(_ isVisible: Bool)
+    func showSearching(_ isSearching: Bool)
+    func showMessage(title: String, message: String)
 }
 
 protocol ExplorePresenterProtocol: AnyObject {
@@ -42,11 +45,13 @@ protocol ExplorePresenterProtocol: AnyObject {
     func didSelectVenue(id: String)
     func didDeselectVenue()
     func didTapPreview()
+    func didTapSearchArea(in region: MKCoordinateRegion)
 }
 
 protocol ExploreInteractorProtocol: AnyObject {
     func listings(matching query: String, category: VenueCategory?) -> [VenueListing]
     func listing(id: String) -> VenueListing?
+    func discoverPlaces(in region: MKCoordinateRegion) async throws -> Int
 }
 
 protocol ExploreRouterProtocol: AnyObject {

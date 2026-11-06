@@ -16,7 +16,7 @@ final class ExploreRouter: ExploreRouterProtocol {
     }
 
     func showVenueDetails(venueID: String, venueName: String) {
-        guard let venue = DemoVenueData.venues.first(where: { $0.id == venueID }) else { return }
+        guard let venue = VenueRepository.shared.venue(id: venueID) else { return }
         let details = VenueDetailsRouter.createModule(venue: venue)
         viewController?.navigationController?.pushViewController(details, animated: true)
     }

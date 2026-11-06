@@ -15,6 +15,7 @@ final class VenueDetailsViewController: UIViewController {
     private let travelSummaryLabel = UILabel()
     private let travelHintLabel = UILabel()
     private let travelActionButton = UIButton(type: .system)
+    private let disclaimerLabel = UILabel()
     private let statusIcon = UIImageView()
     private let statusTitleLabel = UILabel()
     private let statusMessageLabel = UILabel()
@@ -113,7 +114,9 @@ final class VenueDetailsViewController: UIViewController {
         mapsButton.configuration = mapsConfig
         mapsButton.addTarget(self, action: #selector(mapsTapped), for: .touchUpInside)
 
-        let disclaimer = caption("Demo data. All venues, wait times and tickets are fictional.")
+        let disclaimer = disclaimerLabel
+        disclaimer.font = .preferredFont(forTextStyle: .caption1)
+        disclaimer.textColor = .secondaryLabel
         disclaimer.textAlignment = .center
         disclaimer.numberOfLines = 0
 
@@ -203,6 +206,7 @@ extension VenueDetailsViewController: VenueDetailsViewProtocol {
         statusIcon.tintColor = model.statusColor
         statusTitleLabel.text = model.statusTitle
         statusMessageLabel.text = model.statusMessage
+        disclaimerLabel.text = model.disclaimer
 
         var config = joinButton.configuration
         config?.title = model.hasActiveTicket ? "View my ticket" : (model.canJoin ? "Join demo queue" : model.statusTitle)

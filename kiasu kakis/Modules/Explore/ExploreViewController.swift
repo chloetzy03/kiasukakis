@@ -15,6 +15,7 @@ final class ExploreViewController: UIViewController {
     private let previewCard = VenuePreviewCardView()
     private let emptyLabel = UILabel()
     private let locateButton = UIButton(type: .system)
+    private let searchAreaButton = UIButton(type: .system)
     private let locationManager = CLLocationManager()
     private var annotations: [String: VenueAnnotation] = [:]
     private var previewHiddenConstraint: NSLayoutConstraint!
@@ -29,6 +30,7 @@ final class ExploreViewController: UIViewController {
         setUpTopOverlay()
         setUpPreviewCard()
         setUpLocateButton()
+        setUpSearchAreaButton()
         setUpEmptyLabel()
         locationManager.delegate = self
         presenter.viewDidLoad()
@@ -71,7 +73,7 @@ final class ExploreViewController: UIViewController {
         ])
         scroll.heightAnchor.constraint(equalToConstant: 36).isActive = true
 
-        demoLabel.text = "Demo data: fictional venues and wait times"
+        demoLabel.text = "Demo venues and wait times are fictional"
         demoLabel.font = .preferredFont(forTextStyle: .caption2)
         demoLabel.textColor = .secondaryLabel
         demoLabel.textAlignment = .center
@@ -136,6 +138,23 @@ final class ExploreViewController: UIViewController {
         ])
     }
 
+    private func setUpSearchAreaButton() {
+        var config = UIButton.Configuration.filled()
+        config.title = "Search this area"
+        config.image = UIImage(systemName: "magnifyingglass")
+        config.imagePadding = 6
+        config.baseBackgroundColor = Theme.brand
+        config.cornerStyle = .capsule
+        searchAreaButton.configuration = config
+        searchAreaButton.addTarget(self, action: #selector(searchAreaTapped), for: .touchUpInside)
+        searchAreaButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(searchAreaButton)
+        NSLayoutConstraint.activate([
+            searchAreaButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            searchAreaButton.centerYAnchor.constraint(equalTo: locateButton.centerYAnchor)
+        ])
+    }
+
     private func setUpEmptyLabel() {
         emptyLabel.font = .preferredFont(forTextStyle: .headline)
         emptyLabel.textColor = .secondaryLabel
@@ -153,6 +172,8 @@ final class ExploreViewController: UIViewController {
     }
 
     // MARK: - Actions
+
+    @objc private func searchAreaTapped() { presenter.didTapSearchArea(in: mapView.region) }
 
     @objc private func previewTapped() { presenter.didTapPreview() }
 
@@ -229,6 +250,20 @@ extension ExploreViewController: ExploreViewProtocol {
             self.previewCard.alpha = preview == nil ? 0 : 1
             self.view.layoutIfNeeded()
         }
+    }
+
+    func showSearching(_ isSearching: Bool) {
+        var config = searchAreaButton.configuration
+        config?.showsActivityIndicator = isSearching
+        config?.title = isSearching ? "Searching…" : "Search this area"
+        searchAreaButton.configuration = config
+        searchAreaButton.isEnabled = !isSearching
+    }
+
+    func showMessage(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
 
     func showOfflineBanner(_ isVisible: Bool) {

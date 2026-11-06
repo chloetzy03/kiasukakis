@@ -15,6 +15,7 @@ struct VenueDetailsViewModel {
     let statusColor: UIColor
     let canJoin: Bool
     let hasActiveTicket: Bool
+    let disclaimer: String
     let isSaved: Bool
 }
 

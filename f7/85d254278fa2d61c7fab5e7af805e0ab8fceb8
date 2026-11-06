@@ -1,0 +1,50 @@
+"kiasu kakis/Modules/Explore/ExplorePresenter.swift"
+  s_d41b002607dd7e::t_de93482a8af25e 73-74,131
+"kiasu kakis/App/MainTabBarController.swift"
+  s_d41b002607dd7e::t_de93482a8af25e 16-32
+"kiasu kakis/Modules/Saved/SavedPresenter.swift"
+  s_d41b002607dd7e::t_de93482a8af25e 33
+"kiasu kakis/Modules/JoinQueue/JoinQueuePresenter.swift"
+  s_d41b002607dd7e::t_56ffebae31fe25 50
+"kiasu kakis/Services/DemoVenueData.swift"
+  s_d41b002607dd7e::t_de93482a8af25e 7,9,11,13,15,17
+"kiasu kakis/Modules/Explore/ExploreProtocols.swift"
+  s_d41b002607dd7e::t_de93482a8af25e 53,64
+"kiasu kakis/Modules/VenueDetails/VenueDetailsViewController.swift"
+  s_d41b002607dd7e::t_de93482a8af25e 210,213
+"kiasu kakis/Modules/MyQueues/MyQueuesViewController.swift"
+  s_d41b002607dd7e::t_56ffebae31fe25 29
+"kiasu kakis/Modules/VenueDetails/VenueDetailsPresenter.swift"
+  s_d41b002607dd7e::t_de93482a8af25e 100-101,139
+"kiasu kakis/Modules/JoinQueue/JoinQueueViewController.swift"
+  s_d41b002607dd7e::t_de93482a8af25e 44,69
+"kiasu kakis/Entities/QueueSnapshot.swift"
+  s_d41b002607dd7e::t_de93482a8af25e 4-5
+"kiasu kakis/Modules/TicketDetail/TicketDetailPresenter.swift"
+  s_d41b002607dd7e::t_de93482a8af25e 69
+"kiasu kakis/Modules/TicketDetail/TicketDetailViewController.swift"
+  s_d41b002607dd7e::t_de93482a8af25e 81-84,94
+"kiasu kakis/Modules/Explore/ExploreViewController.swift"
+  s_d41b002607dd7e::t_de93482a8af25e 13-15,79-85,87,95,99,149-150,157-158,161-162,184-185,270,273-282,321-330
+  s_d41b002607dd7e::t_2d36d52fb5d594 331
+"kiasu kakis/Modules/Explore/ExploreRouter.swift"
+  s_d41b002607dd7e::t_de93482a8af25e 18-23
+"kiasu kakis/Modules/About/AboutViewController.swift"
+  s_d41b002607dd7e::t_de93482a8af25e 1-45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f785d254278fa2d61c7fab5e7af805e0ab8fceb8",
+  "prompts": {},
+  "sessions": {
+    "s_d41b002607dd7e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "ba26ab60-f6fb-43da-9682-0320ae57b25e",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

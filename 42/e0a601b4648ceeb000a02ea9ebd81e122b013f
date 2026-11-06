@@ -1,0 +1,69 @@
+"kiasu kakis/Modules/VenueDetails/VenueDetailsPresenter.swift"
+  s_d41b002607dd7e::t_202ac00d869b4c 15,23-26,75
+"kiasu kakis/Modules/VenueDetails/VenueDetailsViewController.swift"
+  s_d41b002607dd7e::t_202ac00d869b4c 28-32
+  s_d41b002607dd7e::t_1ee6a986d979fa 178,180
+"kiasu kakis/Modules/MyQueues/MyQueuesRouter.swift"
+  s_d41b002607dd7e::t_202ac00d869b4c 1-21
+"kiasu kakis/Modules/MyQueues/MyQueuesProtocols.swift"
+  s_d41b002607dd7e::t_202ac00d869b4c 1-31
+"kiasu kakis/Modules/JoinQueue/JoinQueueRouter.swift"
+  s_d41b002607dd7e::t_202ac00d869b4c 1-33
+"kiasu kakis/Modules/MyQueues/MyQueuesInteractor.swift"
+  s_d41b002607dd7e::t_202ac00d869b4c 1-12
+"kiasu kakis/Modules/TicketDetail/TicketDetailInteractor.swift"
+  s_d41b002607dd7e::t_202ac00d869b4c 1-16
+"kiasu kakis/App/MainTabBarController.swift"
+  s_d41b002607dd7e::t_202ac00d869b4c 5-6,11,19-24
+  s_d41b002607dd7e::t_da6edfa6edc08c 25-26
+"kiasu kakis/Modules/TicketDetail/TicketDetailPresenter.swift"
+  s_d41b002607dd7e::t_202ac00d869b4c 1-72
+"kiasu kakis/Modules/MyQueues/MyQueuesViewController.swift"
+  s_d41b002607dd7e::t_202ac00d869b4c 1-97
+"kiasu kakis/App/Theme.swift"
+  s_d41b002607dd7e::t_202ac00d869b4c 22-29
+"kiasu kakis/Modules/JoinQueue/JoinQueueViewController.swift"
+  s_d41b002607dd7e::t_202ac00d869b4c 1-142
+"kiasu kakis/Modules/JoinQueue/JoinQueueProtocols.swift"
+  s_d41b002607dd7e::t_202ac00d869b4c 1-35
+"kiasu kakis/Modules/VenueDetails/VenueDetailsInteractor.swift"
+  s_d41b002607dd7e::t_1122510e1f525a 18
+  s_d41b002607dd7e::t_202ac00d869b4c 7,9-11,14,17
+"kiasu kakis/Modules/TicketDetail/TicketDetailProtocols.swift"
+  s_d41b002607dd7e::t_202ac00d869b4c 1-35
+"kiasu kakis/Services/QueueService.swift"
+  s_d41b002607dd7e::t_202ac00d869b4c 1-17,19-67
+  s_d41b002607dd7e::t_843ae392bd2d96 68-78
+  s_d41b002607dd7e::t_2bf4b6aa5404f7 18
+"kiasu kakis/Modules/TicketDetail/TicketDetailViewController.swift"
+  s_d41b002607dd7e::t_202ac00d869b4c 1-209
+"kiasu kakis/Modules/JoinQueue/JoinQueuePresenter.swift"
+  s_d41b002607dd7e::t_202ac00d869b4c 1-52
+"kiasu kakis/Modules/MyQueues/MyQueuesPresenter.swift"
+  s_d41b002607dd7e::t_7274f9173c34bb 20-21
+  s_d41b002607dd7e::t_202ac00d869b4c 1-19,22-41
+"kiasu kakis/Modules/VenueDetails/VenueDetailsRouter.swift"
+  s_d41b002607dd7e::t_4408953d450b90 26-33
+"kiasu kakis/Modules/TicketDetail/TicketDetailRouter.swift"
+  s_d41b002607dd7e::t_202ac00d869b4c 1-12
+"kiasu kakis/Modules/VenueDetails/VenueDetailsProtocols.swift"
+  s_d41b002607dd7e::t_202ac00d869b4c 17,27,37,44
+"kiasu kakis/Modules/JoinQueue/JoinQueueInteractor.swift"
+  s_d41b002607dd7e::t_202ac00d869b4c 1-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "42e0a601b4648ceeb000a02ea9ebd81e122b013f",
+  "prompts": {},
+  "sessions": {
+    "s_d41b002607dd7e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "ba26ab60-f6fb-43da-9682-0320ae57b25e",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

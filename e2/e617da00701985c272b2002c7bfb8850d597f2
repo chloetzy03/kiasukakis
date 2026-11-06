@@ -1,0 +1,36 @@
+"kiasu kakis/Modules/TicketDetail/TicketDetailViewController.swift"
+  s_d41b002607dd7e::t_0ca6177ad4c06e 35
+"kiasu kakis/Modules/VenueDetails/VenueDetailsViewController.swift"
+  s_d41b002607dd7e::t_0ca6177ad4c06e 44
+"kiasu kakis/Modules/MyQueues/MyQueuesViewController.swift"
+  s_d41b002607dd7e::t_0ca6177ad4c06e 22
+"kiasu kakis/Modules/Saved/SavedViewController.swift"
+  s_d41b002607dd7e::t_0ca6177ad4c06e 22
+"kiasu kakis/Modules/Explore/ExploreViewController.swift"
+  s_d41b002607dd7e::t_60ddd6e63dc1ff 209
+  s_d41b002607dd7e::t_0ca6177ad4c06e 21,128,208,226-232
+"kiasu kakis/App/SceneDelegate.swift"
+  s_d41b002607dd7e::t_0ca6177ad4c06e 13
+"kiasu kakis/App/Theme.swift"
+  s_d41b002607dd7e::t_0ca6177ad4c06e 4-7
+"kiasu kakis/Modules/Explore/VenuePreviewCardView.swift"
+  s_d41b002607dd7e::t_0ca6177ad4c06e 30
+"kiasu kakis/Modules/PlaceholderViewController.swift"
+  s_d41b002607dd7e::t_0ca6177ad4c06e 24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e2e617da00701985c272b2002c7bfb8850d597f2",
+  "prompts": {},
+  "sessions": {
+    "s_d41b002607dd7e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "ba26ab60-f6fb-43da-9682-0320ae57b25e",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

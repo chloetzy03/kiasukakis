@@ -5,11 +5,21 @@ protocol SavedVenuesStoring: AnyObject {
     func toggle(_ venueID: String)
 }
 
-// In-memory for now. Milestone 5 makes this survive app relaunches.
+// Saved venue IDs are written to disk after every change.
 final class SavedVenuesStore: SavedVenuesStoring {
 
     static let shared = SavedVenuesStore()
-    private var ids: Set<String> = []
+
+    private static let filename = "saved_venues.json"
+    private let store: LocalStore
+    private var ids: Set<String> {
+        didSet { store.save(ids, to: Self.filename) }
+    }
+
+    init(store: LocalStore = LocalStore()) {
+        self.store = store
+        self.ids = store.load(Set<String>.self, from: Self.filename) ?? []
+    }
 
     func isSaved(_ venueID: String) -> Bool { ids.contains(venueID) }
 

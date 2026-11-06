@@ -15,7 +15,7 @@ protocol QueueServicing: AnyObject {
 }
 
 // Simulated queue. In a real app the venue's system would control queue progress, not the customer.
-// Kept in memory for now; Milestone 5 saves it to disk.
+// Tickets are saved to disk after every change, so they survive relaunching the app.
 final class QueueService: QueueServicing {
 
     static let shared = QueueService()
@@ -26,7 +26,17 @@ final class QueueService: QueueServicing {
         max(2, (snapshot.waitMinutes ?? 10) / minutesPerGroup)
     }
 
-    private(set) var tickets: [QueueTicket] = []
+    private static let filename = "tickets.json"
+    private let store: LocalStore
+
+    private(set) var tickets: [QueueTicket] {
+        didSet { store.save(tickets, to: Self.filename) }
+    }
+
+    init(store: LocalStore = LocalStore()) {
+        self.store = store
+        self.tickets = store.load([QueueTicket].self, from: Self.filename) ?? []
+    }
 
     func ticket(id: UUID) -> QueueTicket? { tickets.first { $0.id == id } }
 

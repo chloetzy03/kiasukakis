@@ -1,0 +1,35 @@
+"kiasu kakis/Modules/VenueDetails/VenueDetailsRouter.swift"
+  s_d41b002607dd7e::t_202ac00d869b4c 16,23,26-33
+  s_d41b002607dd7e::t_b7b341c7a9100f 1-15,17-22,24-25
+"kiasu kakis/Modules/VenueDetails/VenueDetailsInteractor.swift"
+  s_d41b002607dd7e::t_202ac00d869b4c 8-10
+  s_d41b002607dd7e::t_6b272221c8bb92 1-7,11-16
+"kiasu kakis/Modules/VenueDetails/VenueDetailsViewController.swift"
+  s_d41b002607dd7e::t_202ac00d869b4c 173-175
+  s_d41b002607dd7e::t_86447412654416 1-172,176-189
+"kiasu kakis/Services/SavedVenuesStore.swift"
+  s_d41b002607dd7e::t_0b98605a938ae6 8-19
+  s_d41b002607dd7e::t_1db2696f659757 1-7
+"kiasu kakis/Modules/Explore/ExploreRouter.swift"
+  s_d41b002607dd7e::t_01c67d3ae24c34 19-21
+"kiasu kakis/Modules/VenueDetails/VenueDetailsPresenter.swift"
+  s_d41b002607dd7e::t_bb09e2c50135d9 1-72
+"kiasu kakis/Modules/VenueDetails/VenueDetailsProtocols.swift"
+  s_d41b002607dd7e::t_25f5ec5fd15f48 1-41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9560c1629641417a1fa170a0cf8b568b168098c1",
+  "prompts": {},
+  "sessions": {
+    "s_d41b002607dd7e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "ba26ab60-f6fb-43da-9682-0320ae57b25e",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

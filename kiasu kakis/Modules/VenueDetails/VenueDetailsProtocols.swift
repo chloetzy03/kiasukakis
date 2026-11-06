@@ -18,8 +18,23 @@ struct VenueDetailsViewModel {
     let isSaved: Bool
 }
 
+struct TravelViewModel {
+    let summary: String
+    let hint: String?
+    let actionTitle: String?
+    let isLoading: Bool
+}
+
+enum TravelResult {
+    case ready(TravelTimes)
+    case needsPermission
+    case denied
+    case unavailable
+}
+
 protocol VenueDetailsViewProtocol: AnyObject {
     func show(_ viewModel: VenueDetailsViewModel)
+    func showTravel(_ viewModel: TravelViewModel)
 }
 
 protocol VenueDetailsPresenterProtocol: AnyObject {
@@ -28,6 +43,7 @@ protocol VenueDetailsPresenterProtocol: AnyObject {
     func didTapSave()
     func didTapJoin()
     func didTapOpenInMaps()
+    func didTapTravelAction()
 }
 
 protocol VenueDetailsInteractorProtocol: AnyObject {
@@ -36,10 +52,12 @@ protocol VenueDetailsInteractorProtocol: AnyObject {
     var isSaved: Bool { get }
     var activeTicket: QueueTicket? { get }
     func toggleSaved()
+    func loadTravel(requestPermission: Bool) async -> TravelResult
 }
 
 protocol VenueDetailsRouterProtocol: AnyObject {
     func openInMaps(_ venue: Venue)
     func showJoinQueue(for venue: Venue)
     func showTicket(ticketID: UUID)
+    func openSettings()
 }

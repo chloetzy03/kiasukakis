@@ -29,6 +29,10 @@ final class VenueDetailsRouter: VenueDetailsRouterProtocol {
         viewController?.present(join, animated: true)
     }
 
+    func openSettings() {
+        if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) }
+    }
+
     func showTicket(ticketID: UUID) {
         (viewController?.tabBarController as? MainTabBarController)?.showTicket(ticketID)
     }

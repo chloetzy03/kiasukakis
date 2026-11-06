@@ -11,6 +11,10 @@ final class VenueDetailsViewController: UIViewController {
     private let waitLabel = UILabel()
     private let sourceLabel = UILabel()
     private let updatedLabel = UILabel()
+    private let travelSpinner = UIActivityIndicatorView(style: .medium)
+    private let travelSummaryLabel = UILabel()
+    private let travelHintLabel = UILabel()
+    private let travelActionButton = UIButton(type: .system)
     private let statusIcon = UIImageView()
     private let statusTitleLabel = UILabel()
     private let statusMessageLabel = UILabel()
@@ -61,6 +65,20 @@ final class VenueDetailsViewController: UIViewController {
         updatedLabel.numberOfLines = 0
         let waitCard = card([waitTitle, waitRow, sourceLabel, updatedLabel])
 
+        // Travel card
+        travelSummaryLabel.font = .preferredFont(forTextStyle: .headline)
+        travelSummaryLabel.numberOfLines = 0
+        travelHintLabel.font = .preferredFont(forTextStyle: .footnote)
+        travelHintLabel.textColor = .secondaryLabel
+        travelHintLabel.numberOfLines = 0
+        travelActionButton.configuration = .plain()
+        travelActionButton.contentHorizontalAlignment = .leading
+        travelActionButton.addTarget(self, action: #selector(travelActionTapped), for: .touchUpInside)
+        let travelRow = UIStackView(arrangedSubviews: [travelSpinner, travelSummaryLabel])
+        travelRow.spacing = 8
+        travelRow.alignment = .center
+        let travelCard = card([caption("GETTING THERE"), travelRow, travelHintLabel, travelActionButton])
+
         // Queue status card
         statusIcon.contentMode = .scaleAspectFit
         statusIcon.setContentHuggingPriority(.required, for: .horizontal)
@@ -99,7 +117,7 @@ final class VenueDetailsViewController: UIViewController {
         disclaimer.textAlignment = .center
         disclaimer.numberOfLines = 0
 
-        let content = UIStackView(arrangedSubviews: [header, waitCard, statusCard, joinButton, mapsButton, disclaimer])
+        let content = UIStackView(arrangedSubviews: [header, waitCard, travelCard, statusCard, joinButton, mapsButton, disclaimer])
         content.axis = .vertical
         content.spacing = 16
         content.setCustomSpacing(20, after: header)
@@ -152,12 +170,24 @@ final class VenueDetailsViewController: UIViewController {
 
     @objc private func joinTapped() { presenter.didTapJoin() }
     @objc private func mapsTapped() { presenter.didTapOpenInMaps() }
+    @objc private func travelActionTapped() { presenter.didTapTravelAction() }
     @objc private func saveTapped() { presenter.didTapSave() }
 }
 
 // MARK: - VenueDetailsViewProtocol
 
 extension VenueDetailsViewController: VenueDetailsViewProtocol {
+
+    func showTravel(_ model: TravelViewModel) {
+        model.isLoading ? travelSpinner.startAnimating() : travelSpinner.stopAnimating()
+        travelSummaryLabel.text = model.summary
+        travelHintLabel.text = model.hint
+        travelHintLabel.isHidden = model.hint == nil
+        var config = travelActionButton.configuration
+        config?.title = model.actionTitle
+        travelActionButton.configuration = config
+        travelActionButton.isHidden = model.actionTitle == nil
+    }
 
     func show(_ model: VenueDetailsViewModel) {
         title = model.name

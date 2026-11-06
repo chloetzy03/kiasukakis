@@ -1,0 +1,43 @@
+"kiasu kakis/App/Theme.swift"
+  s_d41b002607dd7e::t_202ac00d869b4c 21
+  s_d41b002607dd7e::t_c5e688e8bea6cc 1-20,22-31
+"kiasu kakis/App/MainTabBarController.swift"
+  s_d41b002607dd7e::t_202ac00d869b4c 9
+  s_d41b002607dd7e::t_6c2b52a7410f87 1-8,10-30
+.gitignore
+  s_d41b002607dd7e::t_4f12da86901ddb 1-5
+"kiasu kakis.xcodeproj/project.pbxproj"
+  s_d41b002607dd7e::t_ff8dca2a8c3519 180,237
+"kiasu kakis/App/AppDelegate.swift"
+  s_d41b002607dd7e::t_be22c73a8e36b0 1,4-17
+"kiasu kakis/App/SceneDelegate.swift"
+  s_d41b002607dd7e::t_b4fb69b99050a9 1,3,5,7-16
+"kiasu kakis/Entities/QueueReport.swift"
+  s_d41b002607dd7e::t_55ae9f37d27d80 1-10
+"kiasu kakis/Entities/QueueSnapshot.swift"
+  s_d41b002607dd7e::t_185b207b9e63d9 1-15
+"kiasu kakis/Entities/QueueTicket.swift"
+  s_d41b002607dd7e::t_5c45abc355dc82 1,3-9,11-14,19-30
+"kiasu kakis/Entities/Venue.swift"
+  s_d41b002607dd7e::t_91760c6f352bd3 1-26
+"kiasu kakis/Modules/PlaceholderViewController.swift"
+  s_d41b002607dd7e::t_205e6bae4934a8 1,3-4,6-8,10-14,17,19-21,23-52
+"kiasu kakis/Services/DemoVenueData.swift"
+  s_d41b002607dd7e::t_a2e9188a8f5f73 1-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2cf01dd3d7f31401a5372a4b574a14e83ba92ef2",
+  "prompts": {},
+  "sessions": {
+    "s_d41b002607dd7e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "ba26ab60-f6fb-43da-9682-0320ae57b25e",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

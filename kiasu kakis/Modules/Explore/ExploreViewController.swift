@@ -10,7 +10,9 @@ final class ExploreViewController: UIViewController {
     private let mapView = MKMapView()
     private let searchBar = UISearchBar()
     private let chipStack = UIStackView()
-    private let demoLabel = UILabel()
+    private let infoButton = UIButton(type: .infoLight)
+    private let topOverlay = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterial))
+    private var userIsMovingMap = false
     private let offlineLabel = UILabel()
     private let previewCard = VenuePreviewCardView()
     private let emptyLabel = UILabel()
@@ -74,12 +76,15 @@ final class ExploreViewController: UIViewController {
         ])
         scroll.heightAnchor.constraint(equalToConstant: 36).isActive = true
 
-        demoLabel.text = "Demo venues and wait times are fictional"
-        demoLabel.font = .preferredFont(forTextStyle: .caption2)
-        demoLabel.textColor = .secondaryLabel
-        demoLabel.textAlignment = .center
+        infoButton.accessibilityLabel = "About Kiasu Kakis"
+        infoButton.addTarget(self, action: #selector(infoTapped), for: .touchUpInside)
+        infoButton.setContentHuggingPriority(.required, for: .horizontal)
+        let searchRow = UIStackView(arrangedSubviews: [searchBar, infoButton])
+        searchRow.alignment = .center
+        searchRow.isLayoutMarginsRelativeArrangement = true
+        searchRow.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 16)
 
-        offlineLabel.text = "You're offline. Showing demo data stored on this device."
+        offlineLabel.text = "You're offline. Showing venues saved on this device."
         offlineLabel.font = .preferredFont(forTextStyle: .caption1)
         offlineLabel.textColor = .white
         offlineLabel.backgroundColor = .systemGray
@@ -87,11 +92,11 @@ final class ExploreViewController: UIViewController {
         offlineLabel.numberOfLines = 0
         offlineLabel.isHidden = true
 
-        let stack = UIStackView(arrangedSubviews: [searchBar, scroll, demoLabel, offlineLabel])
+        let stack = UIStackView(arrangedSubviews: [searchRow, scroll, offlineLabel])
         stack.axis = .vertical
         stack.spacing = 4
 
-        let container = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterial))
+        let container = topOverlay
         container.translatesAutoresizingMaskIntoConstraints = false
         stack.translatesAutoresizingMaskIntoConstraints = false
         container.contentView.addSubview(stack)
@@ -141,18 +146,20 @@ final class ExploreViewController: UIViewController {
 
     private func setUpSearchAreaButton() {
         var config = UIButton.Configuration.filled()
-        config.title = "Search this area"
-        config.image = UIImage(systemName: "magnifyingglass")
+        config.title = "Find places here"
+        config.image = UIImage(systemName: "mappin.and.ellipse")
         config.imagePadding = 6
         config.baseBackgroundColor = Theme.brand
         config.cornerStyle = .capsule
         searchAreaButton.configuration = config
         searchAreaButton.addTarget(self, action: #selector(searchAreaTapped), for: .touchUpInside)
         searchAreaButton.translatesAutoresizingMaskIntoConstraints = false
+        searchAreaButton.alpha = 0
+        searchAreaButton.isHidden = true
         view.addSubview(searchAreaButton)
         NSLayoutConstraint.activate([
-            searchAreaButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            searchAreaButton.centerYAnchor.constraint(equalTo: locateButton.centerYAnchor)
+            searchAreaButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            searchAreaButton.topAnchor.constraint(equalTo: topOverlay.bottomAnchor, constant: 12)
         ])
     }
 
@@ -173,6 +180,8 @@ final class ExploreViewController: UIViewController {
     }
 
     // MARK: - Actions
+
+    @objc private func infoTapped() { presenter.didTapInfo() }
 
     @objc private func searchAreaTapped() { presenter.didTapSearchArea(in: mapView.region) }
 
@@ -258,9 +267,19 @@ extension ExploreViewController: ExploreViewProtocol {
     func showSearching(_ isSearching: Bool) {
         var config = searchAreaButton.configuration
         config?.showsActivityIndicator = isSearching
-        config?.title = isSearching ? "Searching…" : "Search this area"
+        config?.title = isSearching ? "Searching…" : "Find places here"
         searchAreaButton.configuration = config
         searchAreaButton.isEnabled = !isSearching
+        if !isSearching { setSearchAreaVisible(false) }
+    }
+
+    private func setSearchAreaVisible(_ visible: Bool) {
+        if visible { searchAreaButton.isHidden = false }
+        UIView.animate(withDuration: 0.2, animations: {
+            self.searchAreaButton.alpha = visible ? 1 : 0
+        }, completion: { _ in
+            self.searchAreaButton.isHidden = !visible
+        })
     }
 
     func showMessage(title: String, message: String) {
@@ -297,6 +316,17 @@ extension ExploreViewController: MKMapViewDelegate {
         pinView.annotation = annotation
         pinView.configure(with: annotation.pin)
         return pinView
+    }
+
+    // The "Find places here" button only appears after the user moves the map.
+    func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
+        let recognizers = mapView.subviews.first?.gestureRecognizers ?? []
+        userIsMovingMap = recognizers.contains { $0.state == .began || $0.state == .ended }
+    }
+
+    func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+        if userIsMovingMap { setSearchAreaVisible(true) }
+        userIsMovingMap = false
     }
 
     func mapView(_ mapView: MKMapView, didSelect annotation: MKAnnotation) {

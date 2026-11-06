@@ -41,7 +41,7 @@ final class JoinQueueViewController: UIViewController {
         aheadLabel.font = .preferredFont(forTextStyle: .subheadline)
         sourceLabel.font = .preferredFont(forTextStyle: .footnote)
         sourceLabel.textColor = .secondaryLabel
-        let conditions = card([caption("SIMULATED QUEUE CONDITIONS"), waitRow, aheadLabel, sourceLabel])
+        let conditions = card([caption("QUEUE CONDITIONS"), waitRow, aheadLabel, sourceLabel])
 
         // Party size card
         partyValueLabel.font = .preferredFont(forTextStyle: .body)
@@ -66,11 +66,7 @@ final class JoinQueueViewController: UIViewController {
         confirmButton.configuration = config
         confirmButton.addTarget(self, action: #selector(confirmTapped), for: .touchUpInside)
 
-        let note = caption("This creates a demo ticket on this device only. No real venue is involved.")
-        note.numberOfLines = 0
-        note.textAlignment = .center
-
-        let content = UIStackView(arrangedSubviews: [venueLabel, conditions, party, warningLabel, confirmButton, note])
+        let content = UIStackView(arrangedSubviews: [venueLabel, conditions, party, warningLabel, confirmButton])
         content.axis = .vertical
         content.spacing = 16
         content.translatesAutoresizingMaskIntoConstraints = false

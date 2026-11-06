@@ -50,6 +50,7 @@ protocol ExplorePresenterProtocol: AnyObject {
     func didDeselectVenue()
     func didTapPreview()
     func didTapSearchArea(in region: MKCoordinateRegion)
+    func didTapInfo()
 }
 
 protocol ExploreInteractorProtocol: AnyObject {
@@ -60,4 +61,5 @@ protocol ExploreInteractorProtocol: AnyObject {
 
 protocol ExploreRouterProtocol: AnyObject {
     func showVenueDetails(venueID: String, venueName: String)
+    func showAbout()
 }

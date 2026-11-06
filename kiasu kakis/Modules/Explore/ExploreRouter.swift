@@ -15,6 +15,12 @@ final class ExploreRouter: ExploreRouterProtocol {
         return view
     }
 
+    func showAbout() {
+        let nav = UINavigationController(rootViewController: AboutViewController())
+        nav.sheetPresentationController?.detents = [.medium(), .large()]
+        viewController?.present(nav, animated: true)
+    }
+
     func showVenueDetails(venueID: String, venueName: String) {
         guard let venue = VenueRepository.shared.venue(id: venueID) else { return }
         let details = VenueDetailsRouter.createModule(venue: venue)

@@ -97,8 +97,8 @@ final class VenueDetailsPresenter: VenueDetailsPresenterProtocol {
         let status: (symbol: String, title: String, message: String, color: UIColor)
         switch venue.queueSupport {
         case .demoSupported:
-            status = ("checkmark.circle.fill", "Demo virtual queue available",
-                      "This venue supports a simulated virtual queue for testing. No real venue is involved.",
+            status = ("checkmark.circle.fill", "Virtual queue available",
+                      "Join from your phone and track your turn without standing in line.",
                       Theme.waitShort)
         case .closed:
             status = ("moon.zzz.fill", "Queue closed",
@@ -136,7 +136,7 @@ final class VenueDetailsPresenter: VenueDetailsPresenterProtocol {
             statusColor: status.color,
             canJoin: venue.queueSupport == .demoSupported,
             hasActiveTicket: interactor.activeTicket != nil,
-            disclaimer: venue.isDemo ? "Demo data. All venues, wait times and tickets are fictional." : "Place details from Apple Maps. Queue data isn't available.",
+            disclaimer: venue.isDemo ? "" : "Place details from Apple Maps. Queue data isn't available.",
             isSaved: interactor.isSaved))
     }
 }

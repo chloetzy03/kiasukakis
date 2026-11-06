@@ -70,6 +70,8 @@ final class ExplorePresenter: ExplorePresenterProtocol {
         }
     }
 
+    func didTapInfo() { router.showAbout() }
+
     func didTapPreview() {
         guard let id = selectedID, let listing = interactor.listing(id: id) else { return }
         router.showVenueDetails(venueID: id, venueName: listing.venue.name)
@@ -126,7 +128,7 @@ final class ExplorePresenter: ExplorePresenterProtocol {
         }
         let queue: String
         switch listing.venue.queueSupport {
-        case .demoSupported: queue = "Demo virtual queue available"
+        case .demoSupported: queue = "Virtual queue available"
         case .closed: queue = "Queue closed"
         case .unsupported: queue = listing.venue.isDemo ? "Remote queue not supported" : "Real place from Apple Maps · no queue data"
         }

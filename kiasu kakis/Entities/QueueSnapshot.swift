@@ -1,8 +1,8 @@
 import Foundation
 
 enum QueueDataSource: String, Codable {
-    case demoSimulation = "Demo simulation"
-    case communityObservation = "Sample community observation"
+    case demoSimulation = "Simulated"
+    case communityObservation = "Simulated community report"
     case officialLive = "Official live data"
 }
 

@@ -29,12 +29,6 @@ final class TicketDetailViewController: UIViewController {
     }
 
     private func buildLayout() {
-        let banner = UILabel()
-        banner.text = "DEMO TICKET · SIMULATED QUEUE"
-        banner.font = .preferredFont(forTextStyle: .caption1)
-        banner.textColor = Theme.brandText
-        banner.textAlignment = .center
-
         venueLabel.font = .preferredFont(forTextStyle: .title2).withBold()
         venueLabel.textAlignment = .center
         venueLabel.numberOfLines = 0
@@ -84,11 +78,10 @@ final class TicketDetailViewController: UIViewController {
         messageLabel.textAlignment = .center
         messageLabel.numberOfLines = 0
 
-        var advanceConfig = UIButton.Configuration.tinted()
-        advanceConfig.cornerStyle = .large
-        advanceConfig.buttonSize = .large
-        advanceConfig.image = UIImage(systemName: "forward.fill")
-        advanceConfig.imagePadding = 8
+        // Small, quiet control that stands in for the venue calling customers.
+        var advanceConfig = UIButton.Configuration.plain()
+        advanceConfig.baseForegroundColor = .secondaryLabel
+        advanceConfig.buttonSize = .small
         advanceButton.configuration = advanceConfig
         advanceButton.addTarget(self, action: #selector(advanceTapped), for: .touchUpInside)
 
@@ -98,14 +91,7 @@ final class TicketDetailViewController: UIViewController {
         cancelButton.configuration = cancelConfig
         cancelButton.addTarget(self, action: #selector(cancelTapped), for: .touchUpInside)
 
-        let footnote = UILabel()
-        footnote.text = "The demo button stands in for the venue calling customers. In a real queue, only the venue would move it forward."
-        footnote.font = .preferredFont(forTextStyle: .caption1)
-        footnote.textColor = .secondaryLabel
-        footnote.numberOfLines = 0
-        footnote.textAlignment = .center
-
-        let content = UIStackView(arrangedSubviews: [banner, ticketCard, stepsStack, messageLabel, info, advanceButton, cancelButton, footnote])
+        let content = UIStackView(arrangedSubviews: [ticketCard, stepsStack, messageLabel, info, cancelButton, advanceButton])
         content.axis = .vertical
         content.spacing = 16
         content.translatesAutoresizingMaskIntoConstraints = false

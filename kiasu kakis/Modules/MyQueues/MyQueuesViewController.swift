@@ -26,7 +26,7 @@ final class MyQueuesViewController: UIViewController {
         heading.text = "No tickets yet"
         heading.font = .preferredFont(forTextStyle: .title2)
         let message = UILabel()
-        message.text = "Join a demo queue from a venue and it will show up here."
+        message.text = "Join a queue from a venue and your ticket will show up here."
         message.font = .preferredFont(forTextStyle: .body)
         message.textColor = .secondaryLabel
         message.numberOfLines = 0

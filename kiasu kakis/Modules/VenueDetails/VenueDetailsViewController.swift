@@ -207,9 +207,10 @@ extension VenueDetailsViewController: VenueDetailsViewProtocol {
         statusTitleLabel.text = model.statusTitle
         statusMessageLabel.text = model.statusMessage
         disclaimerLabel.text = model.disclaimer
+        disclaimerLabel.isHidden = model.disclaimer.isEmpty
 
         var config = joinButton.configuration
-        config?.title = model.hasActiveTicket ? "View my ticket" : (model.canJoin ? "Join demo queue" : model.statusTitle)
+        config?.title = model.hasActiveTicket ? "View my ticket" : (model.canJoin ? "Join queue" : model.statusTitle)
         joinButton.configuration = config
         joinButton.isEnabled = model.canJoin || model.hasActiveTicket
 

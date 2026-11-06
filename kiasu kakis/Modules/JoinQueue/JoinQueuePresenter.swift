@@ -47,6 +47,6 @@ final class JoinQueuePresenter: JoinQueuePresenterProtocol {
             sourceText: "Source: \(snapshot.source.rawValue)",
             partySizeText: partySize == 1 ? "1 person" : "\(partySize) people",
             canJoin: canJoin,
-            unavailableMessage: canJoin ? nil : "This venue isn't accepting demo tickets."))
+            unavailableMessage: canJoin ? nil : "This venue isn't accepting tickets right now."))
     }
 }

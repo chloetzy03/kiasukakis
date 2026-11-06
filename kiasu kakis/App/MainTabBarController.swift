@@ -9,10 +9,7 @@ final class MainTabBarController: UITabBarController {
         viewControllers = [
             makeTab(title: "Explore", symbol: "map", root: ExploreRouter.createModule()),
             makeTab(title: "My Queues", symbol: "ticket", root: MyQueuesRouter.createModule()),
-            makeTab(title: "Saved", symbol: "bookmark",
-                    root: PlaceholderViewController(symbol: "bookmark",
-                                                    heading: "No saved venues yet",
-                                                    message: "Bookmark venues to find them quickly later."))
+            makeTab(title: "Saved", symbol: "bookmark", root: SavedRouter.createModule())
         ]
     }
 

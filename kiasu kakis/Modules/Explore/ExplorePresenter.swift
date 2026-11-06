@@ -6,20 +6,28 @@ final class ExplorePresenter: ExplorePresenterProtocol {
     weak var view: ExploreViewProtocol?
     private let interactor: ExploreInteractorProtocol
     private let router: ExploreRouterProtocol
+    private let networkMonitor: NetworkMonitoring
 
     private var query = ""
     private var category: VenueCategory?
     private var selectedID: String?
     private let categories = VenueCategory.allCases
 
-    init(interactor: ExploreInteractorProtocol, router: ExploreRouterProtocol) {
+    init(interactor: ExploreInteractorProtocol,
+         router: ExploreRouterProtocol,
+         networkMonitor: NetworkMonitoring = NetworkMonitor()) {
         self.interactor = interactor
         self.router = router
+        self.networkMonitor = networkMonitor
     }
 
     func viewDidLoad() {
         view?.showCategories(["All"] + categories.map(\.rawValue), selectedIndex: 0)
         refresh()
+        networkMonitor.onStatusChange = { [weak self] isOnline in
+            self?.view?.showOfflineBanner(!isOnline)
+        }
+        networkMonitor.start()
     }
 
     func didChangeSearch(_ text: String) {

@@ -32,6 +32,7 @@ protocol ExploreViewProtocol: AnyObject {
     func showPins(_ pins: [VenuePinViewModel], selectedID: String?)
     func showPreview(_ preview: VenuePreviewViewModel?)
     func showEmptyState(_ message: String?)
+    func showOfflineBanner(_ isVisible: Bool)
 }
 
 protocol ExplorePresenterProtocol: AnyObject {

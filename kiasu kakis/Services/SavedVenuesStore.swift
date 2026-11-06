@@ -1,6 +1,7 @@
 import Foundation
 
 protocol SavedVenuesStoring: AnyObject {
+    var savedIDs: Set<String> { get }
     func isSaved(_ venueID: String) -> Bool
     func toggle(_ venueID: String)
 }
@@ -20,6 +21,8 @@ final class SavedVenuesStore: SavedVenuesStoring {
         self.store = store
         self.ids = store.load(Set<String>.self, from: Self.filename) ?? []
     }
+
+    var savedIDs: Set<String> { ids }
 
     func isSaved(_ venueID: String) -> Bool { ids.contains(venueID) }
 

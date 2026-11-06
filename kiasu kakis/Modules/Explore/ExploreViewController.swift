@@ -11,6 +11,7 @@ final class ExploreViewController: UIViewController {
     private let searchBar = UISearchBar()
     private let chipStack = UIStackView()
     private let demoLabel = UILabel()
+    private let offlineLabel = UILabel()
     private let previewCard = VenuePreviewCardView()
     private let emptyLabel = UILabel()
     private let locateButton = UIButton(type: .system)
@@ -75,7 +76,15 @@ final class ExploreViewController: UIViewController {
         demoLabel.textColor = .secondaryLabel
         demoLabel.textAlignment = .center
 
-        let stack = UIStackView(arrangedSubviews: [searchBar, scroll, demoLabel])
+        offlineLabel.text = "You're offline. Showing demo data stored on this device."
+        offlineLabel.font = .preferredFont(forTextStyle: .caption1)
+        offlineLabel.textColor = .white
+        offlineLabel.backgroundColor = .systemGray
+        offlineLabel.textAlignment = .center
+        offlineLabel.numberOfLines = 0
+        offlineLabel.isHidden = true
+
+        let stack = UIStackView(arrangedSubviews: [searchBar, scroll, demoLabel, offlineLabel])
         stack.axis = .vertical
         stack.spacing = 4
 
@@ -220,6 +229,10 @@ extension ExploreViewController: ExploreViewProtocol {
             self.previewCard.alpha = preview == nil ? 0 : 1
             self.view.layoutIfNeeded()
         }
+    }
+
+    func showOfflineBanner(_ isVisible: Bool) {
+        offlineLabel.isHidden = !isVisible
     }
 
     func showEmptyState(_ message: String?) {

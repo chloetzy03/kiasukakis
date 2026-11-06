@@ -21,7 +21,7 @@ final class PlaceholderViewController: UIViewController {
         view.backgroundColor = .systemBackground
 
         let icon = UIImageView(image: UIImage(systemName: symbol))
-        icon.tintColor = Theme.brand
+        icon.tintColor = Theme.brandText
         icon.contentMode = .scaleAspectFit
         icon.heightAnchor.constraint(equalToConstant: 56).isActive = true
 

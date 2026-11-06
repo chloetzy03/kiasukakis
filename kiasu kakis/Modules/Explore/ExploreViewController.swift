@@ -18,6 +18,7 @@ final class ExploreViewController: UIViewController {
     private let searchAreaButton = UIButton(type: .system)
     private let locationManager = CLLocationManager()
     private var annotations: [String: VenueAnnotation] = [:]
+    private var selectedChipIndex = 0
     private var previewHiddenConstraint: NSLayoutConstraint!
     private var previewShownConstraint: NSLayoutConstraint!
 
@@ -124,7 +125,7 @@ final class ExploreViewController: UIViewController {
         var config = UIButton.Configuration.filled()
         config.image = UIImage(systemName: "location.fill")
         config.baseBackgroundColor = .systemBackground
-        config.baseForegroundColor = Theme.brand
+        config.baseForegroundColor = Theme.brandText
         config.cornerStyle = .capsule
         locateButton.configuration = config
         locateButton.accessibilityLabel = "Show my location"
@@ -204,13 +205,8 @@ final class ExploreViewController: UIViewController {
     }
 
     private func updateChips(selectedIndex: Int) {
-        for case let button as UIButton in chipStack.arrangedSubviews {
-            var config = button.configuration
-            let selected = button.tag == selectedIndex
-            config?.baseBackgroundColor = selected ? Theme.brand : .secondarySystemBackground
-            config?.baseForegroundColor = selected ? .white : .label
-            button.configuration = config
-        }
+        selectedChipIndex = selectedIndex
+        for case let button as UIButton in chipStack.arrangedSubviews { button.setNeedsUpdateConfiguration() }
     }
 }
 
@@ -227,6 +223,13 @@ extension ExploreViewController: ExploreViewProtocol {
             config.buttonSize = .small
             let button = UIButton(configuration: config)
             button.tag = index
+            // Runs whenever the button needs restyling, including when light/dark mode changes.
+            button.configurationUpdateHandler = { [weak self] button in
+                guard let self else { return }
+                let selected = button.tag == self.selectedChipIndex
+                button.configuration?.baseBackgroundColor = selected ? Theme.brand : .secondarySystemBackground
+                button.configuration?.baseForegroundColor = selected ? .white : .label
+            }
             button.addTarget(self, action: #selector(chipTapped(_:)), for: .touchUpInside)
             chipStack.addArrangedSubview(button)
         }

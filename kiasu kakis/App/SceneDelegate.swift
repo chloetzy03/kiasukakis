@@ -10,7 +10,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = scene as? UIWindowScene else { return }
         let window = UIWindow(windowScene: windowScene)
         window.rootViewController = MainTabBarController()
-        window.tintColor = Theme.brand
+        window.tintColor = Theme.brandText
         window.makeKeyAndVisible()
         self.window = window
     }

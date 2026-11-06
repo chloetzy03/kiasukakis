@@ -27,7 +27,7 @@ final class VenuePreviewCardView: UIView {
         sourceLabel.textColor = .secondaryLabel
         sourceLabel.numberOfLines = 0
         queueLabel.font = .preferredFont(forTextStyle: .subheadline)
-        queueLabel.textColor = Theme.brand
+        queueLabel.textColor = Theme.brandText
 
         dot.layer.cornerRadius = 6
         dot.translatesAutoresizingMaskIntoConstraints = false

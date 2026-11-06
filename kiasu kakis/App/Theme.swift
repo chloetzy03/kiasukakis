@@ -1,8 +1,10 @@
 import UIKit
 
 enum Theme {
-    // Brand colour #bd091c
-    static let brand = UIColor(hex: 0xBD091C)
+    // Brand crimson #bd091c. Dark mode uses lighter reds so it stays readable on dark backgrounds.
+    // `brand` is for filled shapes (white text on top); `brandText` is for text, icons and tints.
+    static let brand = UIColor { $0.userInterfaceStyle == .dark ? UIColor(hex: 0xE0283C) : UIColor(hex: 0xBD091C) }
+    static let brandText = UIColor { $0.userInterfaceStyle == .dark ? UIColor(hex: 0xFF5A6B) : UIColor(hex: 0xBD091C) }
 
     // Wait-time colours. Unknown is grey so missing data is never read as "0 min".
     static let waitShort = UIColor(hex: 0x2E9E5B)

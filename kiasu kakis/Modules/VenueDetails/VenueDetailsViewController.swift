@@ -41,7 +41,7 @@ final class VenueDetailsViewController: UIViewController {
         nameLabel.font = .preferredFont(forTextStyle: .title1).withTraits(.traitBold)
         nameLabel.numberOfLines = 0
         categoryLabel.font = .preferredFont(forTextStyle: .subheadline)
-        categoryLabel.textColor = Theme.brand
+        categoryLabel.textColor = Theme.brandText
         addressLabel.font = .preferredFont(forTextStyle: .subheadline)
         addressLabel.textColor = .secondaryLabel
         addressLabel.numberOfLines = 0

@@ -19,7 +19,7 @@ final class MyQueuesViewController: UIViewController {
         view.addSubview(tableView)
 
         let icon = UIImageView(image: UIImage(systemName: "ticket"))
-        icon.tintColor = Theme.brand
+        icon.tintColor = Theme.brandText
         icon.contentMode = .scaleAspectFit
         icon.heightAnchor.constraint(equalToConstant: 56).isActive = true
         let heading = UILabel()

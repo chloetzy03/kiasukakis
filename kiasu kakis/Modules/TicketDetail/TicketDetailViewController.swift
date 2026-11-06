@@ -32,7 +32,7 @@ final class TicketDetailViewController: UIViewController {
         let banner = UILabel()
         banner.text = "DEMO TICKET · SIMULATED QUEUE"
         banner.font = .preferredFont(forTextStyle: .caption1)
-        banner.textColor = Theme.brand
+        banner.textColor = Theme.brandText
         banner.textAlignment = .center
 
         venueLabel.font = .preferredFont(forTextStyle: .title2).withBold()

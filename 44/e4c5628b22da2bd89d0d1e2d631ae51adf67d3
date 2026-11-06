@@ -1,0 +1,42 @@
+"kiasu kakis/Modules/Saved/SavedProtocols.swift"
+  s_d41b002607dd7e::t_7c902a3c789ae9 1-28
+"kiasu kakis/Services/NetworkMonitor.swift"
+  s_d41b002607dd7e::t_7c902a3c789ae9 1-24
+"kiasu kakis/Modules/Explore/ExplorePresenter.swift"
+  s_d41b002607dd7e::t_7c902a3c789ae9 9,16-18,21,27-30
+"kiasu kakis/Modules/Saved/SavedInteractor.swift"
+  s_d41b002607dd7e::t_7c902a3c789ae9 1-22
+"kiasu kakis/Modules/Explore/ExploreViewController.swift"
+  s_d41b002607dd7e::t_7c902a3c789ae9 14,79-87,234-235
+  s_d41b002607dd7e::t_444e43100b0bbd 236-237
+"kiasu kakis/App/MainTabBarController.swift"
+  s_d41b002607dd7e::t_7c902a3c789ae9 12
+"kiasu kakis/Modules/Saved/SavedViewController.swift"
+  s_d41b002607dd7e::t_7c902a3c789ae9 1-103
+"kiasu kakis/Modules/Saved/SavedRouter.swift"
+  s_d41b002607dd7e::t_7c902a3c789ae9 1-22
+"kiasu kakis/Modules/Explore/ExploreProtocols.swift"
+  s_d41b002607dd7e::t_7c902a3c789ae9 35
+"kiasu kakis/Services/SavedVenuesStore.swift"
+  s_d41b002607dd7e::t_7c902a3c789ae9 4
+  s_d41b002607dd7e::t_cda84051337057 25
+  s_d41b002607dd7e::t_c2db213c8f0770 26
+"kiasu kakis/Modules/Saved/SavedPresenter.swift"
+  s_d41b002607dd7e::t_7c902a3c789ae9 1-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "44e4c5628b22da2bd89d0d1e2d631ae51adf67d3",
+  "prompts": {},
+  "sessions": {
+    "s_d41b002607dd7e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "ba26ab60-f6fb-43da-9682-0320ae57b25e",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

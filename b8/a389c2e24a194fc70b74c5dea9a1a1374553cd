@@ -1,0 +1,33 @@
+"kiasu kakis/Modules/VenueDetails/VenueDetailsRouter.swift"
+  s_d41b002607dd7e::t_a43062773908c4 32-35
+"kiasu kakis/Modules/VenueDetails/VenueDetailsProtocols.swift"
+  s_d41b002607dd7e::t_a43062773908c4 21-34,37,46,55,62
+"kiasu kakis/Modules/VenueDetails/VenueDetailsViewController.swift"
+  s_d41b002607dd7e::t_a43062773908c4 14-17,68-81,120,173,181-190
+  s_d41b002607dd7e::t_3f8a02df973c52 191
+"kiasu kakis/Services/LocationService.swift"
+  s_d41b002607dd7e::t_a43062773908c4 1-77
+"kiasu kakis/Services/TravelTimeService.swift"
+  s_d41b002607dd7e::t_a43062773908c4 1-33
+"kiasu kakis/Modules/VenueDetails/VenueDetailsInteractor.swift"
+  s_d41b002607dd7e::t_a43062773908c4 2,9-10,14-16,20-21,29-42
+"kiasu kakis/Modules/VenueDetails/VenueDetailsPresenter.swift"
+  s_d41b002607dd7e::t_a43062773908c4 8-10,17-20,39-90
+  s_d41b002607dd7e::t_40cd0c1b1c0db2 91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b8a389c2e24a194fc70b74c5dea9a1a1374553cd",
+  "prompts": {},
+  "sessions": {
+    "s_d41b002607dd7e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "ba26ab60-f6fb-43da-9682-0320ae57b25e",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

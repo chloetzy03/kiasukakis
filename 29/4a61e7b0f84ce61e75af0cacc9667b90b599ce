@@ -1,0 +1,24 @@
+"kiasu kakis/Services/SavedVenuesStore.swift"
+  s_d41b002607dd7e::t_0b98605a938ae6 17,20-22
+  s_d41b002607dd7e::t_09f7f2a7f6c97f 8,12-16,18-19
+"kiasu kakis/Services/LocalStore.swift"
+  s_d41b002607dd7e::t_0b98605a938ae6 1-38
+"kiasu kakis/Services/QueueService.swift"
+  s_d41b002607dd7e::t_2bf4b6aa5404f7 18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "294a61e7b0f84ce61e75af0cacc9667b90b599ce",
+  "prompts": {},
+  "sessions": {
+    "s_d41b002607dd7e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "ba26ab60-f6fb-43da-9682-0320ae57b25e",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

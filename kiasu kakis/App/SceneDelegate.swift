@@ -17,6 +17,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window = window
     }
 
+    // The simulated queues only run while the app is on screen. Coming back also catches up the user's tickets.
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        _ = QueueService.shared   // Make sure it is listening before the first tick.
+        QueueSimulator.shared.start()
+    }
+
+    func sceneWillResignActive(_ scene: UIScene) {
+        QueueSimulator.shared.stop()
+    }
+
     private func showMainScreen() {
         guard let window else { return }
         let duration = UIAccessibility.isReduceMotionEnabled ? 0 : 0.35

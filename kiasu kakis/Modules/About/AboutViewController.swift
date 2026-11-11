@@ -34,6 +34,7 @@ final class AboutViewController: UIViewController {
             section.spacing = 6
             stack.addArrangedSubview(section)
         }
+        stack.addArrangedSubview(makeSpeedSection())
         stack.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(stack)
         NSLayoutConstraint.activate([
@@ -41,5 +42,34 @@ final class AboutViewController: UIViewController {
             stack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             stack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
         ])
+    }
+
+    // Demo speed is for showing the app quickly. Realistic speed shows how a real queue would feel.
+    private func makeSpeedSection() -> UIView {
+        let heading = UILabel()
+        heading.text = "Queue simulation speed"
+        heading.font = .preferredFont(forTextStyle: .headline)
+
+        let control = UISegmentedControl(items: SimulationSpeed.allCases.map(\.title))
+        control.selectedSegmentIndex = SimulationSpeed.allCases.firstIndex(of: QueueSimulator.shared.speed) ?? 0
+        control.accessibilityLabel = "Queue simulation speed"
+
+        let detail = UILabel()
+        detail.font = .preferredFont(forTextStyle: .footnote)
+        detail.textColor = .secondaryLabel
+        detail.numberOfLines = 0
+        detail.text = QueueSimulator.shared.speed.detail
+
+        control.addAction(UIAction { [weak control, weak detail] _ in
+            guard let control else { return }
+            let speed = SimulationSpeed.allCases[control.selectedSegmentIndex]
+            QueueSimulator.shared.speed = speed
+            detail?.text = speed.detail
+        }, for: .valueChanged)
+
+        let section = UIStackView(arrangedSubviews: [heading, control, detail])
+        section.axis = .vertical
+        section.spacing = 8
+        return section
     }
 }

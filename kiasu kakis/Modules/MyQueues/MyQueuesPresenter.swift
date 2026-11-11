@@ -5,6 +5,7 @@ final class MyQueuesPresenter: MyQueuesPresenterProtocol {
     weak var view: MyQueuesViewProtocol?
     private let interactor: MyQueuesInteractorProtocol
     private let router: MyQueuesRouterProtocol
+    private var queueObserver: QueueChangeObserver?
 
     init(interactor: MyQueuesInteractorProtocol, router: MyQueuesRouterProtocol) {
         self.interactor = interactor
@@ -12,6 +13,7 @@ final class MyQueuesPresenter: MyQueuesPresenterProtocol {
     }
 
     func viewWillAppear() {
+        if queueObserver == nil { queueObserver = QueueChangeObserver { [weak self] in self?.viewWillAppear() } }
         let tickets = interactor.tickets
         let active = tickets.filter { $0.status.isActive }
         let past = tickets.filter { !$0.status.isActive }

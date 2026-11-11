@@ -311,10 +311,29 @@ extension ExploreViewController: ExploreViewProtocol {
     }
 
     func showPins(_ pins: [VenuePinViewModel], selectedID: String?) {
-        mapView.removeAnnotations(Array(annotations.values))
-        annotations = Dictionary(pins.map { ($0.id, VenueAnnotation(pin: $0)) }, uniquingKeysWith: { first, _ in first })
-        mapView.addAnnotations(Array(annotations.values))
-        if let selectedID, let selected = annotations[selectedID] {
+        // Update pins in place. Removing and re-adding them all would flicker, and would drop the selection,
+        // which matters now that wait times change every few seconds.
+        let newIDs = Set(pins.map(\.id))
+        let removed = annotations.filter { !newIDs.contains($0.key) }
+        mapView.removeAnnotations(Array(removed.values))
+        removed.keys.forEach { annotations[$0] = nil }
+
+        var added: [VenueAnnotation] = []
+        for pin in pins {
+            if let existing = annotations[pin.id] {
+                guard existing.pin != pin else { continue }
+                existing.pin = pin
+                (mapView.view(for: existing) as? WaitPinView)?.configure(with: pin)
+            } else {
+                let annotation = VenueAnnotation(pin: pin)
+                annotations[pin.id] = annotation
+                added.append(annotation)
+            }
+        }
+        mapView.addAnnotations(added)
+
+        if let selectedID, let selected = annotations[selectedID],
+           !mapView.selectedAnnotations.contains(where: { $0 === selected }) {
             mapView.selectAnnotation(selected, animated: false)
         }
     }
@@ -393,7 +412,7 @@ extension ExploreViewController: ExploreViewProtocol {
 // MARK: - Map
 
 final class VenueAnnotation: NSObject, MKAnnotation {
-    let pin: VenuePinViewModel
+    var pin: VenuePinViewModel
     var coordinate: CLLocationCoordinate2D { CLLocationCoordinate2D(latitude: pin.latitude, longitude: pin.longitude) }
     var title: String? { pin.name }
     init(pin: VenuePinViewModel) { self.pin = pin }

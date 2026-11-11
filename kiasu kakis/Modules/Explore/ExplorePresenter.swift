@@ -16,6 +16,7 @@ final class ExplorePresenter: ExplorePresenterProtocol {
     private var searchedRegions: [MKCoordinateRegion] = []
     private var searchTask: Task<Void, Never>?
     private var suggestionTask: Task<Void, Never>?
+    private var queueObserver: QueueChangeObserver?
     private var suggestions: [PlaceSuggestion] = []
     private static let singaporeCenter = CLLocationCoordinate2D(latitude: 1.2950, longitude: 103.8500)
     // Zoomed out further than this (about 15 km tall), a search would be too broad to be useful.
@@ -38,6 +39,13 @@ final class ExplorePresenter: ExplorePresenterProtocol {
             self?.view?.showOfflineBanner(!isOnline)
         }
         networkMonitor.start()
+        // Waits change on their own, so refresh the pins and the open card when they do.
+        queueObserver = QueueChangeObserver { [weak self] in self?.queueDataChanged() }
+    }
+
+    private func queueDataChanged() {
+        refresh()
+        if let selectedID { view?.showPreview(interactor.listing(id: selectedID).map { Self.makePreview($0) }) }
     }
 
     // Typing shows matches we already know straight away, then adds Google or Apple Maps suggestions
@@ -209,8 +217,7 @@ final class ExplorePresenter: ExplorePresenterProtocol {
     // MARK: - Formatting
 
     static func waitText(for snapshot: QueueSnapshot) -> String {
-        guard let minutes = snapshot.waitMinutes else { return "No recent reports" }
-        return "\(minutes) min"
+        QueueFormatting.waitText(snapshot)
     }
 
     private static func makePin(_ listing: VenueListing) -> VenuePinViewModel {
@@ -242,8 +249,7 @@ final class ExplorePresenter: ExplorePresenterProtocol {
         if snapshot.waitMinutes == nil {
             source = "No recent reports. This is not a 0-minute wait."
         } else {
-            let relative = RelativeDateTimeFormatter().localizedString(for: snapshot.timestamp, relativeTo: Date())
-            source = "\(snapshot.source.rawValue) · \(relative)"
+            source = "\(snapshot.source.rawValue) · \(QueueFormatting.ago(snapshot.timestamp))"
         }
         let queue: String
         switch listing.venue.queueSupport {

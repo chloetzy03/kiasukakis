@@ -41,7 +41,7 @@ final class JoinQueuePresenter: JoinQueuePresenterProtocol {
 
         view?.show(JoinQueueViewModel(
             venueName: venue.name,
-            waitText: snapshot.waitMinutes.map { "\($0) min" } ?? "No recent reports",
+            waitText: QueueFormatting.waitText(snapshot),
             waitColor: Theme.waitColor(forMinutes: snapshot.waitMinutes),
             aheadText: "About \(ahead) groups ahead",
             sourceText: "Source: \(snapshot.source.rawValue)",

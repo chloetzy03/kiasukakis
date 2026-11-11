@@ -6,6 +6,7 @@ final class VenueDetailsPresenter: VenueDetailsPresenterProtocol {
     private let interactor: VenueDetailsInteractorProtocol
     private let router: VenueDetailsRouterProtocol
     private var travelAction: TravelAction?
+    private var queueObserver: QueueChangeObserver?
 
     private enum TravelAction { case allowLocation, openSettings }
 
@@ -18,6 +19,7 @@ final class VenueDetailsPresenter: VenueDetailsPresenterProtocol {
         render()
         loadTravel(requestPermission: false)
         loadPlaceInfo()
+        queueObserver = QueueChangeObserver { [weak self] in self?.render() }
     }
     func viewWillAppear() { render() }
 
@@ -152,8 +154,7 @@ final class VenueDetailsPresenter: VenueDetailsPresenterProtocol {
 
         let updated: String
         if hasData {
-            let relative = RelativeDateTimeFormatter().localizedString(for: snapshot.timestamp, relativeTo: Date())
-            updated = "Updated \(relative)"
+            updated = QueueFormatting.updatedText(snapshot)
         } else {
             updated = "No recent queue information. This is not a 0-minute wait."
         }
@@ -162,7 +163,7 @@ final class VenueDetailsPresenter: VenueDetailsPresenterProtocol {
             name: venue.name,
             categoryText: venue.category.rawValue,
             address: venue.address,
-            waitText: hasData ? "\(snapshot.waitMinutes ?? 0) min" : "No recent reports",
+            waitText: QueueFormatting.waitText(snapshot),
             waitColor: Theme.waitColor(forMinutes: snapshot.waitMinutes),
             sourceText: hasData ? "Source: \(snapshot.source.rawValue)" : "Source: none available",
             updatedText: updated,

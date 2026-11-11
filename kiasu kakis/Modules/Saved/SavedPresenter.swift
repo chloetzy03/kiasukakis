@@ -4,6 +4,7 @@ final class SavedPresenter: SavedPresenterProtocol {
 
     weak var view: SavedViewProtocol?
     private let interactor: SavedInteractorProtocol
+    private var queueObserver: QueueChangeObserver?
     private let router: SavedRouterProtocol
 
     init(interactor: SavedInteractorProtocol, router: SavedRouterProtocol) {
@@ -11,7 +12,10 @@ final class SavedPresenter: SavedPresenterProtocol {
         self.router = router
     }
 
-    func viewWillAppear() { refresh() }
+    func viewWillAppear() {
+        if queueObserver == nil { queueObserver = QueueChangeObserver { [weak self] in self?.refresh() } }
+        refresh()
+    }
 
     func didSelectVenue(id: String) { router.showVenueDetails(venueID: id) }
 

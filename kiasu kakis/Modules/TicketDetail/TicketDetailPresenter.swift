@@ -4,12 +4,18 @@ final class TicketDetailPresenter: TicketDetailPresenterProtocol {
 
     weak var view: TicketDetailViewProtocol?
     private let interactor: TicketDetailInteractorProtocol
+    private let simulator: QueueSimulating
+    private var queueObserver: QueueChangeObserver?
 
-    init(interactor: TicketDetailInteractorProtocol) {
+    init(interactor: TicketDetailInteractorProtocol, simulator: QueueSimulating = QueueSimulator.shared) {
         self.interactor = interactor
+        self.simulator = simulator
     }
 
-    func viewDidLoad() { render() }
+    func viewDidLoad() {
+        render()
+        queueObserver = QueueChangeObserver { [weak self] in self?.render() }
+    }
 
     func didTapAdvance() {
         interactor.advance()
@@ -61,7 +67,7 @@ final class TicketDetailPresenter: TicketDetailPresenterProtocol {
             statusColor: Theme.color(for: ticket.status),
             positionText: positionText,
             nowServingText: String(format: "#%03d", ticket.nowServing),
-            estimateText: isWaiting ? "About \(position * QueueService.minutesPerGroup) min" : "-",
+            estimateText: isWaiting ? simulator.speed.estimateText(groups: position) : "-",
             partyText: ticket.partySize == 1 ? "1 person" : "\(ticket.partySize) people",
             message: message,
             stepIndex: step,

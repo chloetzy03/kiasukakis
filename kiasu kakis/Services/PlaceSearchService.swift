@@ -32,7 +32,7 @@ final class PlaceSearchService: PlaceSearching {
         return response.mapItems.prefix(maxResultsPerQuery).compactMap(makeVenue)
     }
 
-    private static func makeVenue(from item: MKMapItem) -> Venue? {
+    static func makeVenue(from item: MKMapItem) -> Venue? {
         guard let name = item.name else { return nil }
         let coordinate = item.placemark.coordinate
         return Venue(id: String(format: "mk-%.5f-%.5f", coordinate.latitude, coordinate.longitude),

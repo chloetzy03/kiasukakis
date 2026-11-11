@@ -1,9 +1,12 @@
 import Foundation
+import CoreLocation
 
 protocol VenueProviding: AnyObject {
     var venues: [Venue] { get }
     func venue(id: String) -> Venue?
     @discardableResult func add(_ venues: [Venue]) -> Int
+    // Returns the stored venue: an existing one if this is the same place, otherwise the new one after saving it.
+    func resolve(_ venue: Venue) -> Venue
 }
 
 // One place to look up venues: the fictional demo ones plus real places found through Apple Maps.
@@ -26,6 +29,21 @@ final class VenueRepository: VenueProviding {
     var venues: [Venue] { DemoVenueData.venues + discovered }
 
     func venue(id: String) -> Venue? { venues.first { $0.id == id } }
+
+    func resolve(_ candidate: Venue) -> Venue {
+        if let existing = venue(id: candidate.id) { return existing }
+        // Apple Maps and Google can describe the same place with different ids, so match by name and distance.
+        let spot = CLLocation(latitude: candidate.latitude, longitude: candidate.longitude)
+        let name = SearchText.normalized(candidate.name)
+        let same = venues.first { other in
+            let otherName = SearchText.normalized(other.name)
+            return (otherName.contains(name) || name.contains(otherName))
+                && CLLocation(latitude: other.latitude, longitude: other.longitude).distance(from: spot) < 80
+        }
+        if let same { return same }
+        add([candidate])
+        return candidate
+    }
 
     // Returns how many were new.
     func add(_ newVenues: [Venue]) -> Int {

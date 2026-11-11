@@ -64,7 +64,7 @@ protocol ExplorePresenterProtocol: AnyObject {
 protocol ExploreInteractorProtocol: AnyObject {
     func listings(matching query: String, category: VenueCategory?) -> [VenueListing]
     func listing(id: String) -> VenueListing?
-    func discoverPlaces(in region: MKCoordinateRegion) async throws -> Int
+    @MainActor func discoverPlaces(in region: MKCoordinateRegion, onProgress: () -> Void) async throws
     func listings(matching query: String, category: VenueCategory?, in region: MKCoordinateRegion) -> [VenueListing]
 }
 

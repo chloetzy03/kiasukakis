@@ -38,9 +38,11 @@ final class ExploreInteractor: ExploreInteractorProtocol {
         return VenueListing(venue: venue, snapshot: DemoVenueData.snapshot(for: id))
     }
 
-    // Returns how many new places were added.
-    func discoverPlaces(in region: MKCoordinateRegion) async throws -> Int {
-        let found = try await placeSearch.searchFoodPlaces(in: region)
-        return repository.add(found)
+    // onProgress runs each time a batch of new places has been saved.
+    @MainActor
+    func discoverPlaces(in region: MKCoordinateRegion, onProgress: () -> Void) async throws {
+        try await placeSearch.searchFoodPlaces(in: region) { [repository] found in
+            if repository.add(found) > 0 { onProgress() }
+        }
     }
 }

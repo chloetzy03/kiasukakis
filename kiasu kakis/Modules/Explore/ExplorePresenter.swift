@@ -13,10 +13,11 @@ final class ExplorePresenter: ExplorePresenterProtocol {
     private var category: VenueCategory?
     private var selectedID: String?
     private var visibleRegion: MKCoordinateRegion?
-    private var lastSearchedRegion: MKCoordinateRegion?
+    private var searchedRegions: [MKCoordinateRegion] = []
     private var searchTask: Task<Void, Never>?
     // Zoomed out further than this (about 15 km tall), a search would be too broad to be useful.
     private static let maxSearchSpan = 0.15
+    private static let searchPadding = 1.5
     private let categories = VenueCategory.allCases
 
     init(interactor: ExploreInteractorProtocol,
@@ -66,12 +67,12 @@ final class ExplorePresenter: ExplorePresenterProtocol {
             view?.showAreaStatus(.zoomIn)
             return
         }
-        guard Self.needsSearch(region, lastSearched: lastSearchedRegion) else {
+        guard Self.needsSearch(region, searched: searchedRegions) else {
             view?.showAreaStatus(.hidden)
             return
         }
-        searchTask = Task { [weak self] in
-            try? await Task.sleep(nanoseconds: 700_000_000)
+        searchTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: 250_000_000)
             guard !Task.isCancelled else { return }
             await self?.search(region)
         }
@@ -80,15 +81,20 @@ final class ExplorePresenter: ExplorePresenterProtocol {
     func didTapRetrySearch() {
         guard let region = visibleRegion, region.span.latitudeDelta <= Self.maxSearchSpan else { return }
         searchTask?.cancel()
-        searchTask = Task { [weak self] in await self?.search(region) }
+        searchTask = Task { @MainActor [weak self] in await self?.search(region) }
     }
 
+    @MainActor
     private func search(_ region: MKCoordinateRegion) async {
         view?.showAreaStatus(.searching)
+        // Search a wider area than the screen, so a small pan afterwards already has pins.
+        let wider = MKCoordinateRegion(center: region.center,
+                                       span: MKCoordinateSpan(latitudeDelta: region.span.latitudeDelta * Self.searchPadding,
+                                                              longitudeDelta: region.span.longitudeDelta * Self.searchPadding))
         do {
-            _ = try await interactor.discoverPlaces(in: region)
+            try await interactor.discoverPlaces(in: wider) { [weak self] in self?.refresh() }
             guard !Task.isCancelled else { return }
-            lastSearchedRegion = region
+            searchedRegions.append(wider)
             refresh()
             view?.showAreaStatus(.hidden)
         } catch {
@@ -97,13 +103,15 @@ final class ExplorePresenter: ExplorePresenterProtocol {
         }
     }
 
-    // Skip the search if the map barely moved since the last one.
-    static func needsSearch(_ region: MKCoordinateRegion, lastSearched: MKCoordinateRegion?) -> Bool {
-        guard let last = lastSearched else { return true }
-        let moved = max(abs(region.center.latitude - last.center.latitude) / region.span.latitudeDelta,
-                        abs(region.center.longitude - last.center.longitude) / region.span.longitudeDelta)
-        let zoomRatio = region.span.latitudeDelta / last.span.latitudeDelta
-        return moved > 0.3 || zoomRatio < 0.6 || zoomRatio > 1.6
+    // Skip the search if an earlier search already covered what is on screen.
+    static func needsSearch(_ region: MKCoordinateRegion, searched: [MKCoordinateRegion]) -> Bool {
+        !searched.contains { done in
+            let latFits = abs(region.center.latitude - done.center.latitude) + region.span.latitudeDelta / 2 <= done.span.latitudeDelta / 2
+            let lonFits = abs(region.center.longitude - done.center.longitude) + region.span.longitudeDelta / 2 <= done.span.longitudeDelta / 2
+            // Zoomed in a lot since then? Search again, because the old search only kept the top results.
+            let notTooCoarse = done.span.latitudeDelta <= region.span.latitudeDelta * 2.5
+            return latFits && lonFits && notTooCoarse
+        }
     }
 
     func didTapInfo() { router.showAbout() }

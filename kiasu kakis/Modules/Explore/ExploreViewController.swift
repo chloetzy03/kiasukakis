@@ -18,6 +18,7 @@ final class ExploreViewController: UIViewController {
     private let locateButton = UIButton(type: .system)
     private let searchAreaButton = UIButton(type: .system)
     private let locationManager = CLLocationManager()
+    private static let singaporeBounds = SingaporeBounds()
     private var annotations: [String: VenueAnnotation] = [:]
     private var selectedChipIndex = 0
     private var previewHiddenConstraint: NSLayoutConstraint!
@@ -192,24 +193,53 @@ final class ExploreViewController: UIViewController {
     }
 
     @objc private func locateTapped() {
-        switch locationManager.authorizationStatus {
-        case .notDetermined:
-            locationManager.requestWhenInUseAuthorization()
-        case .authorizedWhenInUse, .authorizedAlways:
-            mapView.showsUserLocation = true
-            if let coordinate = mapView.userLocation.location?.coordinate {
-                mapView.setCenter(coordinate, animated: true)
+        Task { @MainActor in
+            do {
+                let location = try await LocationService.shared.currentLocation()
+                mapView.showsUserLocation = true
+                if Self.singaporeBounds.contains(location.coordinate) {
+                    mapView.setRegion(MKCoordinateRegion(center: location.coordinate,
+                                                         latitudinalMeters: 1000, longitudinalMeters: 1000),
+                                      animated: true)
+                } else {
+                    showOutsideSingaporeAlert(at: location.coordinate)
+                }
+            } catch LocationError.denied {
+                showLocationOffAlert()
+            } catch {
+                showMessage(title: "Couldn't find you", message: "Your location isn't available right now. Please try again.")
             }
-        default:
-            let alert = UIAlertController(title: "Location is off",
-                                          message: "You can still search and browse the map. To see your location, turn it on in Settings.",
-                                          preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Not now", style: .cancel))
-            alert.addAction(UIAlertAction(title: "Settings", style: .default) { _ in
-                if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) }
-            })
-            present(alert, animated: true)
         }
+    }
+
+    // The app only has Singapore data, so a location elsewhere (like the simulator's default in California) is confusing.
+    private func showOutsideSingaporeAlert(at coordinate: CLLocationCoordinate2D) {
+        let alert = UIAlertController(title: "You're outside Singapore",
+                                      message: "Kiasu Kakis only has places in Singapore.",
+                                      preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Stay in Singapore", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Go to my location", style: .default) { [weak self] _ in
+            self?.mapView.setRegion(MKCoordinateRegion(center: coordinate, latitudinalMeters: 1000, longitudinalMeters: 1000),
+                                    animated: true)
+        })
+        present(alert, animated: true)
+    }
+
+    private func showLocationOffAlert() {
+        let alert = UIAlertController(title: "Location is off",
+                                      message: "You can still search and browse the map. To see your location, turn it on in Settings.",
+                                      preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Not now", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Settings", style: .default) { _ in
+            if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) }
+        })
+        present(alert, animated: true)
+    }
+
+    private func showMessage(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
 
     private func updateChips(selectedIndex: Int) {
@@ -349,5 +379,12 @@ extension ExploreViewController: CLLocationManagerDelegate {
         case .authorizedWhenInUse, .authorizedAlways: mapView.showsUserLocation = true
         default: mapView.showsUserLocation = false
         }
+    }
+}
+
+// A rough box around Singapore.
+struct SingaporeBounds {
+    func contains(_ c: CLLocationCoordinate2D) -> Bool {
+        (1.15...1.48).contains(c.latitude) && (103.55...104.10).contains(c.longitude)
     }
 }

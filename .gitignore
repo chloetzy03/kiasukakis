@@ -3,3 +3,6 @@ xcuserdata/
 *.xcuserstate
 build/
 DerivedData/
+
+# Local secrets (never commit)
+Secrets.xcconfig

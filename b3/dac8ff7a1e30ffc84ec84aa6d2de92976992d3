@@ -1,0 +1,30 @@
+"kiasu kakis/Services/GooglePlacesService.swift"
+  s_83605c29a5e567::t_9236a425bcece6 1-175
+"kiasu kakis.xcodeproj/project.pbxproj"
+  s_83605c29a5e567::t_9236a425bcece6 11,38,251,259,284,292
+App-Info.plist
+  s_83605c29a5e567::t_9236a425bcece6 1-15
+"kiasu kakis/Entities/PlaceDetails.swift"
+  s_83605c29a5e567::t_9236a425bcece6 1-20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b3dac8ff7a1e30ffc84ec84aa6d2de92976992d3",
+  "prompts": {},
+  "humans": {
+    "h_ee194195c1c2bb": {
+      "author": "chloe <chloetzy03@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_83605c29a5e567": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "1e007083-5ef8-4fa4-a40d-8019fcebb6dc",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

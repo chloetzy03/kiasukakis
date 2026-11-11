@@ -9,24 +9,27 @@ final class VenueDetailsInteractor: VenueDetailsInteractorProtocol {
     private let location: LocationProviding
     private let travel: TravelTimeProviding
     private let places: PlaceDetailsProviding
+    private let simulator: QueueSimulating
 
     init(venue: Venue,
          store: SavedVenuesStoring = SavedVenuesStore.shared,
          queueService: QueueServicing = QueueService.shared,
          location: LocationProviding = LocationService.shared,
          travel: TravelTimeProviding = TravelTimeService(),
-         places: PlaceDetailsProviding = GooglePlacesService.shared) {
+         places: PlaceDetailsProviding = GooglePlacesService.shared,
+         simulator: QueueSimulating = QueueSimulator.shared) {
         self.venue = venue
         self.store = store
         self.queueService = queueService
         self.location = location
         self.travel = travel
         self.places = places
+        self.simulator = simulator
     }
 
     var activeTicket: QueueTicket? { queueService.activeTicket(forVenue: venue.id) }
 
-    var snapshot: QueueSnapshot { DemoVenueData.snapshot(for: venue.id) }
+    var snapshot: QueueSnapshot { simulator.snapshot(for: venue.id) }
     var isSaved: Bool { store.isSaved(venue.id) }
     func toggleSaved() { store.toggle(venue.id) }
 

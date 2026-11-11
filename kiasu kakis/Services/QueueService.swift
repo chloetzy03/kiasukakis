@@ -12,6 +12,7 @@ protocol QueueServicing: AnyObject {
     func join(venue: Venue, partySize: Int) -> Result<QueueTicket, QueueError>
     func advance(ticketID: UUID)
     func cancel(ticketID: UUID)
+    @discardableResult func progressTickets(now: Date, interval: TimeInterval) -> Bool
 }
 
 // Simulated queue. In a real app the venue's system would control queue progress, not the customer.
@@ -33,9 +34,29 @@ final class QueueService: QueueServicing {
         didSet { store.save(tickets, to: Self.filename) }
     }
 
-    init(store: LocalStore = LocalStore()) {
+    private let simulator: QueueSimulating
+    private let clock: () -> Date
+    private var tickObserver: NSObjectProtocol?
+
+    init(store: LocalStore = LocalStore(),
+         simulator: QueueSimulating = QueueSimulator.shared,
+         clock: @escaping () -> Date = Date.init) {
         self.store = store
+        self.simulator = simulator
+        self.clock = clock
         self.tickets = store.load([QueueTicket].self, from: Self.filename) ?? []
+        // Every simulator tick, move the user's tickets forward and tell the screens if anything changed.
+        tickObserver = NotificationCenter.default.addObserver(forName: .queueSimulatorDidTick, object: simulator as AnyObject,
+                                                              queue: .main) { [weak self] note in
+            guard let self else { return }
+            let ticketsMoved = progressTickets(now: self.clock(), interval: simulator.speed.groupInterval)
+            let waitsChanged = note.userInfo?["waitsChanged"] as? Bool ?? false
+            if ticketsMoved || waitsChanged { NotificationCenter.default.post(name: .queueDataDidChange, object: nil) }
+        }
+    }
+
+    deinit {
+        if let tickObserver { NotificationCenter.default.removeObserver(tickObserver) }
     }
 
     func ticket(id: UUID) -> QueueTicket? { tickets.first { $0.id == id } }
@@ -49,7 +70,7 @@ final class QueueService: QueueServicing {
         if let existing = activeTicket(forVenue: venue.id) { return .failure(.alreadyJoined(existing)) }
 
         let nowServing = Int.random(in: 20..<60)
-        let ahead = Self.groupsAhead(for: DemoVenueData.snapshot(for: venue.id))
+        let ahead = Self.groupsAhead(for: simulator.snapshot(for: venue.id))
         let ticket = QueueTicket(id: UUID(),
                                  venueID: venue.id,
                                  venueName: venue.name,
@@ -57,7 +78,8 @@ final class QueueService: QueueServicing {
                                  ticketNumber: nowServing + ahead,
                                  nowServing: nowServing,
                                  status: .waiting,
-                                 createdAt: Date())
+                                 createdAt: clock(),
+                                 lastProgressAt: clock())
         tickets.insert(ticket, at: 0)
         return .success(ticket)
     }
@@ -70,7 +92,32 @@ final class QueueService: QueueServicing {
             return
         }
         tickets[index].nowServing += 1
+        tickets[index].lastProgressAt = clock()
         tickets[index].status = Self.status(for: tickets[index])
+    }
+
+    // Moves waiting tickets forward by however many groups have been served since they last moved.
+    // Also catches up after the app was closed. A ticket stops moving once it is called.
+    @discardableResult
+    func progressTickets(now: Date, interval: TimeInterval) -> Bool {
+        var updated = tickets
+        var changed = false
+        for index in updated.indices where updated[index].status == .waiting || updated[index].status == .almostYourTurn {
+            guard let last = updated[index].lastProgressAt else {
+                updated[index].lastProgressAt = now
+                changed = true
+                continue
+            }
+            let steps = Int(now.timeIntervalSince(last) / interval)
+            guard steps > 0 else { continue }
+            // Never go past the ticket's own number.
+            updated[index].nowServing += min(steps, updated[index].position)
+            updated[index].lastProgressAt = last.addingTimeInterval(Double(steps) * interval)
+            updated[index].status = Self.status(for: updated[index])
+            changed = true
+        }
+        if changed { tickets = updated }
+        return changed
     }
 
     func cancel(ticketID: UUID) {

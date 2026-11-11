@@ -25,6 +25,8 @@ struct QueueTicket: Codable, Identifiable, Equatable {
     var nowServing: Int
     var status: QueueStatus
     let createdAt: Date
+    // When the queue last moved on its own. nil for tickets saved before the live queue existed.
+    var lastProgressAt: Date?
 
     // People ahead of the user in the queue.
     var position: Int { max(ticketNumber - nowServing, 0) }

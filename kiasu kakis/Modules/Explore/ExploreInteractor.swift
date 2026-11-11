@@ -7,13 +7,16 @@ final class ExploreInteractor: ExploreInteractorProtocol {
     private let repository: VenueProviding
     private let placeSearch: PlaceSearching
     private let suggester: PlaceSuggesting
+    private let simulator: QueueSimulating
 
     init(repository: VenueProviding = VenueRepository.shared,
          placeSearch: PlaceSearching = PlaceSearchService(),
-         suggester: PlaceSuggesting = PlaceSuggestionService()) {
+         suggester: PlaceSuggesting = PlaceSuggestionService(),
+         simulator: QueueSimulating = QueueSimulator.shared) {
         self.repository = repository
         self.placeSearch = placeSearch
         self.suggester = suggester
+        self.simulator = simulator
     }
 
     func listings(matching query: String, category: VenueCategory?) -> [VenueListing] {
@@ -23,7 +26,7 @@ final class ExploreInteractor: ExploreInteractorProtocol {
             .filter { trimmed.isEmpty
                 || $0.name.localizedCaseInsensitiveContains(trimmed)
                 || $0.address.localizedCaseInsensitiveContains(trimmed) }
-            .map { VenueListing(venue: $0, snapshot: DemoVenueData.snapshot(for: $0.id)) }
+            .map { VenueListing(venue: $0, snapshot: simulator.snapshot(for: $0.id)) }
     }
 
     // Only venues inside the visible map area (plus a margin), so old searches don't clutter the map.
@@ -63,7 +66,7 @@ final class ExploreInteractor: ExploreInteractorProtocol {
 
     func listing(id: String) -> VenueListing? {
         guard let venue = repository.venue(id: id) else { return nil }
-        return VenueListing(venue: venue, snapshot: DemoVenueData.snapshot(for: id))
+        return VenueListing(venue: venue, snapshot: simulator.snapshot(for: id))
     }
 
     // onProgress runs each time a batch of new places has been saved.

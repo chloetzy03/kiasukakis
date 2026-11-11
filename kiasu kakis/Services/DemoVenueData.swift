@@ -1,6 +1,6 @@
 import Foundation
 
-// All venues and waiting times are fictional demonstration data.
+// All venues are fictional demonstration data. Their waiting times come from QueueSimulator.
 enum DemoVenueData {
 
     static let venues: [Venue] = [
@@ -17,14 +17,4 @@ enum DemoVenueData {
         Venue(id: "v6", name: "Lantern Gardens Entrance", address: "4 Harbour Avenue, Singapore",
               category: .attraction, latitude: 1.2816, longitude: 103.8636, queueSupport: .demoSupported)
     ]
-
-    static func snapshot(for venueID: String, now: Date = Date()) -> QueueSnapshot {
-        switch venueID {
-        case "v1": return QueueSnapshot(venueID: venueID, waitMinutes: 40, source: .communityObservation, timestamp: now.addingTimeInterval(-600))
-        case "v2": return QueueSnapshot(venueID: venueID, waitMinutes: 15, source: .demoSimulation, timestamp: now.addingTimeInterval(-120))
-        case "v4": return QueueSnapshot(venueID: venueID, waitMinutes: 8, source: .demoSimulation, timestamp: now.addingTimeInterval(-300))
-        case "v6": return QueueSnapshot(venueID: venueID, waitMinutes: 25, source: .demoSimulation, timestamp: now.addingTimeInterval(-60))
-        default: return QueueSnapshot(venueID: venueID, waitMinutes: nil, source: .communityObservation, timestamp: .distantPast)
-        }
-    }
 }

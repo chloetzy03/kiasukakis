@@ -142,7 +142,7 @@ final class VenueDetailsPresenter: VenueDetailsPresenterProtocol {
                       .systemGray)
         case .unsupported where !venue.isDemo:
             status = ("info.circle", "No queue information",
-                      "This is a real place from Apple Maps. Kiasu Kakis has no queue data for it, and remote joining isn't available.",
+                      "This is a real place from Apple Maps or Google. Kiasu Kakis has no queue data for it, and remote joining isn't available.",
                       .systemGray)
         case .unsupported:
             status = ("nosign", "Remote queue not supported",
@@ -172,7 +172,7 @@ final class VenueDetailsPresenter: VenueDetailsPresenterProtocol {
             statusColor: status.color,
             canJoin: venue.queueSupport == .demoSupported,
             hasActiveTicket: interactor.activeTicket != nil,
-            disclaimer: venue.isDemo ? "" : "Place details from Apple Maps. Queue data isn't available.",
+            disclaimer: venue.isDemo ? "" : "Place details from Apple Maps and Google. Queue data isn't available.",
             isSaved: interactor.isSaved))
     }
 }

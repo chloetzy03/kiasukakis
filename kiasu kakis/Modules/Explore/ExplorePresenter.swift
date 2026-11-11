@@ -15,6 +15,9 @@ final class ExplorePresenter: ExplorePresenterProtocol {
     private var visibleRegion: MKCoordinateRegion?
     private var searchedRegions: [MKCoordinateRegion] = []
     private var searchTask: Task<Void, Never>?
+    private var suggestionTask: Task<Void, Never>?
+    private var suggestions: [PlaceSuggestion] = []
+    private static let singaporeCenter = CLLocationCoordinate2D(latitude: 1.2950, longitude: 103.8500)
     // Zoomed out further than this (about 15 km tall), a search would be too broad to be useful.
     private static let maxSearchSpan = 0.15
     private static let searchPadding = 1.5
@@ -37,9 +40,76 @@ final class ExplorePresenter: ExplorePresenterProtocol {
         networkMonitor.start()
     }
 
+    // Typing shows matches we already know straight away, then adds Google or Apple Maps suggestions
+    // once the user pauses for a moment.
     func didChangeSearch(_ text: String) {
         query = text
-        refresh()
+        suggestionTask?.cancel()
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            suggestions = []
+            view?.showSuggestions(nil)
+            return
+        }
+        let center = visibleRegion?.center ?? Self.singaporeCenter
+        let local = interactor.localSuggestions(matching: trimmed, near: center)
+        suggestions = local
+        let needsRemote = SearchText.normalized(trimmed).count >= 2
+        view?.showSuggestions(makeSuggestionsModel(isLoading: needsRemote))
+        guard needsRemote else { return }
+        suggestionTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: 300_000_000)
+            guard !Task.isCancelled, let self else { return }
+            let remote = await interactor.remoteSuggestions(for: trimmed, near: center)
+            guard !Task.isCancelled else { return }
+            suggestions = Self.merge(local: local, remote: remote)
+            view?.showSuggestions(makeSuggestionsModel(isLoading: false))
+        }
+    }
+
+    func didSelectSuggestion(at index: Int) {
+        guard suggestions.indices.contains(index) else { return }
+        let suggestion = suggestions[index]
+        suggestionTask?.cancel()
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            guard let venue = await interactor.resolve(suggestion) else {
+                view?.showMessage(title: "Couldn't open that place", message: "Check your internet connection and try again.")
+                return
+            }
+            query = ""
+            suggestions = []
+            view?.showSuggestions(nil)
+            view?.clearSearchText()
+            // Zoom in on the place and select it, so its card opens.
+            let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: venue.latitude, longitude: venue.longitude),
+                                            span: MKCoordinateSpan(latitudeDelta: 0.008, longitudeDelta: 0.008))
+            visibleRegion = region
+            category = nil
+            view?.showCategories(["All"] + categories.map(\.rawValue), selectedIndex: 0)
+            selectedID = venue.id
+            refresh()
+            view?.showPreview(interactor.listing(id: venue.id).map { Self.makePreview($0) })
+            view?.focusMap(on: region)
+        }
+    }
+
+    // Local matches first, then remote ones that are not already listed.
+    static func merge(local: [PlaceSuggestion], remote: [PlaceSuggestion]) -> [PlaceSuggestion] {
+        let known = Set(local.map { SearchText.normalized($0.title) })
+        return local + remote.filter { !known.contains(SearchText.normalized($0.title)) }
+    }
+
+    private func makeSuggestionsModel(isLoading: Bool) -> SuggestionsViewModel {
+        let rows = suggestions.map {
+            SuggestionRowViewModel(title: $0.title, subtitle: $0.subtitle,
+                                   symbolName: $0.category.map { Self.symbolName(for: $0) } ?? "mappin.circle")
+        }
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        return SuggestionsViewModel(rows: rows,
+                                    isLoading: isLoading,
+                                    showsGoogleAttribution: suggestions.contains { $0.source == .google },
+                                    emptyMessage: rows.isEmpty && !isLoading ? "No places found for “\(trimmed)”." : nil)
     }
 
     func didSelectCategory(at index: Int) {
@@ -124,9 +194,9 @@ final class ExplorePresenter: ExplorePresenterProtocol {
     private func refresh() {
         let listings: [VenueListing]
         if let visibleRegion {
-            listings = interactor.listings(matching: query, category: category, in: visibleRegion)
+            listings = interactor.listings(matching: "", category: category, in: visibleRegion)
         } else {
-            listings = interactor.listings(matching: query, category: category)
+            listings = interactor.listings(matching: "", category: category)
         }
         if let selectedID, !listings.contains(where: { $0.venue.id == selectedID }) {
             self.selectedID = nil
@@ -179,7 +249,7 @@ final class ExplorePresenter: ExplorePresenterProtocol {
         switch listing.venue.queueSupport {
         case .demoSupported: queue = "Virtual queue available"
         case .closed: queue = "Queue closed"
-        case .unsupported: queue = listing.venue.isDemo ? "Remote queue not supported" : "Real place from Apple Maps · no queue data"
+        case .unsupported: queue = listing.venue.isDemo ? "Remote queue not supported" : "Real place · no queue data"
         }
         return VenuePreviewViewModel(id: listing.venue.id,
                                      name: listing.venue.name,

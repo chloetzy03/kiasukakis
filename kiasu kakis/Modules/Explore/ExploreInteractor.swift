@@ -6,11 +6,14 @@ final class ExploreInteractor: ExploreInteractorProtocol {
 
     private let repository: VenueProviding
     private let placeSearch: PlaceSearching
+    private let suggester: PlaceSuggesting
 
     init(repository: VenueProviding = VenueRepository.shared,
-         placeSearch: PlaceSearching = PlaceSearchService()) {
+         placeSearch: PlaceSearching = PlaceSearchService(),
+         suggester: PlaceSuggesting = PlaceSuggestionService()) {
         self.repository = repository
         self.placeSearch = placeSearch
+        self.suggester = suggester
     }
 
     func listings(matching query: String, category: VenueCategory?) -> [VenueListing] {
@@ -31,6 +34,31 @@ final class ExploreInteractor: ExploreInteractorProtocol {
     private static func region(_ region: MKCoordinateRegion, contains venue: Venue, margin: Double) -> Bool {
         abs(venue.latitude - region.center.latitude) <= region.span.latitudeDelta / 2 * margin
             && abs(venue.longitude - region.center.longitude) <= region.span.longitudeDelta / 2 * margin
+    }
+
+    // Searches every known venue (not just the ones on screen). Closest matches to the map centre come first.
+    func localSuggestions(matching query: String, near center: CLLocationCoordinate2D) -> [PlaceSuggestion] {
+        let here = CLLocation(latitude: center.latitude, longitude: center.longitude)
+        return repository.venues
+            .compactMap { venue -> (Venue, Int, CLLocationDistance)? in
+                guard let rank = SearchText.rank(query: query, name: venue.name, address: venue.address) else { return nil }
+                return (venue, rank, here.distance(from: CLLocation(latitude: venue.latitude, longitude: venue.longitude)))
+            }
+            .sorted { ($0.1, $0.2) < ($1.1, $1.2) }
+            .prefix(6)
+            .map { PlaceSuggestion(id: $0.0.id, title: $0.0.name, subtitle: $0.0.address, category: $0.0.category,
+                                   source: .local, venue: $0.0, googlePlaceID: nil) }
+    }
+
+    func remoteSuggestions(for query: String, near center: CLLocationCoordinate2D) async -> [PlaceSuggestion] {
+        await suggester.suggestions(for: query, near: center)
+    }
+
+    // Turns a result into a saved venue, so it has a pin and a details page.
+    func resolve(_ suggestion: PlaceSuggestion) async -> Venue? {
+        if suggestion.source == .local, let venue = suggestion.venue { return venue }
+        guard let venue = await suggester.resolve(suggestion) else { return nil }
+        return repository.resolve(venue)
     }
 
     func listing(id: String) -> VenueListing? {

@@ -17,6 +17,10 @@ final class ExploreViewController: UIViewController {
     private let emptyLabel = UILabel()
     private let locateButton = UIButton(type: .system)
     private let searchAreaButton = UIButton(type: .system)
+    private let resultsTable = UITableView(frame: .zero, style: .plain)
+    private let resultsFooter = UILabel()
+    private let resultsEmptyLabel = UILabel()
+    private var suggestionRows: [SuggestionRowViewModel] = []
     private let locationManager = CLLocationManager()
     private static let singaporeBounds = SingaporeBounds()
     private var annotations: [String: VenueAnnotation] = [:]
@@ -35,6 +39,7 @@ final class ExploreViewController: UIViewController {
         setUpLocateButton()
         setUpSearchAreaButton()
         setUpEmptyLabel()
+        setUpResultsList()
         locationManager.delegate = self
         presenter.viewDidLoad()
     }
@@ -58,7 +63,7 @@ final class ExploreViewController: UIViewController {
     }
 
     private func setUpTopOverlay() {
-        searchBar.placeholder = "Search venues"
+        searchBar.placeholder = "Search places"
         searchBar.searchBarStyle = .minimal
         searchBar.delegate = self
 
@@ -179,6 +184,37 @@ final class ExploreViewController: UIViewController {
         ])
     }
 
+    // The list of search results. It sits on top of the map while the user is searching.
+    private func setUpResultsList() {
+        resultsTable.translatesAutoresizingMaskIntoConstraints = false
+        resultsTable.backgroundColor = Theme.background
+        resultsTable.dataSource = self
+        resultsTable.delegate = self
+        resultsTable.keyboardDismissMode = .onDrag
+        resultsTable.isHidden = true
+        resultsTable.register(UITableViewCell.self, forCellReuseIdentifier: "suggestion")
+
+        resultsFooter.font = .preferredFont(forTextStyle: .caption1)
+        resultsFooter.textColor = .secondaryLabel
+        resultsFooter.textAlignment = .center
+        resultsFooter.numberOfLines = 0
+        resultsFooter.adjustsFontForContentSizeCategory = true
+
+        resultsEmptyLabel.font = .preferredFont(forTextStyle: .headline)
+        resultsEmptyLabel.textColor = .secondaryLabel
+        resultsEmptyLabel.textAlignment = .center
+        resultsEmptyLabel.numberOfLines = 0
+        resultsEmptyLabel.adjustsFontForContentSizeCategory = true
+
+        view.addSubview(resultsTable)
+        NSLayoutConstraint.activate([
+            resultsTable.topAnchor.constraint(equalTo: topOverlay.bottomAnchor),
+            resultsTable.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            resultsTable.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            resultsTable.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+    }
+
     // MARK: - Actions
 
     @objc private func infoTapped() { presenter.didTapInfo() }
@@ -236,7 +272,7 @@ final class ExploreViewController: UIViewController {
         present(alert, animated: true)
     }
 
-    private func showMessage(title: String, message: String) {
+    func showMessage(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
@@ -315,6 +351,35 @@ extension ExploreViewController: ExploreViewProtocol {
         })
     }
 
+    func showSuggestions(_ model: SuggestionsViewModel?) {
+        guard let model else {
+            resultsTable.isHidden = true
+            suggestionRows = []
+            return
+        }
+        suggestionRows = model.rows
+        var footer: [String] = []
+        if model.isLoading { footer.append("Searching…") }
+        if model.showsGoogleAttribution { footer.append("Powered by Google") }
+        resultsFooter.text = footer.joined(separator: "\n")
+        resultsFooter.frame = CGRect(x: 0, y: 0, width: resultsTable.bounds.width, height: footer.isEmpty ? 0 : 52)
+        resultsTable.tableFooterView = footer.isEmpty ? UIView(frame: .zero) : resultsFooter
+        resultsEmptyLabel.text = model.emptyMessage
+        resultsTable.backgroundView = model.emptyMessage == nil ? nil : resultsEmptyLabel
+        resultsTable.isHidden = false
+        resultsTable.reloadData()
+    }
+
+    func clearSearchText() {
+        searchBar.text = ""
+        searchBar.resignFirstResponder()
+        searchBar.setShowsCancelButton(false, animated: true)
+    }
+
+    func focusMap(on region: MKCoordinateRegion) {
+        mapView.setRegion(region, animated: true)
+    }
+
     func showOfflineBanner(_ isVisible: Bool) {
         offlineLabel.isHidden = !isVisible
     }
@@ -371,6 +436,17 @@ extension ExploreViewController: UISearchBarDelegate {
     }
 
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) { searchBar.resignFirstResponder() }
+
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        searchBar.setShowsCancelButton(true, animated: true)
+    }
+
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.text = ""
+        searchBar.resignFirstResponder()
+        searchBar.setShowsCancelButton(false, animated: true)
+        presenter.didChangeSearch("")
+    }
 }
 
 extension ExploreViewController: CLLocationManagerDelegate {
@@ -386,5 +462,31 @@ extension ExploreViewController: CLLocationManagerDelegate {
 struct SingaporeBounds {
     func contains(_ c: CLLocationCoordinate2D) -> Bool {
         (1.15...1.48).contains(c.latitude) && (103.55...104.10).contains(c.longitude)
+    }
+}
+
+// MARK: - Search results list
+
+extension ExploreViewController: UITableViewDataSource, UITableViewDelegate {
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { suggestionRows.count }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "suggestion", for: indexPath)
+        let row = suggestionRows[indexPath.row]
+        var content = UIListContentConfiguration.subtitleCell()
+        content.text = row.title
+        content.secondaryText = row.subtitle
+        content.secondaryTextProperties.color = .secondaryLabel
+        content.image = UIImage(systemName: row.symbolName)
+        content.imageProperties.tintColor = Theme.brandText
+        cell.contentConfiguration = content
+        cell.backgroundColor = Theme.surface
+        return cell
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        presenter.didSelectSuggestion(at: indexPath.row)
     }
 }

@@ -1,5 +1,6 @@
 import UIKit
 import MapKit
+import CoreLocation
 
 // What the screen needs to show a map pin.
 struct VenuePinViewModel: Equatable {
@@ -26,6 +27,21 @@ struct VenuePreviewViewModel {
     let queueText: String
 }
 
+// One row in the search results list.
+struct SuggestionRowViewModel: Equatable {
+    let title: String
+    let subtitle: String
+    let symbolName: String
+}
+
+// Everything the results list needs. Passing nil to the view hides the list.
+struct SuggestionsViewModel: Equatable {
+    let rows: [SuggestionRowViewModel]
+    let isLoading: Bool
+    let showsGoogleAttribution: Bool
+    let emptyMessage: String?
+}
+
 struct VenueListing {
     let venue: Venue
     let snapshot: QueueSnapshot
@@ -47,6 +63,10 @@ protocol ExploreViewProtocol: AnyObject {
     func showEmptyState(_ message: String?)
     func showOfflineBanner(_ isVisible: Bool)
     func showAreaStatus(_ status: AreaStatus)
+    func showSuggestions(_ viewModel: SuggestionsViewModel?)
+    func clearSearchText()
+    func focusMap(on region: MKCoordinateRegion)
+    func showMessage(title: String, message: String)
 }
 
 protocol ExplorePresenterProtocol: AnyObject {
@@ -58,6 +78,7 @@ protocol ExplorePresenterProtocol: AnyObject {
     func didTapPreview()
     func didChangeRegion(_ region: MKCoordinateRegion)
     func didTapRetrySearch()
+    func didSelectSuggestion(at index: Int)
     func didTapInfo()
 }
 
@@ -66,6 +87,9 @@ protocol ExploreInteractorProtocol: AnyObject {
     func listing(id: String) -> VenueListing?
     @MainActor func discoverPlaces(in region: MKCoordinateRegion, onProgress: () -> Void) async throws
     func listings(matching query: String, category: VenueCategory?, in region: MKCoordinateRegion) -> [VenueListing]
+    func localSuggestions(matching query: String, near center: CLLocationCoordinate2D) -> [PlaceSuggestion]
+    func remoteSuggestions(for query: String, near center: CLLocationCoordinate2D) async -> [PlaceSuggestion]
+    func resolve(_ suggestion: PlaceSuggestion) async -> Venue?
 }
 
 protocol ExploreRouterProtocol: AnyObject {

@@ -1,0 +1,34 @@
+"kiasu kakis/Services/SearchText.swift"
+  s_83605c29a5e567::t_313a0c5b440400 1-21
+"kiasu kakis/Services/PlaceSearchService.swift"
+  s_83605c29a5e567::t_313a0c5b440400 35
+"kiasu kakis/Services/VenueRepository.swift"
+  s_83605c29a5e567::t_313a0c5b440400 2,8-9,35,38-43,46
+  s_83605c29a5e567::t_a19789714aa1e4 33-34,36-37,44-45
+  s_83605c29a5e567::t_73c6fb67e1b3a6 47
+"kiasu kakis/Services/PlaceSuggestionService.swift"
+  s_83605c29a5e567::t_313a0c5b440400 1-145
+"kiasu kakis/Entities/PlaceSuggestion.swift"
+  s_83605c29a5e567::t_313a0c5b440400 1-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4144cc667f87afd3c9a1dfb046653f3b3bb31d38",
+  "prompts": {},
+  "humans": {
+    "h_ee194195c1c2bb": {
+      "author": "chloe <chloetzy03@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_83605c29a5e567": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "1e007083-5ef8-4fa4-a40d-8019fcebb6dc",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

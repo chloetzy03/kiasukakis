@@ -12,6 +12,11 @@ final class ExplorePresenter: ExplorePresenterProtocol {
     private var query = ""
     private var category: VenueCategory?
     private var selectedID: String?
+    private var visibleRegion: MKCoordinateRegion?
+    private var lastSearchedRegion: MKCoordinateRegion?
+    private var searchTask: Task<Void, Never>?
+    // Zoomed out further than this (about 15 km tall), a search would be too broad to be useful.
+    private static let maxSearchSpan = 0.15
     private let categories = VenueCategory.allCases
 
     init(interactor: ExploreInteractorProtocol,
@@ -51,23 +56,54 @@ final class ExplorePresenter: ExplorePresenterProtocol {
         view?.showPreview(nil)
     }
 
-    func didTapSearchArea(in region: MKCoordinateRegion) {
-        view?.showSearching(true)
-        Task { [weak self] in
-            guard let self else { return }
-            do {
-                let added = try await interactor.discoverPlaces(in: region)
-                refresh()
-                view?.showSearching(false)
-                if added == 0 {
-                    view?.showMessage(title: "No new places",
-                                      message: "No new food places were found here. Try zooming out or moving the map.")
-                }
-            } catch {
-                view?.showSearching(false)
-                view?.showMessage(title: "Couldn't search", message: "Check your internet connection and try again.")
-            }
+    // Called every time the map stops moving. We show what is already known right away,
+    // then search Apple Maps once the user has stopped panning for a moment.
+    func didChangeRegion(_ region: MKCoordinateRegion) {
+        visibleRegion = region
+        refresh()
+        searchTask?.cancel()
+        guard region.span.latitudeDelta <= Self.maxSearchSpan else {
+            view?.showAreaStatus(.zoomIn)
+            return
         }
+        guard Self.needsSearch(region, lastSearched: lastSearchedRegion) else {
+            view?.showAreaStatus(.hidden)
+            return
+        }
+        searchTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 700_000_000)
+            guard !Task.isCancelled else { return }
+            await self?.search(region)
+        }
+    }
+
+    func didTapRetrySearch() {
+        guard let region = visibleRegion, region.span.latitudeDelta <= Self.maxSearchSpan else { return }
+        searchTask?.cancel()
+        searchTask = Task { [weak self] in await self?.search(region) }
+    }
+
+    private func search(_ region: MKCoordinateRegion) async {
+        view?.showAreaStatus(.searching)
+        do {
+            _ = try await interactor.discoverPlaces(in: region)
+            guard !Task.isCancelled else { return }
+            lastSearchedRegion = region
+            refresh()
+            view?.showAreaStatus(.hidden)
+        } catch {
+            guard !Task.isCancelled else { return }
+            view?.showAreaStatus(.failed)
+        }
+    }
+
+    // Skip the search if the map barely moved since the last one.
+    static func needsSearch(_ region: MKCoordinateRegion, lastSearched: MKCoordinateRegion?) -> Bool {
+        guard let last = lastSearched else { return true }
+        let moved = max(abs(region.center.latitude - last.center.latitude) / region.span.latitudeDelta,
+                        abs(region.center.longitude - last.center.longitude) / region.span.longitudeDelta)
+        let zoomRatio = region.span.latitudeDelta / last.span.latitudeDelta
+        return moved > 0.3 || zoomRatio < 0.6 || zoomRatio > 1.6
     }
 
     func didTapInfo() { router.showAbout() }
@@ -78,13 +114,18 @@ final class ExplorePresenter: ExplorePresenterProtocol {
     }
 
     private func refresh() {
-        let listings = interactor.listings(matching: query, category: category)
+        let listings: [VenueListing]
+        if let visibleRegion {
+            listings = interactor.listings(matching: query, category: category, in: visibleRegion)
+        } else {
+            listings = interactor.listings(matching: query, category: category)
+        }
         if let selectedID, !listings.contains(where: { $0.venue.id == selectedID }) {
             self.selectedID = nil
             view?.showPreview(nil)
         }
         view?.showPins(listings.map { Self.makePin($0) }, selectedID: selectedID)
-        view?.showEmptyState(listings.isEmpty ? "No venues match your search." : nil)
+        view?.showEmptyState(listings.isEmpty ? "No places found here. Try moving or zooming the map." : nil)
     }
 
     // MARK: - Formatting

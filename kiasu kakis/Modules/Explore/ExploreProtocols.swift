@@ -31,6 +31,14 @@ struct VenueListing {
     let snapshot: QueueSnapshot
 }
 
+// What the small status pill under the search bar says.
+enum AreaStatus: Equatable {
+    case hidden
+    case searching
+    case zoomIn
+    case failed
+}
+
 // VIPER contracts: each piece only knows the others through these protocols.
 protocol ExploreViewProtocol: AnyObject {
     func showCategories(_ titles: [String], selectedIndex: Int)
@@ -38,8 +46,7 @@ protocol ExploreViewProtocol: AnyObject {
     func showPreview(_ preview: VenuePreviewViewModel?)
     func showEmptyState(_ message: String?)
     func showOfflineBanner(_ isVisible: Bool)
-    func showSearching(_ isSearching: Bool)
-    func showMessage(title: String, message: String)
+    func showAreaStatus(_ status: AreaStatus)
 }
 
 protocol ExplorePresenterProtocol: AnyObject {
@@ -49,7 +56,8 @@ protocol ExplorePresenterProtocol: AnyObject {
     func didSelectVenue(id: String)
     func didDeselectVenue()
     func didTapPreview()
-    func didTapSearchArea(in region: MKCoordinateRegion)
+    func didChangeRegion(_ region: MKCoordinateRegion)
+    func didTapRetrySearch()
     func didTapInfo()
 }
 
@@ -57,6 +65,7 @@ protocol ExploreInteractorProtocol: AnyObject {
     func listings(matching query: String, category: VenueCategory?) -> [VenueListing]
     func listing(id: String) -> VenueListing?
     func discoverPlaces(in region: MKCoordinateRegion) async throws -> Int
+    func listings(matching query: String, category: VenueCategory?, in region: MKCoordinateRegion) -> [VenueListing]
 }
 
 protocol ExploreRouterProtocol: AnyObject {

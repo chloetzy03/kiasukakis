@@ -12,7 +12,6 @@ final class ExploreViewController: UIViewController {
     private let chipStack = UIStackView()
     private let infoButton = UIButton(type: .infoLight)
     private let topOverlay = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterial))
-    private var userIsMovingMap = false
     private let offlineLabel = UILabel()
     private let previewCard = VenuePreviewCardView()
     private let emptyLabel = UILabel()
@@ -46,7 +45,7 @@ final class ExploreViewController: UIViewController {
         mapView.delegate = self
         mapView.pointOfInterestFilter = .excludingAll
         mapView.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 1.2950, longitude: 103.8500),
-                                             span: MKCoordinateSpan(latitudeDelta: 0.06, longitudeDelta: 0.06)),
+                                             span: MKCoordinateSpan(latitudeDelta: 0.04, longitudeDelta: 0.04)),
                           animated: false)
         view.addSubview(mapView)
         NSLayoutConstraint.activate([
@@ -146,13 +145,13 @@ final class ExploreViewController: UIViewController {
 
     private func setUpSearchAreaButton() {
         var config = UIButton.Configuration.filled()
-        config.title = "Find places here"
+        config.title = "Searching…"
         config.image = UIImage(systemName: "mappin.and.ellipse")
         config.imagePadding = 6
         config.baseBackgroundColor = Theme.brand
         config.cornerStyle = .capsule
         searchAreaButton.configuration = config
-        searchAreaButton.addTarget(self, action: #selector(searchAreaTapped), for: .touchUpInside)
+        searchAreaButton.addTarget(self, action: #selector(retrySearchTapped), for: .touchUpInside)
         searchAreaButton.translatesAutoresizingMaskIntoConstraints = false
         searchAreaButton.alpha = 0
         searchAreaButton.isHidden = true
@@ -183,7 +182,7 @@ final class ExploreViewController: UIViewController {
 
     @objc private func infoTapped() { presenter.didTapInfo() }
 
-    @objc private func searchAreaTapped() { presenter.didTapSearchArea(in: mapView.region) }
+    @objc private func retrySearchTapped() { presenter.didTapRetrySearch() }
 
     @objc private func previewTapped() { presenter.didTapPreview() }
 
@@ -264,13 +263,17 @@ extension ExploreViewController: ExploreViewProtocol {
         }
     }
 
-    func showSearching(_ isSearching: Bool) {
+    func showAreaStatus(_ status: AreaStatus) {
         var config = searchAreaButton.configuration
-        config?.showsActivityIndicator = isSearching
-        config?.title = isSearching ? "Searching…" : "Find places here"
+        config?.showsActivityIndicator = status == .searching
+        config?.image = status == .searching ? nil : UIImage(systemName: "mappin.and.ellipse")
+        switch status {
+        case .hidden, .searching: config?.title = "Searching…"
+        case .zoomIn: config?.title = "Zoom in to find places"
+        case .failed: config?.title = "Couldn't search. Tap to retry"
+        }
         searchAreaButton.configuration = config
-        searchAreaButton.isEnabled = !isSearching
-        if !isSearching { setSearchAreaVisible(false) }
+        setSearchAreaVisible(status != .hidden)
     }
 
     private func setSearchAreaVisible(_ visible: Bool) {
@@ -278,14 +281,8 @@ extension ExploreViewController: ExploreViewProtocol {
         UIView.animate(withDuration: 0.2, animations: {
             self.searchAreaButton.alpha = visible ? 1 : 0
         }, completion: { _ in
-            self.searchAreaButton.isHidden = !visible
+            self.searchAreaButton.isHidden = !visible && self.searchAreaButton.alpha == 0
         })
-    }
-
-    func showMessage(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
     }
 
     func showOfflineBanner(_ isVisible: Bool) {
@@ -318,15 +315,8 @@ extension ExploreViewController: MKMapViewDelegate {
         return pinView
     }
 
-    // The "Find places here" button only appears after the user moves the map.
-    func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
-        let recognizers = mapView.subviews.first?.gestureRecognizers ?? []
-        userIsMovingMap = recognizers.contains { $0.state == .began || $0.state == .ended }
-    }
-
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-        if userIsMovingMap { setSearchAreaVisible(true) }
-        userIsMovingMap = false
+        presenter.didChangeRegion(mapView.region)
     }
 
     func mapView(_ mapView: MKMapView, didSelect annotation: MKAnnotation) {

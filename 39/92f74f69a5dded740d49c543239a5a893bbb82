@@ -1,0 +1,22 @@
+"kiasu kakis/Services/VenueRepository.swift"
+  s_83605c29a5e567::t_eb16f1bc48c724 23,32-33,37-41
+  s_83605c29a5e567::t_e9d7945ac1bbde 42
+"kiasu kakis/Modules/Explore/ExploreViewController.swift"
+  s_83605c29a5e567::t_eb16f1bc48c724 250
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3992f74f69a5dded740d49c543239a5a893bbb82",
+  "prompts": {},
+  "sessions": {
+    "s_83605c29a5e567": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "1e007083-5ef8-4fa4-a40d-8019fcebb6dc",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

@@ -247,7 +247,7 @@ extension ExploreViewController: ExploreViewProtocol {
 
     func showPins(_ pins: [VenuePinViewModel], selectedID: String?) {
         mapView.removeAnnotations(Array(annotations.values))
-        annotations = Dictionary(uniqueKeysWithValues: pins.map { ($0.id, VenueAnnotation(pin: $0)) })
+        annotations = Dictionary(pins.map { ($0.id, VenueAnnotation(pin: $0)) }, uniquingKeysWith: { first, _ in first })
         mapView.addAnnotations(Array(annotations.values))
         if let selectedID, let selected = annotations[selectedID] {
             mapView.selectAnnotation(selected, animated: false)

@@ -20,7 +20,7 @@ final class VenueRepository: VenueProviding {
 
     init(store: LocalStore = LocalStore()) {
         self.store = store
-        self.discovered = store.load([Venue].self, from: Self.filename) ?? []
+        self.discovered = Self.unique(store.load([Venue].self, from: Self.filename) ?? [])
     }
 
     var venues: [Venue] { DemoVenueData.venues + discovered }
@@ -29,9 +29,15 @@ final class VenueRepository: VenueProviding {
 
     // Returns how many were new.
     func add(_ newVenues: [Venue]) -> Int {
-        let known = Set(venues.map(\.id))
-        let fresh = newVenues.filter { !known.contains($0.id) }
+        var known = Set(venues.map(\.id))
+        let fresh = newVenues.filter { known.insert($0.id).inserted }
         if !fresh.isEmpty { discovered.append(contentsOf: fresh) }
         return fresh.count
+    }
+
+    // Earlier versions could save two places with the same id, which crashed the map on launch.
+    private static func unique(_ venues: [Venue]) -> [Venue] {
+        var seen = Set(DemoVenueData.venues.map(\.id))
+        return venues.filter { seen.insert($0.id).inserted }
     }
 }

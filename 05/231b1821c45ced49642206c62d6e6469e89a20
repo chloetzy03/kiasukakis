@@ -1,0 +1,66 @@
+"kiasu kakis/Assets.xcassets/LaunchBackground.colorset/Contents.json"
+  s_83605c29a5e567::t_b956ca7bf9d84d 1-38
+"kiasu kakis/Assets.xcassets/FoodBoba.imageset/Contents.json"
+  s_83605c29a5e567::t_b956ca7bf9d84d 1-12
+"kiasu kakis/Modules/VenueDetails/VenueDetailsViewController.swift"
+  s_83605c29a5e567::t_68d35c21ff9312 27
+"kiasu kakis/Assets.xcassets/AppIcon.appiconset/Contents.json"
+  s_83605c29a5e567::t_b956ca7bf9d84d 2,4-7,10,12-13,16-19,22,24-25,28-31,34-36,38
+"kiasu kakis/Modules/About/AboutViewController.swift"
+  s_83605c29a5e567::t_68d35c21ff9312 9
+"kiasu kakis/Modules/PlaceholderViewController.swift"
+  s_83605c29a5e567::t_68d35c21ff9312 21
+LaunchScreen-Info.plist
+  s_83605c29a5e567::t_9ede6193314103 1-13
+"kiasu kakis/Assets.xcassets/FoodToast.imageset/Contents.json"
+  s_83605c29a5e567::t_b956ca7bf9d84d 1-12
+"kiasu kakis.xcodeproj/project.pbxproj"
+  s_83605c29a5e567::t_9ede6193314103 256,288
+"kiasu kakis/Modules/Splash/SplashFood.swift"
+  s_83605c29a5e567::t_68d35c21ff9312 1-64
+"kiasu kakis/Modules/Explore/ExploreViewController.swift"
+  s_83605c29a5e567::t_68d35c21ff9312 31,132,268
+"kiasu kakis/Modules/Splash/SplashViewController.swift"
+  s_83605c29a5e567::t_68d35c21ff9312 1-147
+"kiasu kakis/Modules/JoinQueue/JoinQueueViewController.swift"
+  s_83605c29a5e567::t_68d35c21ff9312 20
+"kiasu kakis/Modules/MyQueues/MyQueuesViewController.swift"
+  s_83605c29a5e567::t_68d35c21ff9312 13
+"kiasu kakis/Assets.xcassets/LaunchMark.imageset/Contents.json"
+  s_83605c29a5e567::t_b956ca7bf9d84d 1-40
+"kiasu kakis/Assets.xcassets/FoodChilli.imageset/Contents.json"
+  s_83605c29a5e567::t_b956ca7bf9d84d 1-12
+"kiasu kakis/App/SceneDelegate.swift"
+  s_83605c29a5e567::t_68d35c21ff9312 12-14,19-25
+  s_83605c29a5e567::t_b6a24aa520b1c9 26
+"kiasu kakis/Assets.xcassets/FoodBowl.imageset/Contents.json"
+  s_83605c29a5e567::t_b956ca7bf9d84d 1-12
+"kiasu kakis/Modules/Explore/VenuePreviewCardView.swift"
+  s_83605c29a5e567::t_68d35c21ff9312 15
+"kiasu kakis/Modules/Saved/SavedViewController.swift"
+  s_83605c29a5e567::t_68d35c21ff9312 13
+"kiasu kakis/App/Theme.swift"
+  s_83605c29a5e567::t_68d35c21ff9312 9-12
+"kiasu kakis/Modules/Splash/EyesView.swift"
+  s_83605c29a5e567::t_68d35c21ff9312 1-90
+"kiasu kakis/Assets.xcassets/FoodDumpling.imageset/Contents.json"
+  s_83605c29a5e567::t_b956ca7bf9d84d 1-12
+"kiasu kakis/Modules/TicketDetail/TicketDetailViewController.swift"
+  s_83605c29a5e567::t_68d35c21ff9312 26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "05231b1821c45ced49642206c62d6e6469e89a20",
+  "prompts": {},
+  "sessions": {
+    "s_83605c29a5e567": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "1e007083-5ef8-4fa4-a40d-8019fcebb6dc",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

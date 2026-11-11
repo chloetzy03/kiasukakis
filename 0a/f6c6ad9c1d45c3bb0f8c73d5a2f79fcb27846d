@@ -1,0 +1,28 @@
+"kiasu kakis/Modules/Explore/ExploreInteractor.swift"
+  s_83605c29a5e567::t_3ce17f7485fcd0 41-46
+"kiasu kakis/Modules/Explore/ExplorePresenter.swift"
+  s_83605c29a5e567::t_3ce17f7485fcd0 16,20,70,74-75,84,87,90-93,95,97,106-114
+"kiasu kakis/Modules/Explore/ExploreProtocols.swift"
+  s_83605c29a5e567::t_3ce17f7485fcd0 67
+"kiasu kakis/Modules/Explore/ExploreViewController.swift"
+  s_83605c29a5e567::t_3ce17f7485fcd0 21,196-210,215-244,384-389
+  s_83605c29a5e567::t_6e2ca575d54763 390
+"kiasu kakis/Services/PlaceSearchService.swift"
+  s_83605c29a5e567::t_3ce17f7485fcd0 4-5,14-16,21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0af6c6ad9c1d45c3bb0f8c73d5a2f79fcb27846d",
+  "prompts": {},
+  "sessions": {
+    "s_83605c29a5e567": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "1e007083-5ef8-4fa4-a40d-8019fcebb6dc",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

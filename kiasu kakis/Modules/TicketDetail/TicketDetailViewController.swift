@@ -23,7 +23,7 @@ final class TicketDetailViewController: UIViewController {
         super.viewDidLoad()
         title = "My ticket"
         navigationItem.largeTitleDisplayMode = .never
-        view.backgroundColor = .systemGroupedBackground
+        view.backgroundColor = Theme.background
         buildLayout()
         presenter.viewDidLoad()
     }

@@ -17,7 +17,7 @@ final class JoinQueueViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Join queue"
-        view.backgroundColor = .systemGroupedBackground
+        view.backgroundColor = Theme.background
         navigationItem.leftBarButtonItem = UIBarButtonItem(systemItem: .cancel, primaryAction: UIAction { [weak self] _ in
             self?.presenter.didTapClose()
         })

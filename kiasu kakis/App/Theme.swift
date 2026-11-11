@@ -6,6 +6,10 @@ enum Theme {
     static let brand = UIColor { $0.userInterfaceStyle == .dark ? UIColor(hex: 0xE0283C) : UIColor(hex: 0xBD091C) }
     static let brandText = UIColor { $0.userInterfaceStyle == .dark ? UIColor(hex: 0xFF5A6B) : UIColor(hex: 0xBD091C) }
 
+    // Warm cream replaces stark white. Cards sit slightly lighter than the page.
+    static let background = UIColor { $0.userInterfaceStyle == .dark ? UIColor(hex: 0x170C0D) : UIColor(hex: 0xFBF4EA) }
+    static let surface = UIColor { $0.userInterfaceStyle == .dark ? UIColor(hex: 0x241618) : UIColor(hex: 0xFFFCF7) }
+
     // Wait-time colours. Unknown is grey so missing data is never read as "0 min".
     static let waitShort = UIColor(hex: 0x2E9E5B)
     static let waitMedium = UIColor(hex: 0xF5A623)

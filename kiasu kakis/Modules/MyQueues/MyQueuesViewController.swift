@@ -10,7 +10,7 @@ final class MyQueuesViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemGroupedBackground
+        view.backgroundColor = Theme.background
 
         tableView.dataSource = self
         tableView.delegate = self

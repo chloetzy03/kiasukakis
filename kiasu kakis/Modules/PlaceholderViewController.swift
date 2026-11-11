@@ -18,7 +18,7 @@ final class PlaceholderViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = Theme.background
 
         let icon = UIImageView(image: UIImage(systemName: symbol))
         icon.tintColor = Theme.brandText

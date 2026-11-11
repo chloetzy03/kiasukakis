@@ -24,7 +24,7 @@ final class VenueDetailsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemGroupedBackground
+        view.backgroundColor = Theme.background
         navigationItem.largeTitleDisplayMode = .never
         buildLayout()
         presenter.viewDidLoad()

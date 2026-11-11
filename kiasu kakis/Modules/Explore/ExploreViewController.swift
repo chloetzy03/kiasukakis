@@ -28,7 +28,7 @@ final class ExploreViewController: UIViewController {
         super.viewDidLoad()
         title = "Explore"
         navigationItem.largeTitleDisplayMode = .never
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = Theme.background
         setUpMap()
         setUpTopOverlay()
         setUpPreviewCard()
@@ -129,7 +129,7 @@ final class ExploreViewController: UIViewController {
     private func setUpLocateButton() {
         var config = UIButton.Configuration.filled()
         config.image = UIImage(systemName: "location.fill")
-        config.baseBackgroundColor = .systemBackground
+        config.baseBackgroundColor = Theme.surface
         config.baseForegroundColor = Theme.brandText
         config.cornerStyle = .capsule
         locateButton.configuration = config
@@ -265,7 +265,7 @@ extension ExploreViewController: ExploreViewProtocol {
             button.configurationUpdateHandler = { [weak self] button in
                 guard let self else { return }
                 let selected = button.tag == self.selectedChipIndex
-                button.configuration?.baseBackgroundColor = selected ? Theme.brand : .secondarySystemBackground
+                button.configuration?.baseBackgroundColor = selected ? Theme.brand : Theme.surface
                 button.configuration?.baseForegroundColor = selected ? .white : .label
             }
             button.addTarget(self, action: #selector(chipTapped(_:)), for: .touchUpInside)

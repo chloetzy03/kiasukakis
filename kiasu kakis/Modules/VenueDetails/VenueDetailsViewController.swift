@@ -21,6 +21,14 @@ final class VenueDetailsViewController: UIViewController {
     private let statusMessageLabel = UILabel()
     private let joinButton = UIButton(type: .system)
     private let mapsButton = UIButton(type: .system)
+    private let photoView = UIImageView()
+    private let photoCreditLabel = UILabel()
+    private let ratingLabel = UILabel()
+    private let openLabel = UILabel()
+    private let hoursLabel = UILabel()
+    private let attributionLabel = UILabel()
+    private var photoContainer: UIView!
+    private var placeCard: UIView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,6 +57,32 @@ final class VenueDetailsViewController: UIViewController {
         let header = UIStackView(arrangedSubviews: [categoryLabel, nameLabel, addressLabel])
         header.axis = .vertical
         header.spacing = 4
+
+        // Google details (hidden until they arrive)
+        photoView.contentMode = .scaleAspectFill
+        photoView.clipsToBounds = true
+        photoView.layer.cornerRadius = 14
+        photoView.backgroundColor = Theme.surface
+        photoView.isAccessibilityElement = false
+        photoView.translatesAutoresizingMaskIntoConstraints = false
+        photoView.heightAnchor.constraint(equalToConstant: 180).isActive = true
+        photoCreditLabel.font = .preferredFont(forTextStyle: .caption2)
+        photoCreditLabel.textColor = .secondaryLabel
+        let photoStack = UIStackView(arrangedSubviews: [photoView, photoCreditLabel])
+        photoStack.axis = .vertical
+        photoStack.spacing = 4
+        photoContainer = photoStack
+        photoContainer.isHidden = true
+
+        ratingLabel.font = .preferredFont(forTextStyle: .headline)
+        openLabel.font = .preferredFont(forTextStyle: .subheadline)
+        hoursLabel.font = .preferredFont(forTextStyle: .subheadline)
+        hoursLabel.textColor = .secondaryLabel
+        attributionLabel.font = .preferredFont(forTextStyle: .caption2)
+        attributionLabel.textColor = .secondaryLabel
+        for label in [ratingLabel, openLabel, hoursLabel, attributionLabel] { label.numberOfLines = 0 }
+        placeCard = card([caption("ABOUT THIS PLACE"), ratingLabel, openLabel, hoursLabel, attributionLabel])
+        placeCard.isHidden = true
 
         // Wait card
         let waitTitle = caption("CURRENT WAIT")
@@ -120,7 +154,7 @@ final class VenueDetailsViewController: UIViewController {
         disclaimer.textAlignment = .center
         disclaimer.numberOfLines = 0
 
-        let content = UIStackView(arrangedSubviews: [header, waitCard, travelCard, statusCard, joinButton, mapsButton, disclaimer])
+        let content = UIStackView(arrangedSubviews: [header, photoContainer, placeCard, waitCard, travelCard, statusCard, joinButton, mapsButton, disclaimer])
         content.axis = .vertical
         content.spacing = 16
         content.setCustomSpacing(20, after: header)
@@ -157,7 +191,7 @@ final class VenueDetailsViewController: UIViewController {
         stack.spacing = 8
         stack.translatesAutoresizingMaskIntoConstraints = false
         let container = UIView()
-        container.backgroundColor = .secondarySystemGroupedBackground
+        container.backgroundColor = Theme.surface
         container.layer.cornerRadius = 14
         container.addSubview(stack)
         NSLayoutConstraint.activate([
@@ -190,6 +224,27 @@ extension VenueDetailsViewController: VenueDetailsViewProtocol {
         config?.title = model.actionTitle
         travelActionButton.configuration = config
         travelActionButton.isHidden = model.actionTitle == nil
+    }
+
+    func showPlaceInfo(_ model: PlaceInfoViewModel?) {
+        guard let model else { placeCard.isHidden = true; return }
+        let detail = [model.openText, model.priceText].compactMap { $0 }.joined(separator: " · ")
+        ratingLabel.text = model.ratingText
+        ratingLabel.isHidden = model.ratingText == nil
+        openLabel.text = detail
+        openLabel.textColor = model.isOpen == false ? .systemRed : (model.isOpen == true ? Theme.waitShort : .label)
+        openLabel.isHidden = detail.isEmpty
+        hoursLabel.text = model.todayHoursText
+        hoursLabel.isHidden = model.todayHoursText == nil
+        attributionLabel.text = model.attribution
+        placeCard.isHidden = false
+    }
+
+    func showPhoto(_ image: UIImage?, credit: String?) {
+        guard let image else { photoContainer.isHidden = true; return }
+        photoView.image = image
+        photoCreditLabel.text = credit.map { "Photo: \($0) via Google Maps" } ?? "Photo via Google Maps"
+        photoContainer.isHidden = false
     }
 
     func show(_ model: VenueDetailsViewModel) {

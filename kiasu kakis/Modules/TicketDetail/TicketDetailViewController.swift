@@ -131,7 +131,7 @@ final class TicketDetailViewController: UIViewController {
         stack.spacing = spacing
         stack.translatesAutoresizingMaskIntoConstraints = false
         let container = UIView()
-        container.backgroundColor = .secondarySystemGroupedBackground
+        container.backgroundColor = Theme.surface
         container.layer.cornerRadius = 14
         container.addSubview(stack)
         NSLayoutConstraint.activate([

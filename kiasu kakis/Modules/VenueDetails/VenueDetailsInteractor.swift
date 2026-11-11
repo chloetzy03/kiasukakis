@@ -8,17 +8,20 @@ final class VenueDetailsInteractor: VenueDetailsInteractorProtocol {
     private let queueService: QueueServicing
     private let location: LocationProviding
     private let travel: TravelTimeProviding
+    private let places: PlaceDetailsProviding
 
     init(venue: Venue,
          store: SavedVenuesStoring = SavedVenuesStore.shared,
          queueService: QueueServicing = QueueService.shared,
          location: LocationProviding = LocationService.shared,
-         travel: TravelTimeProviding = TravelTimeService()) {
+         travel: TravelTimeProviding = TravelTimeService(),
+         places: PlaceDetailsProviding = GooglePlacesService.shared) {
         self.venue = venue
         self.store = store
         self.queueService = queueService
         self.location = location
         self.travel = travel
+        self.places = places
     }
 
     var activeTicket: QueueTicket? { queueService.activeTicket(forVenue: venue.id) }
@@ -26,6 +29,12 @@ final class VenueDetailsInteractor: VenueDetailsInteractorProtocol {
     var snapshot: QueueSnapshot { DemoVenueData.snapshot(for: venue.id) }
     var isSaved: Bool { store.isSaved(venue.id) }
     func toggleSaved() { store.toggle(venue.id) }
+
+    func loadPlaceDetails() async -> PlaceDetails? { await places.details(for: venue) }
+
+    func loadPhoto(for details: PlaceDetails) async -> Data? {
+        await places.photoData(for: details, venueID: venue.id)
+    }
 
     func loadTravel(requestPermission: Bool) async -> TravelResult {
         switch location.authorization {

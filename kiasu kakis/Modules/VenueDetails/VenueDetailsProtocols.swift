@@ -26,6 +26,16 @@ struct TravelViewModel {
     let isLoading: Bool
 }
 
+// Rating, hours and price from Google, formatted for display. Any line can be missing.
+struct PlaceInfoViewModel {
+    let ratingText: String?
+    let openText: String?
+    let isOpen: Bool?
+    let priceText: String?
+    let todayHoursText: String?
+    let attribution: String
+}
+
 enum TravelResult {
     case ready(TravelTimes)
     case needsPermission
@@ -36,6 +46,8 @@ enum TravelResult {
 protocol VenueDetailsViewProtocol: AnyObject {
     func show(_ viewModel: VenueDetailsViewModel)
     func showTravel(_ viewModel: TravelViewModel)
+    func showPlaceInfo(_ viewModel: PlaceInfoViewModel?)
+    func showPhoto(_ image: UIImage?, credit: String?)
 }
 
 protocol VenueDetailsPresenterProtocol: AnyObject {
@@ -54,6 +66,8 @@ protocol VenueDetailsInteractorProtocol: AnyObject {
     var activeTicket: QueueTicket? { get }
     func toggleSaved()
     func loadTravel(requestPermission: Bool) async -> TravelResult
+    func loadPlaceDetails() async -> PlaceDetails?
+    func loadPhoto(for details: PlaceDetails) async -> Data?
 }
 
 protocol VenueDetailsRouterProtocol: AnyObject {

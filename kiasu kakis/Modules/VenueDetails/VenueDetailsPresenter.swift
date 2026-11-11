@@ -17,6 +17,7 @@ final class VenueDetailsPresenter: VenueDetailsPresenterProtocol {
     func viewDidLoad() {
         render()
         loadTravel(requestPermission: false)
+        loadPlaceInfo()
     }
     func viewWillAppear() { render() }
 
@@ -42,6 +43,41 @@ final class VenueDetailsPresenter: VenueDetailsPresenterProtocol {
         case .openSettings: router.openSettings()
         case nil: break
         }
+    }
+
+    // Google details arrive after the page is already on screen, so the page never waits for them.
+    private func loadPlaceInfo() {
+        Task { [weak self] in
+            guard let self, let details = await interactor.loadPlaceDetails() else { return }
+            view?.showPlaceInfo(Self.makePlaceInfo(details, now: Date()))
+            guard details.photoName != nil else { return }
+            let image = await interactor.loadPhoto(for: details).flatMap(UIImage.init(data:))
+            view?.showPhoto(image, credit: image == nil ? nil : details.photoAuthor)
+        }
+    }
+
+    static func makePlaceInfo(_ details: PlaceDetails, now: Date, calendar: Calendar = .current) -> PlaceInfoViewModel? {
+        var rating: String?
+        if let value = details.rating {
+            rating = String(format: "%.1f ★", value)
+            if let count = details.ratingCount {
+                rating? += " · \(count.formatted()) \(count == 1 ? "review" : "reviews")"
+            }
+        }
+        let open = details.openNow.map { $0 ? "Open now" : "Closed now" }
+        let price = details.priceLevel.flatMap { $0 == 0 ? "Free" : String(repeating: "$", count: min($0, 4)) }
+
+        // Google lists Monday first; Calendar counts Sunday as 1.
+        var today: String?
+        let index = (calendar.component(.weekday, from: now) + 5) % 7
+        if index < details.weekdayHours.count,
+           let colon = details.weekdayHours[index].range(of: ": ") {
+            today = "Today: " + details.weekdayHours[index][colon.upperBound...]
+        }
+        guard rating != nil || open != nil || price != nil || today != nil else { return nil }
+        return PlaceInfoViewModel(ratingText: rating, openText: open, isOpen: details.openNow,
+                                  priceText: price, todayHoursText: today,
+                                  attribution: "Details from Google Maps")
     }
 
     private func loadTravel(requestPermission: Bool) {

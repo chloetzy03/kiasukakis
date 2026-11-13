@@ -21,6 +21,10 @@ protocol QueueServicing: AnyObject {
     func deleteTickets(where shouldDelete: (QueueTicket) -> Bool)
     func setTravelMinutes(_ minutes: Int, forTicket id: UUID)
     func checkIn(ticketID: UUID)
+    // Gives a called ticket more time, once.
+    func requestMoreTime(ticketID: UUID)
+    // Gives up on called tickets whose grace period has run out. Returns true if any changed.
+    @discardableResult func expireLateTickets(now: Date, grace: TimeInterval) -> Bool
     @discardableResult func progressTickets(now: Date, interval: TimeInterval) -> Bool
 }
 
@@ -67,15 +71,18 @@ final class QueueService: QueueServicing {
                                                               queue: .main) { [weak self] note in
             guard let self else { return }
             let ticketsMoved = progressTickets(now: self.clock(), interval: simulator.speed.groupInterval)
+            let expired = expireLateTickets(now: self.clock(), grace: simulator.speed.graceSeconds)
+            // A called ticket has a countdown on screen, so screens refresh every tick while one exists.
+            let counting = tickets.contains { $0.status == .called }
             let waitsChanged = note.userInfo?["waitsChanged"] as? Bool ?? false
             // The demo speed can change between ticks, which changes when alerts should fire.
             self.syncAlerts()
-            if ticketsMoved || waitsChanged { NotificationCenter.default.post(name: .queueDataDidChange, object: nil) }
+            if ticketsMoved || waitsChanged || expired || counting { NotificationCenter.default.post(name: .queueDataDidChange, object: nil) }
         }
     }
 
     private func syncAlerts() {
-        notifier.sync(tickets: tickets, interval: simulator.speed.groupInterval, now: clock())
+        notifier.sync(tickets: tickets, interval: simulator.speed.groupInterval, grace: simulator.speed.graceSeconds, now: clock())
     }
 
     deinit {
@@ -124,6 +131,7 @@ final class QueueService: QueueServicing {
         tickets[index].nowServing += 1
         tickets[index].lastProgressAt = clock()
         tickets[index].status = Self.status(for: tickets[index])
+        if tickets[index].status == .called { tickets[index].calledAt = clock() }
     }
 
     // Moves waiting tickets forward by however many groups have been served since they last moved.
@@ -140,10 +148,15 @@ final class QueueService: QueueServicing {
             }
             let steps = Int(now.timeIntervalSince(last) / interval)
             guard steps > 0 else { continue }
+            let positionBefore = updated[index].position
             // Never go past the ticket's own number.
             updated[index].nowServing += min(steps, updated[index].position)
             updated[index].lastProgressAt = last.addingTimeInterval(Double(steps) * interval)
             updated[index].status = Self.status(for: updated[index])
+            // Count the grace period from when the ticket was actually called, even if the app was closed then.
+            if updated[index].status == .called {
+                updated[index].calledAt = last.addingTimeInterval(Double(positionBefore) * interval)
+            }
             changed = true
         }
         if changed { tickets = updated }
@@ -169,6 +182,26 @@ final class QueueService: QueueServicing {
         guard let index = tickets.firstIndex(where: { $0.id == ticketID }), tickets[index].status.isActive,
               tickets[index].arrivedAt == nil else { return }
         tickets[index].arrivedAt = clock()
+    }
+
+    func requestMoreTime(ticketID: UUID) {
+        guard let index = tickets.firstIndex(where: { $0.id == ticketID }), tickets[index].canRequestMoreTime else { return }
+        tickets[index].lateExtensions = tickets[index].extensionCount + 1
+    }
+
+    @discardableResult
+    func expireLateTickets(now: Date, grace: TimeInterval) -> Bool {
+        var updated = tickets
+        var changed = false
+        for index in updated.indices where updated[index].status == .called {
+            // Tickets called before grace periods existed get one starting now.
+            if updated[index].calledAt == nil { updated[index].calledAt = now; changed = true; continue }
+            guard let deadline = updated[index].deadline(grace: grace), now >= deadline else { continue }
+            updated[index].status = .expired
+            changed = true
+        }
+        if changed { tickets = updated }
+        return changed
     }
 
     func cancel(ticketID: UUID) {

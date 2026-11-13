@@ -26,6 +26,12 @@ enum QueueFormatting {
         return snapshot.trend == .steady ? "\(minutes) min" : "\(minutes) min \(arrow(for: snapshot.trend))"
     }
 
+    // "25 sec" or "3 min", for a countdown.
+    static func remaining(_ seconds: TimeInterval) -> String {
+        let whole = max(0, Int(seconds.rounded(.up)))
+        return whole < 60 ? "\(whole) sec" : "\(Int((Double(whole) / 60).rounded(.up))) min"
+    }
+
     // "just now", "20 seconds ago", "2 minutes ago".
     static func ago(_ date: Date, now: Date = Date()) -> String {
         let seconds = max(0, now.timeIntervalSince(date))

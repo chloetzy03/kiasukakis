@@ -4,13 +4,13 @@ import UserNotifications
 protocol TicketNotifying: AnyObject {
     func requestPermissionIfNeeded()
     // Makes the scheduled alerts match the tickets. Safe to call often: it only reschedules what changed.
-    func sync(tickets: [QueueTicket], interval: TimeInterval, now: Date)
+    func sync(tickets: [QueueTicket], interval: TimeInterval, grace: TimeInterval, now: Date)
 }
 
 // For tests and anywhere alerts aren't wanted.
 final class NoopTicketNotifier: TicketNotifying {
     func requestPermissionIfNeeded() {}
-    func sync(tickets: [QueueTicket], interval: TimeInterval, now: Date) {}
+    func sync(tickets: [QueueTicket], interval: TimeInterval, grace: TimeInterval, now: Date) {}
 }
 
 // Local notifications, so the phone can tell the user even when the app is closed. No server is needed.
@@ -31,13 +31,13 @@ final class LocalTicketNotifier: NSObject, TicketNotifying, UNUserNotificationCe
         }
     }
 
-    func sync(tickets: [QueueTicket], interval: TimeInterval, now: Date) {
+    func sync(tickets: [QueueTicket], interval: TimeInterval, grace: TimeInterval, now: Date) {
         for ticket in tickets {
-            let plan = TicketNotificationPlan.plan(for: ticket, interval: interval, now: now)
-            let signature = "\(ticket.status.rawValue)-\(ticket.position)-\(interval)-\(ticket.lastProgressAt?.timeIntervalSince1970 ?? 0)-\(ticket.travelMinutes ?? -1)-\(ticket.arrivedAt != nil)"
+            let plan = TicketNotificationPlan.plan(for: ticket, interval: interval, grace: grace, now: now)
+            let signature = "\(ticket.status.rawValue)-\(ticket.position)-\(interval)-\(ticket.lastProgressAt?.timeIntervalSince1970 ?? 0)-\(ticket.travelMinutes ?? -1)-\(ticket.arrivedAt != nil)-\(grace)-\(ticket.extensionCount)-\(ticket.calledAt?.timeIntervalSince1970 ?? 0)"
             guard signatures[ticket.id] != signature else { continue }
             signatures[ticket.id] = signature
-            center.removePendingNotificationRequests(withIdentifiers: Self.identifiers(for: ticket.id))
+            center.removePendingNotificationRequests(withIdentifiers: Self.identifiers(for: ticket))
             for item in plan { schedule(item, for: ticket) }
         }
     }
@@ -48,6 +48,12 @@ final class LocalTicketNotifier: NSObject, TicketNotifying, UNUserNotificationCe
         case .leaveNow:
             content.title = "Time to leave for \(ticket.venueName)"
             content.body = "It takes about \(ticket.travelMinutes ?? 0) min to get there. Head off now so you arrive when you're called."
+        case .lastCall:
+            content.title = "Last call at \(ticket.venueName)"
+            content.body = "Your spot will be given away soon. Go in now."
+        case .expired:
+            content.title = "Your spot at \(ticket.venueName) was released"
+            content.body = "You didn't arrive in time. You can join the queue again."
         case .almost:
             content.title = "You're next at \(ticket.venueName)"
             content.body = "One group ahead of you. Head over now."
@@ -65,8 +71,12 @@ final class LocalTicketNotifier: NSObject, TicketNotifying, UNUserNotificationCe
         "ticket-\(id.uuidString)-\(kind)"
     }
 
-    private static func identifiers(for id: UUID) -> [String] {
-        [identifier(id, .leaveNow), identifier(id, .almost), identifier(id, .called)]
+    // Once a ticket is called, the "your turn" alert has done its job, so only the late alerts are replaced.
+    private static func identifiers(for ticket: QueueTicket) -> [String] {
+        let kinds: [PlannedNotification.Kind] = ticket.status == .called
+            ? [.lastCall, .expired]
+            : [.leaveNow, .almost, .called, .lastCall, .expired]
+        return kinds.map { identifier(ticket.id, $0) }
     }
 
     // Show alerts as banners even while the app is open.

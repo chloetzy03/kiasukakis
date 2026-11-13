@@ -18,7 +18,15 @@ final class TicketDetailPresenter: TicketDetailPresenterProtocol {
         refreshTravel(requestPermission: false)
     }
 
-    func didTapProximityAction() { refreshTravel(requestPermission: true) }
+    // The one button under the prompt: more time when called, or location for a leave alert.
+    func didTapProximityAction() {
+        if interactor.ticket?.status == .called {
+            interactor.requestMoreTime()
+            render()
+        } else {
+            refreshTravel(requestPermission: true)
+        }
+    }
 
     private func refreshTravel(requestPermission: Bool) {
         Task { [weak self] in
@@ -51,6 +59,20 @@ final class TicketDetailPresenter: TicketDetailPresenterProtocol {
         render()
     }
 
+    // "Go in now · 25 sec left". The countdown refreshes with every queue tick.
+    private func calledMessage(for ticket: QueueTicket) -> String {
+        guard ticket.arrivedAt == nil, let deadline = ticket.deadline(grace: simulator.speed.graceSeconds) else { return "It's your turn. Go in now." }
+        return "Go in now · \(QueueFormatting.remaining(deadline.timeIntervalSinceNow)) left"
+    }
+
+    private func promptAction(for ticket: QueueTicket, locationAction: String?) -> String? {
+        switch ticket.status {
+        case .called: return ticket.canRequestMoreTime ? "I'm running late (+\(simulator.speed.graceText))" : nil
+        case .waiting: return locationAction
+        default: return nil
+        }
+    }
+
     private func render() {
         guard let ticket = interactor.ticket else { return }
         let position = ticket.position
@@ -69,10 +91,10 @@ final class TicketDetailPresenter: TicketDetailPresenterProtocol {
         switch ticket.status {
         case .waiting: message = prompt.text ?? ""
         case .almostYourTurn: message = ticket.arrivedAt == nil ? "You're next. Head over now." : "You're here. You're next!"
-        case .called: message = "It's your turn. Go in now."
+        case .called: message = calledMessage(for: ticket)
         case .completed: message = "Done. Enjoy!"
         case .cancelled: message = "You left this queue."
-        case .expired: message = "This ticket expired."
+        case .expired: message = "You missed your turn. Spot released."
         }
 
         let step: Int?
@@ -99,6 +121,6 @@ final class TicketDetailPresenter: TicketDetailPresenterProtocol {
             canAdvance: ticket.status == .called || (ticket.status.isActive && DemoControls.isEnabled),
             advanceTitle: ticket.status == .called ? "Mark as served" : "Skip ahead (demo)",
             canCancel: ticket.status.isActive,
-            promptActionTitle: ticket.status == .waiting ? prompt.action : nil))
+            promptActionTitle: promptAction(for: ticket, locationAction: prompt.action)))
     }
 }

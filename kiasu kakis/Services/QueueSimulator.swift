@@ -31,6 +31,10 @@ enum SimulationSpeed: String, CaseIterable {
     // How long one group in the queue takes to be served.
     var groupInterval: TimeInterval { self == .demo ? 8 : 300 }
 
+    // How long a called group has to arrive before the place is given to the next one.
+    var graceSeconds: TimeInterval { self == .demo ? 40 : 300 }
+    var graceText: String { self == .demo ? "\(Int(graceSeconds)) sec" : "\(Int(graceSeconds / 60)) min" }
+
     func estimateText(groups: Int) -> String {
         let seconds = Double(groups) * groupInterval
         if seconds < 60 { return "About \(Int(seconds.rounded())) sec" }

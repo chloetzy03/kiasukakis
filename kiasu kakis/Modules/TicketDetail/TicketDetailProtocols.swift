@@ -35,6 +35,7 @@ protocol TicketDetailInteractorProtocol: AnyObject {
     var ticket: QueueTicket? { get }
     func advance()
     func cancel()
+    func requestMoreTime()
     var locationStatus: LocationAuthorization { get }
     func refreshTravel(requestPermission: Bool) async
 }

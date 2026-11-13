@@ -31,7 +31,21 @@ struct QueueTicket: Codable, Identifiable, Equatable {
     var travelMinutes: Int?
     // Set when the user taps "I'm here" or is found near the venue.
     var arrivedAt: Date?
+    // When the ticket was called. The user has a short grace period from here to arrive.
+    var calledAt: Date?
+    // How many times the user asked for more time. Optional so tickets saved earlier still load.
+    var lateExtensions: Int?
 
     // People ahead of the user in the queue.
     var position: Int { max(ticketNumber - nowServing, 0) }
+
+    // A person can ask for more time once, so a no-show can't hold a table for ever.
+    static let maxExtensions = 1
+    var extensionCount: Int { lateExtensions ?? 0 }
+    var canRequestMoreTime: Bool { status == .called && extensionCount < Self.maxExtensions }
+
+    // When a called ticket is given up on. nil until it has been called.
+    func deadline(grace: TimeInterval) -> Date? {
+        calledAt.map { $0.addingTimeInterval(grace * Double(1 + extensionCount)) }
+    }
 }

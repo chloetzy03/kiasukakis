@@ -1,0 +1,32 @@
+"kiasu kakis/Modules/Explore/WaitLegendView.swift"
+  s_83605c29a5e567::t_0ed5eda599a081 20,43
+  s_83605c29a5e567::t_0ae6bbbcedd8c3 1-19,21-42,44-58
+"kiasu kakis/Modules/Explore/ExploreViewController.swift"
+  s_83605c29a5e567::t_0ae6bbbcedd8c3 18,219-221,294-299
+  s_83605c29a5e567::t_8febd920497665 300
+"kiasu kakis/Modules/Explore/QueueSheetView.swift"
+  s_83605c29a5e567::t_0ae6bbbcedd8c3 333-334
+"kiasu kakis/Modules/VenueDetails/VenueDetailsViewController.swift"
+  s_83605c29a5e567::t_0ae6bbbcedd8c3 277
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6256a85da267714df6f08177bafb24e11cdea1dc",
+  "prompts": {},
+  "humans": {
+    "h_ee194195c1c2bb": {
+      "author": "chloe <chloetzy03@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_83605c29a5e567": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "1e007083-5ef8-4fa4-a40d-8019fcebb6dc",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

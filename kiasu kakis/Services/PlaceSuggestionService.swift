@@ -51,7 +51,7 @@ final class PlaceSuggestionService: PlaceSuggesting {
             "sessionToken": sessionToken,
             "includedRegionCodes": ["sg"],
             // Food places only. A search for a mall returns the restaurants inside it, and shops return nothing.
-            "includedPrimaryTypes": ["restaurant", "cafe", "bakery", "coffee_shop", "food_court"],
+            "includedPrimaryTypes": ["restaurant", "cafe", "coffee_shop", "bar", "bakery"],
             "locationBias": ["circle": ["center": ["latitude": center.latitude, "longitude": center.longitude],
                                         "radius": 20_000]]
         ])
@@ -98,6 +98,7 @@ final class PlaceSuggestionService: PlaceSuggesting {
             case "cafe", "coffee_shop", "tea_house": return .cafe
             case "bakery", "dessert_shop", "ice_cream_shop", "confectionery", "dessert_restaurant": return .dessert
             case "food_court": return .hawker
+            case "bar", "pub", "night_club", "wine_bar", "cocktail_bar", "lounge_bar": return .bar
             case "tourist_attraction", "museum", "park", "amusement_park", "zoo", "aquarium": return .attraction
             case "restaurant", "meal_takeaway", "fast_food_restaurant": return .restaurant
             default: continue
@@ -113,7 +114,7 @@ final class PlaceSuggestionService: PlaceSuggesting {
         request.naturalLanguageQuery = query
         request.region = MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 0.3, longitudeDelta: 0.3))
         request.resultTypes = .pointOfInterest
-        request.pointOfInterestFilter = MKPointOfInterestFilter(including: [.restaurant, .cafe, .bakery])
+        request.pointOfInterestFilter = MKPointOfInterestFilter(including: [.restaurant, .cafe, .bakery, .nightlife, .brewery])
         guard let response = try? await MKLocalSearch(request: request).start() else { return [] }
         return response.mapItems.prefix(Self.maxResults).compactMap { item in
             guard let venue = PlaceSearchService.makeVenue(from: item) else { return nil }

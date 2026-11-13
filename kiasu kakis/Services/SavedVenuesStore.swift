@@ -4,6 +4,7 @@ protocol SavedVenuesStoring: AnyObject {
     var savedIDs: Set<String> { get }
     func isSaved(_ venueID: String) -> Bool
     func toggle(_ venueID: String)
+    func remove(_ venueIDs: Set<String>)
 }
 
 // Saved venue IDs are written to disk after every change.
@@ -28,5 +29,10 @@ final class SavedVenuesStore: SavedVenuesStoring {
 
     func toggle(_ venueID: String) {
         if ids.contains(venueID) { ids.remove(venueID) } else { ids.insert(venueID) }
+    }
+
+    func remove(_ venueIDs: Set<String>) {
+        guard !ids.isDisjoint(with: venueIDs) else { return }
+        ids.subtract(venueIDs)
     }
 }

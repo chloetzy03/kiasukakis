@@ -5,6 +5,7 @@ enum VenueCategory: String, Codable, CaseIterable {
     case restaurant = "Restaurant"
     case cafe = "Café"
     case dessert = "Dessert"
+    case bar = "Bar"
     case attraction = "Attraction"
 }
 

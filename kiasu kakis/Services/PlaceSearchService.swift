@@ -14,7 +14,8 @@ final class PlaceSearchService: PlaceSearching {
     // Only places where a queue is plausible. Malls, shops, parks and supermarkets are left out on purpose.
     private static let categoryGroups: [[MKPointOfInterestCategory]] = [
         [.restaurant],
-        [.cafe, .bakery]
+        [.cafe, .bakery],
+        [.nightlife, .brewery]
     ]
     private static let metersPerDegree = 111_000.0
 
@@ -62,6 +63,7 @@ final class PlaceSearchService: PlaceSearching {
         if poi == .cafe { return .cafe }
         if poi == .bakery { return .dessert }
         if poi == .foodMarket { return .hawker }
+        if poi == .nightlife || poi == .brewery || poi == .winery { return .bar }
         return .restaurant
     }
 }

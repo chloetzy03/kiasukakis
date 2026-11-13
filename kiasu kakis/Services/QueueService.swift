@@ -12,6 +12,9 @@ protocol QueueServicing: AnyObject {
     func join(venue: Venue, partySize: Int) -> Result<QueueTicket, QueueError>
     func advance(ticketID: UUID)
     func cancel(ticketID: UUID)
+    // Removes tickets from the history. Active tickets are never removed by id.
+    func deleteTicket(id: UUID)
+    func deleteTickets(where shouldDelete: (QueueTicket) -> Bool)
     @discardableResult func progressTickets(now: Date, interval: TimeInterval) -> Bool
 }
 
@@ -118,6 +121,15 @@ final class QueueService: QueueServicing {
         }
         if changed { tickets = updated }
         return changed
+    }
+
+    func deleteTicket(id: UUID) {
+        deleteTickets { $0.id == id && !$0.status.isActive }
+    }
+
+    func deleteTickets(where shouldDelete: (QueueTicket) -> Bool) {
+        let remaining = tickets.filter { !shouldDelete($0) }
+        if remaining.count != tickets.count { tickets = remaining }
     }
 
     func cancel(ticketID: UUID) {

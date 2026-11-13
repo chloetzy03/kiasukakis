@@ -9,6 +9,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
         let window = UIWindow(windowScene: windowScene)
+        LegacyDataMigration().runIfNeeded()
         // List rows use the warm card colour instead of pure white.
         UITableViewCell.appearance().backgroundColor = Theme.surface
         window.rootViewController = SplashViewController { [weak self] in self?.showMainScreen() }

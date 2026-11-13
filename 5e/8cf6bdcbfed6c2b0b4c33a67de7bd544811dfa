@@ -1,0 +1,52 @@
+"kiasu kakis/Modules/VenueDetails/VenueDetailsInteractor.swift"
+  s_83605c29a5e567::t_110bb7f693e6f0 36-37
+"kiasu kakis/Entities/QueueSnapshot.swift"
+  s_83605c29a5e567::t_f7f95415653343 6
+"kiasu kakis/Entities/CrowdReport.swift"
+  s_83605c29a5e567::t_f7f95415653343 1-41
+"kiasu kakis/Modules/Explore/ExploreRouter.swift"
+  s_83605c29a5e567::t_f7f95415653343 32-35
+"kiasu kakis/Modules/Explore/ExploreInteractor.swift"
+  s_83605c29a5e567::t_f7f95415653343 28-29
+"kiasu kakis/Modules/Explore/ExplorePresenter.swift"
+  s_83605c29a5e567::t_110bb7f693e6f0 166
+  s_83605c29a5e567::t_f7f95415653343 164-165,167-169
+"kiasu kakis/Modules/VenueDetails/VenueDetailsProtocols.swift"
+  s_83605c29a5e567::t_110bb7f693e6f0 72,81
+"kiasu kakis/Services/CrowdReportStore.swift"
+  s_83605c29a5e567::t_f7f95415653343 1-30
+"kiasu kakis/Modules/VenueDetails/VenueDetailsRouter.swift"
+  s_83605c29a5e567::t_110bb7f693e6f0 32-35
+"kiasu kakis/Modules/Explore/ExploreProtocols.swift"
+  s_83605c29a5e567::t_f7f95415653343 134,143
+"kiasu kakis/Entities/QueueSupportInfo.swift"
+  s_83605c29a5e567::t_f7f95415653343 32-33
+"kiasu kakis/Modules/Shared/CrowdReportSheet.swift"
+  s_83605c29a5e567::t_f7f95415653343 1-21
+"kiasu kakis/Services/QueueSimulator.swift"
+  s_83605c29a5e567::t_f7f95415653343 44-45,80,90,95,103-106,117-119
+  s_83605c29a5e567::t_a5a3df44cdf7ed 120-121
+"kiasu kakis/Modules/VenueDetails/VenueDetailsPresenter.swift"
+  s_83605c29a5e567::t_110bb7f693e6f0 39-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5e8cf6bdcbfed6c2b0b4c33a67de7bd544811dfa",
+  "prompts": {},
+  "humans": {
+    "h_ee194195c1c2bb": {
+      "author": "chloe <chloetzy03@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_83605c29a5e567": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "1e007083-5ef8-4fa4-a40d-8019fcebb6dc",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

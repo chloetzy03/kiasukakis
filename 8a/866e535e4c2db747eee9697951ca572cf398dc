@@ -1,0 +1,55 @@
+"kiasu kakis/Modules/VenueDetails/VenueDetailsPresenter.swift"
+  s_83605c29a5e567::t_da9cfe706bc611 36-40,138,155-160
+"kiasu kakis/Modules/Explore/ExplorePresenter.swift"
+  s_83605c29a5e567::t_6f1e954c7838ff 160,349
+  s_83605c29a5e567::t_da9cfe706bc611 162-163,366-370
+"kiasu kakis/Services/VenueRepository.swift"
+  s_83605c29a5e567::t_ae840cdabcd2f9 24-25,30-31,34-35,38,41,51-61,63-65,86
+"kiasu kakis/Modules/VenueDetails/VenueDetailsViewController.swift"
+  s_83605c29a5e567::t_da9cfe706bc611 275
+"kiasu kakis/Services/ExternalQueueDirectory.swift"
+  s_83605c29a5e567::t_53b20e7cacd63c 17
+  s_83605c29a5e567::t_6f1e954c7838ff 1-16,18-19
+"kiasu kakis/Entities/QueueSupportInfo.swift"
+  s_83605c29a5e567::t_6f1e954c7838ff 1-57
+"kiasu kakis/Modules/Saved/SavedPresenter.swift"
+  s_83605c29a5e567::t_da9cfe706bc611 54-55
+  s_83605c29a5e567::t_6f1e954c7838ff 53
+"kiasu kakis/Modules/VenueDetails/VenueDetailsRouter.swift"
+  s_83605c29a5e567::t_da9cfe706bc611 32-35
+"kiasu kakis/Services/DemoVenueData.swift"
+  s_83605c29a5e567::t_6f1e954c7838ff 11,13,15,17,19,21,23,25,27,29,31
+"kiasu kakis/Services/QueueService.swift"
+  s_83605c29a5e567::t_6f1e954c7838ff 82
+"kiasu kakis/Modules/VenueDetails/VenueDetailsProtocols.swift"
+  s_83605c29a5e567::t_da9cfe706bc611 16,79
+"kiasu kakis/Modules/JoinQueue/JoinQueuePresenter.swift"
+  s_83605c29a5e567::t_6f1e954c7838ff 43
+"kiasu kakis/Entities/Venue.swift"
+  s_83605c29a5e567::t_6f1e954c7838ff 12,14-19,34-35
+"kiasu kakis/Modules/Explore/ExploreRouter.swift"
+  s_83605c29a5e567::t_da9cfe706bc611 32-35
+"kiasu kakis/Modules/Explore/ExploreProtocols.swift"
+  s_83605c29a5e567::t_da9cfe706bc611 141
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8a866e535e4c2db747eee9697951ca572cf398dc",
+  "prompts": {},
+  "humans": {
+    "h_ee194195c1c2bb": {
+      "author": "chloe <chloetzy03@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_83605c29a5e567": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "1e007083-5ef8-4fa4-a40d-8019fcebb6dc",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

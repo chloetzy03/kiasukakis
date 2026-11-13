@@ -30,7 +30,8 @@ final class WaitPinView: MKAnnotationView {
             image = pill
             centerOffset = CGPoint(x: 0, y: -pill.size.height / 2)
             collisionMode = .rectangle
-            displayPriority = .required
+            // Featured places always show. Others are hidden when they would overlap, and appear as you zoom in.
+            displayPriority = pin.isFeatured ? .required : .defaultHigh
         }
     }
 

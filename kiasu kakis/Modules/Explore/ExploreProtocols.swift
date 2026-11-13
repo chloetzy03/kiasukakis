@@ -14,6 +14,8 @@ struct VenuePinViewModel: Equatable {
     let textColor: UIColor
     // Real places with no queue data are drawn as small grey dots instead of pills.
     let isPlaceDot: Bool
+    // The hand-picked places stay visible when pins crowd together. The others make room for them.
+    let isFeatured: Bool
     // What VoiceOver reads, for example "Golden Bowl, 15 min rising".
     let spokenText: String
 }

@@ -23,6 +23,8 @@ final class ExplorePresenter: ExplorePresenterProtocol {
     // Zoomed out further than this (about 15 km tall), a search would be too broad to be useful.
     private static let maxSearchSpan = 0.15
     private static let searchPadding = 1.5
+    // A very long list is no use on a phone, so only the shortest waits are listed.
+    private static let maxQueueRows = 40
     // Only food types, since the app is about queues for food. (Attraction stays in the data model for old saved places.)
     private let categories = VenueCategory.allCases.filter { $0 != .attraction }
 
@@ -266,12 +268,19 @@ final class ExplorePresenter: ExplorePresenterProtocol {
         let queues = listings
             .filter { $0.snapshot.waitMinutes != nil }
             .sorted { ($0.snapshot.waitMinutes ?? 0) < ($1.snapshot.waitMinutes ?? 0) }
-        queueRowIDs = queues.map(\.venue.id)
+        let shown = Array(queues.prefix(Self.maxQueueRows))
+        queueRowIDs = shown.map(\.venue.id)
         let tooFarOut = (visibleRegion?.span.latitudeDelta ?? 0) > Self.maxSearchSpan
-        view?.showQueueList(makeQueueList(queues, tooFarOut: tooFarOut))
+        view?.showQueueList(makeQueueList(shown, totalCount: queues.count, tooFarOut: tooFarOut))
     }
 
-    private func makeQueueList(_ queues: [VenueListing], tooFarOut: Bool) -> QueueListViewModel {
+    private static func queueCountText(shown: Int, total: Int) -> String {
+        if total == 0 { return "" }
+        if total > shown { return "Shortest \(shown) of \(total)" }
+        return total == 1 ? "1 queue" : "\(total) queues"
+    }
+
+    private func makeQueueList(_ queues: [VenueListing], totalCount: Int, tooFarOut: Bool) -> QueueListViewModel {
         let rows = queues.map { listing -> QueueRowViewModel in
             let minutes = listing.snapshot.waitMinutes
             let wait = Self.waitText(for: listing.snapshot)
@@ -292,7 +301,7 @@ final class ExplorePresenter: ExplorePresenterProtocol {
                                            buttonTitle: "Go to nearest queue")
         }
         return QueueListViewModel(title: "Queues in this area",
-                                  subtitle: rows.isEmpty ? "" : (rows.count == 1 ? "1 queue" : "\(rows.count) queues"),
+                                  subtitle: Self.queueCountText(shown: rows.count, total: totalCount),
                                   rows: rows, empty: empty)
     }
 
@@ -313,6 +322,7 @@ final class ExplorePresenter: ExplorePresenterProtocol {
                                  fillColor: Theme.waitColor(forMinutes: minutes),
                                  textColor: Theme.pinTextColor(forMinutes: minutes),
                                  isPlaceDot: !listing.venue.isDemo && minutes == nil,
+                                 isFeatured: DemoVenueData.curatedIDs.contains(listing.venue.id),
                                  spokenText: "\(listing.venue.name), " + (minutes == nil
                                     ? "no queue information"
                                     : QueueFormatting.spoken(waitText(for: listing.snapshot)) + " wait"))

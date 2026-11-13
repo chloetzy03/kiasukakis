@@ -19,7 +19,7 @@ final class SavedInteractor: SavedInteractorProtocol {
         return repository.venues
             .filter { saved.contains($0.id) }
             .sorted { $0.name < $1.name }
-            .map { VenueListing(venue: $0, snapshot: simulator.snapshot(for: $0.id)) }
+            .map { VenueListing(venue: $0, snapshot: simulator.snapshot(for: $0)) }
     }
 
     func remove(venueID: String) {

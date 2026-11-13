@@ -73,7 +73,7 @@ final class QueueService: QueueServicing {
         if let existing = activeTicket(forVenue: venue.id) { return .failure(.alreadyJoined(existing)) }
 
         let nowServing = Int.random(in: 20..<60)
-        let ahead = Self.groupsAhead(for: simulator.snapshot(for: venue.id))
+        let ahead = Self.groupsAhead(for: simulator.snapshot(for: venue))
         let ticket = QueueTicket(id: UUID(),
                                  venueID: venue.id,
                                  venueName: venue.name,

@@ -9,8 +9,9 @@ protocol VenueProviding: AnyObject {
     func resolve(_ venue: Venue) -> Venue
 }
 
-// One place to look up venues: the fictional demo ones plus real places found through Apple Maps.
+// One place to look up venues: the curated queue places plus real places found through Apple Maps and Google.
 // Discovered places are saved to disk so saved venues still resolve after relaunch.
+// A share of the discovered places is given a simulated queue (see SimulatedQueueCatalog).
 final class VenueRepository: VenueProviding {
 
     static let shared = VenueRepository()
@@ -19,14 +20,17 @@ final class VenueRepository: VenueProviding {
     private static let filename = "discovered_venues_v2.json"
     private static let oldFilename = "discovered_venues.json"
     private let store: LocalStore
+    private let queues: QueueProfileProviding
     private var discovered: [Venue] {
         didSet { store.save(discovered, to: Self.filename) }
     }
 
-    init(store: LocalStore = LocalStore()) {
+    init(store: LocalStore = LocalStore(), queues: QueueProfileProviding = SimulatedQueueCatalog()) {
         self.store = store
+        self.queues = queues
         store.delete(Self.oldFilename)
-        self.discovered = Self.unique(store.load([Venue].self, from: Self.filename) ?? [])
+        let saved = Self.unique(store.load([Venue].self, from: Self.filename) ?? [])
+        self.discovered = saved.map { Self.withQueueBehaviour($0, using: queues) }
     }
 
     var venues: [Venue] { DemoVenueData.venues + discovered }
@@ -36,7 +40,16 @@ final class VenueRepository: VenueProviding {
     func resolve(_ candidate: Venue) -> Venue {
         if let existing = venue(id: candidate.id) ?? sameSpot(as: candidate) { return existing }
         add([candidate])
-        return candidate
+        return venue(id: candidate.id) ?? candidate
+    }
+
+    // Marks a venue as having a simulated queue, and whether people can join it remotely, when the catalog says so.
+    private static func withQueueBehaviour(_ venue: Venue, using queues: QueueProfileProviding) -> Venue {
+        guard let profile = queues.profile(for: venue) else { return venue }
+        var queued = venue
+        queued.isDemo = true
+        queued.queueSupport = profile.supportsRemoteJoin ? .demoSupported : .unsupported
+        return queued
     }
 
     // Apple Maps and Google can describe the same place with different ids, and our curated queue places
@@ -54,7 +67,9 @@ final class VenueRepository: VenueProviding {
     // Returns how many were new.
     func add(_ newVenues: [Venue]) -> Int {
         var known = Set(venues.map(\.id))
-        let fresh = newVenues.filter { known.insert($0.id).inserted && sameSpot(as: $0) == nil }
+        let fresh = newVenues
+            .filter { known.insert($0.id).inserted && sameSpot(as: $0) == nil }
+            .map { Self.withQueueBehaviour($0, using: queues) }
         if !fresh.isEmpty { discovered.append(contentsOf: fresh) }
         return fresh.count
     }

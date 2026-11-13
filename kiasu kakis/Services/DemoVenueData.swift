@@ -4,6 +4,8 @@ import Foundation
 // are simulated for the demo (see QueueSimulator). Locations come from Apple Maps.
 enum DemoVenueData {
 
+    static let curatedIDs: Set<String> = Set(venues.map(\.id))
+
     static let venues: [Venue] = [
         Venue(id: "v1", name: "Tian Tian Hainanese Chicken Rice", address: "Maxwell Food Centre, 1 Kadayanallur St",
               category: .hawker, latitude: 1.28035, longitude: 103.84474, queueSupport: .unsupported),

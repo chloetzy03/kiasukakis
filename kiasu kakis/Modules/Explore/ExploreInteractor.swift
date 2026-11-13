@@ -32,7 +32,7 @@ final class ExploreInteractor: ExploreInteractorProtocol {
             .filter { trimmed.isEmpty
                 || $0.name.localizedCaseInsensitiveContains(trimmed)
                 || $0.address.localizedCaseInsensitiveContains(trimmed) }
-            .map { VenueListing(venue: $0, snapshot: simulator.snapshot(for: $0.id)) }
+            .map { VenueListing(venue: $0, snapshot: simulator.snapshot(for: $0)) }
     }
 
     // Only venues inside the visible map area (plus a margin), so old searches don't clutter the map.
@@ -80,7 +80,7 @@ final class ExploreInteractor: ExploreInteractorProtocol {
 
     func listing(id: String) -> VenueListing? {
         guard let venue = repository.venue(id: id) else { return nil }
-        return VenueListing(venue: venue, snapshot: simulator.snapshot(for: id))
+        return VenueListing(venue: venue, snapshot: simulator.snapshot(for: venue))
     }
 
     // onProgress runs each time a batch of new places has been saved.

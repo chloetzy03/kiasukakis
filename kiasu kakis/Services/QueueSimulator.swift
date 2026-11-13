@@ -40,7 +40,7 @@ enum SimulationSpeed: String, CaseIterable {
 
 protocol QueueSimulating: AnyObject {
     var speed: SimulationSpeed { get set }
-    func snapshot(for venueID: String) -> QueueSnapshot
+    func snapshot(for venue: Venue) -> QueueSnapshot
     func start()
     func stop()
 }
@@ -51,29 +51,8 @@ final class QueueSimulator: QueueSimulating {
 
     static let shared = QueueSimulator(speed: .saved)
 
-    struct Profile {
-        let base: Double
-        let range: ClosedRange<Double>
-        let source: QueueDataSource
-    }
-
-    // Only these demo venues have a live queue. The others stay at "no recent reports" on purpose.
-    // Hawker stalls have no remote queue, so their waits are labelled as community reports.
-    static let profiles: [String: Profile] = [
-        "v1": Profile(base: 35, range: 20...55, source: .communityObservation),   // Tian Tian
-        "v2": Profile(base: 30, range: 18...50, source: .communityObservation),   // Hawker Chan
-        "v3": Profile(base: 45, range: 30...70, source: .communityObservation),   // Tai Hwa
-        "v4": Profile(base: 15, range: 6...28, source: .demoSimulation),          // Song Fa
-        "v5": Profile(base: 25, range: 12...45, source: .demoSimulation),         // Jumbo
-        "v6": Profile(base: 30, range: 15...50, source: .demoSimulation),         // Din Tai Fung
-        "v7": Profile(base: 12, range: 4...22, source: .demoSimulation),          // Mei Heong Yuen
-        "v8": Profile(base: 10, range: 3...20, source: .demoSimulation),          // Tiong Bahru Bakery
-        "v9": Profile(base: 8, range: 3...16, source: .demoSimulation),           // Ya Kun
-        "v10": Profile(base: 15, range: 6...30, source: .demoSimulation),         // KOI
-        "v11": Profile(base: 14, range: 5...28, source: .demoSimulation)          // Birds of Paradise
-    ]
-
     private struct State {
+        let profile: QueueProfile
         var wait: Double
         var history: [Double]
         var updatedAt: Date
@@ -95,39 +74,54 @@ final class QueueSimulator: QueueSimulating {
         }
     }
 
+    private let profiles: QueueProfileProviding
     private let clock: () -> Date
     private var rng: any RandomNumberGenerator
+    // A queue starts the first time anyone asks about a venue, so the app never simulates places nobody looks at.
     private var states: [String: State] = [:]
+    private var venuesWithoutQueue: Set<String> = []
     private var timer: Timer?
 
     init(speed: SimulationSpeed,
+         profiles: QueueProfileProviding = SimulatedQueueCatalog(),
          clock: @escaping () -> Date = Date.init,
          random: any RandomNumberGenerator = SystemRandomNumberGenerator()) {
         self.speed = speed
+        self.profiles = profiles
         self.clock = clock
         self.rng = random
-        let now = clock()
-        // Start with readings that are a little old, like real reports.
-        for (index, id) in Self.profiles.keys.sorted().enumerated() {
-            let profile = Self.profiles[id]!
-            states[id] = State(wait: profile.base,
-                               history: [profile.base],
-                               updatedAt: now.addingTimeInterval(-Double(60 + index * 45)),
-                               nextReading: now.addingTimeInterval(Double.random(in: speed.readingGap, using: &rng)))
-        }
     }
 
     // MARK: - Reading
 
-    func snapshot(for venueID: String) -> QueueSnapshot {
-        guard let profile = Self.profiles[venueID], let state = states[venueID] else {
-            return QueueSnapshot(venueID: venueID, waitMinutes: nil, source: .communityObservation, timestamp: .distantPast)
+    func snapshot(for venue: Venue) -> QueueSnapshot {
+        guard let state = state(for: venue) else {
+            return QueueSnapshot(venueID: venue.id, waitMinutes: nil, source: .communityObservation, timestamp: .distantPast)
         }
-        return QueueSnapshot(venueID: venueID,
+        return QueueSnapshot(venueID: venue.id,
                              waitMinutes: Int(state.wait.rounded()),
-                             source: profile.source,
+                             source: state.profile.source,
                              timestamp: state.updatedAt,
                              trend: Self.trend(of: state.history))
+    }
+
+    // Returns the venue's queue, starting it on first use. Venues without a queue are remembered, so asking again is cheap.
+    private func state(for venue: Venue) -> State? {
+        if let existing = states[venue.id] { return existing }
+        guard !venuesWithoutQueue.contains(venue.id) else { return nil }
+        guard let profile = profiles.profile(for: venue) else {
+            venuesWithoutQueue.insert(venue.id)
+            return nil
+        }
+        let now = clock()
+        // The first reading is a little old, like a real report.
+        let state = State(profile: profile,
+                          wait: profile.base,
+                          history: [profile.base],
+                          updatedAt: now.addingTimeInterval(-Double.random(in: 30...180, using: &rng)),
+                          nextReading: now.addingTimeInterval(Double.random(in: speed.readingGap, using: &rng)))
+        states[venue.id] = state
+        return state
     }
 
     static func trend(of history: [Double]) -> QueueTrend {
@@ -159,8 +153,10 @@ final class QueueSimulator: QueueSimulating {
     func tick() -> Bool {
         let now = clock()
         var changed = false
-        for (id, profile) in Self.profiles {
+        // Sorted, so the same seed gives the same result every run.
+        for id in states.keys.sorted() {
             guard var state = states[id], now >= state.nextReading else { continue }
+            let profile = state.profile
             // Drift back toward the usual wait, plus a random nudge, and stay inside the allowed range.
             let pull = (profile.base - state.wait) * 0.12
             let nudge = Double.random(in: -speed.maxStep...speed.maxStep, using: &rng)

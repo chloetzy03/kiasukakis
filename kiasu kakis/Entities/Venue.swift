@@ -23,7 +23,7 @@ struct Venue: Codable, Identifiable, Equatable {
     let category: VenueCategory
     let latitude: Double
     let longitude: Double
-    let queueSupport: QueueSupport
+    var queueSupport: QueueSupport
     // false for real places found through Apple Maps search.
     var isDemo: Bool = true
 }

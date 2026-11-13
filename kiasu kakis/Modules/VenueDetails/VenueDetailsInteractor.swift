@@ -29,7 +29,7 @@ final class VenueDetailsInteractor: VenueDetailsInteractorProtocol {
 
     var activeTicket: QueueTicket? { queueService.activeTicket(forVenue: venue.id) }
 
-    var snapshot: QueueSnapshot { simulator.snapshot(for: venue.id) }
+    var snapshot: QueueSnapshot { simulator.snapshot(for: venue) }
     var isSaved: Bool { store.isSaved(venue.id) }
     func toggleSaved() { store.toggle(venue.id) }
 

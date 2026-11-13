@@ -12,7 +12,7 @@ final class JoinQueueInteractor: JoinQueueInteractorProtocol {
         self.simulator = simulator
     }
 
-    var snapshot: QueueSnapshot { simulator.snapshot(for: venue.id) }
+    var snapshot: QueueSnapshot { simulator.snapshot(for: venue) }
 
     func join(partySize: Int) -> Result<QueueTicket, QueueError> {
         service.join(venue: venue, partySize: partySize)

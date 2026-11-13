@@ -28,6 +28,8 @@ final class JoinQueuePresenter: JoinQueuePresenterProtocol {
             router.finish(withTicketID: existing.id)
         case .failure(.notAvailable):
             view?.showError("This queue isn't accepting tickets right now.")
+        case .failure(.tooManyActive):
+            view?.showError(interactor.queueLimitMessage ?? "You're already in the most queues allowed.")
         }
     }
 
@@ -37,7 +39,8 @@ final class JoinQueuePresenter: JoinQueuePresenterProtocol {
         let venue = interactor.venue
         let snapshot = interactor.snapshot
         let ahead = QueueService.groupsAhead(for: snapshot)
-        let canJoin = venue.queueSupport == .demoSupported
+        let limitMessage = interactor.queueLimitMessage
+        let canJoin = venue.queueSupport == .demoSupported && limitMessage == nil
 
         view?.show(JoinQueueViewModel(
             venueName: venue.name,
@@ -47,6 +50,6 @@ final class JoinQueuePresenter: JoinQueuePresenterProtocol {
             sourceText: "Source: \(snapshot.source.rawValue)",
             partySizeText: partySize == 1 ? "1 person" : "\(partySize) people",
             canJoin: canJoin,
-            unavailableMessage: canJoin ? nil : "This venue isn't accepting tickets right now."))
+            unavailableMessage: canJoin ? nil : (limitMessage ?? "This venue isn't accepting tickets right now.")))
     }
 }

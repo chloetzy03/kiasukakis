@@ -11,11 +11,12 @@ enum QueueFormatting {
         }
     }
 
+    // Plain words for what the arrow means, so nobody has to guess.
     static func trendWord(for trend: QueueTrend) -> String {
         switch trend {
-        case .rising: return "Rising"
-        case .falling: return "Falling"
-        case .steady: return "Steady"
+        case .rising: return "Wait getting longer"
+        case .falling: return "Wait getting shorter"
+        case .steady: return "Wait holding steady"
         }
     }
 
@@ -36,7 +37,7 @@ enum QueueFormatting {
     }
 
     static func updatedText(_ snapshot: QueueSnapshot, now: Date = Date()) -> String {
-        "Updated \(ago(snapshot.timestamp, now: now)) · \(arrow(for: snapshot.trend)) \(trendWord(for: snapshot.trend))"
+        "Updated \(ago(snapshot.timestamp, now: now)) · \(trendWord(for: snapshot.trend))"
     }
 }
 

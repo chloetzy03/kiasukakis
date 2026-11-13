@@ -26,6 +26,8 @@ protocol JoinQueuePresenterProtocol: AnyObject {
 protocol JoinQueueInteractorProtocol: AnyObject {
     var venue: Venue { get }
     var snapshot: QueueSnapshot { get }
+    // Set when the person is already in as many queues as allowed (and not in this one).
+    var queueLimitMessage: String? { get }
     func join(partySize: Int) -> Result<QueueTicket, QueueError>
 }
 

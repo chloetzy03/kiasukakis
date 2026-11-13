@@ -14,6 +14,12 @@ final class JoinQueueInteractor: JoinQueueInteractorProtocol {
 
     var snapshot: QueueSnapshot { simulator.snapshot(for: venue) }
 
+    var queueLimitMessage: String? {
+        guard service.activeTicket(forVenue: venue.id) == nil, service.activeTicketCount >= service.maxActiveTickets else { return nil }
+        let count = service.activeTicketCount
+        return "You're already in \(count) queues. Leave one in My Queues to join this one."
+    }
+
     func join(partySize: Int) -> Result<QueueTicket, QueueError> {
         service.join(venue: venue, partySize: partySize)
     }

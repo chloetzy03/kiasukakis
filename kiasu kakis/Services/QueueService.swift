@@ -3,10 +3,14 @@ import Foundation
 enum QueueError: Error {
     case notAvailable
     case alreadyJoined(QueueTicket)
+    // You can only be in a few queues at once, so nobody can hold a place in every queue.
+    case tooManyActive(limit: Int)
 }
 
 protocol QueueServicing: AnyObject {
     var tickets: [QueueTicket] { get }
+    var activeTicketCount: Int { get }
+    var maxActiveTickets: Int { get }
     func ticket(id: UUID) -> QueueTicket?
     func activeTicket(forVenue venueID: String) -> QueueTicket?
     func join(venue: Venue, partySize: Int) -> Result<QueueTicket, QueueError>
@@ -24,6 +28,8 @@ final class QueueService: QueueServicing {
 
     static let shared = QueueService()
     static let minutesPerGroup = 5
+    // A real restaurant would not hold places for someone who is queueing everywhere else, so the number is limited.
+    static let maxActiveTickets = 2
 
     // Groups ahead of a new ticket, derived from the venue's demo wait time.
     static func groupsAhead(for snapshot: QueueSnapshot) -> Int {
@@ -62,6 +68,10 @@ final class QueueService: QueueServicing {
         if let tickObserver { NotificationCenter.default.removeObserver(tickObserver) }
     }
 
+    var activeTicketCount: Int { tickets.filter { $0.status.isActive }.count }
+
+    var maxActiveTickets: Int { Self.maxActiveTickets }
+
     func ticket(id: UUID) -> QueueTicket? { tickets.first { $0.id == id } }
 
     func activeTicket(forVenue venueID: String) -> QueueTicket? {
@@ -71,6 +81,7 @@ final class QueueService: QueueServicing {
     func join(venue: Venue, partySize: Int) -> Result<QueueTicket, QueueError> {
         guard venue.queueSupport == .demoSupported else { return .failure(.notAvailable) }
         if let existing = activeTicket(forVenue: venue.id) { return .failure(.alreadyJoined(existing)) }
+        guard activeTicketCount < maxActiveTickets else { return .failure(.tooManyActive(limit: maxActiveTickets)) }
 
         let nowServing = Int.random(in: 20..<60)
         let ahead = Self.groupsAhead(for: simulator.snapshot(for: venue))

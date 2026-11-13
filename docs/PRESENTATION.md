@@ -30,7 +30,7 @@
 - **Demo or realistic speed:** a switch in About & Settings. Demo moves in seconds, realistic in minutes.
 - **Search:** forgiving ("yakun" finds "Ya Kun"), food places only. Google autocomplete, with an Apple Maps fallback.
 - **Venue details:** Google photo, rating, open now, today's hours, travel time, open in Apple Maps.
-- **Join queue** with party size, **My Queues** (swipe right to save a place, swipe left to delete a finished ticket), **Saved** places.
+- **Join queue** with party size (at most 2 active queues at once, one per venue, so nobody holds places everywhere), **My Queues** (swipe right to save a place, swipe left to delete a finished ticket), **Saved** places.
 - **Launch experience:** custom icon (light, dark, tinted), a static launch screen, and a splash with a different food by time of day (toast, noodles, boba, chilli, dumpling) and moving eyes.
 - **Accessibility:** VoiceOver labels, live Dynamic Type, contrast fixes, Reduce Motion, 44 pt touch targets.
 - **Offline:** an offline banner, and the app keeps working with saved data.
@@ -105,6 +105,7 @@
 | Places didn't load when the map moved | Apple's text search treats the region as a hint and kept returning city-centre results | Switched to `MKLocalPointsOfInterestRequest`, which searches a real circle |
 | Search too slow | One slow Apple request blocked the rest | Stream results per request, shorter debounce, search a wider area, cache searched areas |
 | Locate button went to California | The simulator's default location | Zoom to 1 km, wait for the first fix, warn when outside Singapore |
+| People joining every queue | Nothing stopped it | A limit of 2 active queues in `QueueService`, with a clear message on the join screen |
 | Close button only worked sometimes | A later view covered part of it | Bring it to the front, and checked with a hit test at four points |
 | Save button did nothing | Built but never connected | Wired up and verified |
 | Grey text hard to read | Secondary grey was 3.15:1 on cream (needs 4.5) | Warmer, darker grey (5.6:1). Darkened green and orange pins for white text |
@@ -144,6 +145,7 @@
 
 ## 11. Likely questions, with answers
 
+- **"What if someone joins lots of queues?"** The app allows 2 active tickets and one per venue. A real system would add no-show penalties and a short cooldown after leaving, which needs a server.
 - **"Is the queue data real?"** No, it's simulated and labelled. There's no public Singapore data. The app is built to swap in a real source.
 - **"How is it different from Google Maps?"** Google shows places. This shows waits and lets you join a queue, so it opens on queues and only shows food places.
 - **"Why VIPER?"** It keeps each screen's responsibilities separate, and every layer talks through protocols, so pieces can be swapped and tested.

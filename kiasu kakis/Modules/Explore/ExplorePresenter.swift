@@ -211,7 +211,9 @@ final class ExplorePresenter: ExplorePresenterProtocol {
             view?.showPreview(nil)
         }
         view?.showPins(listings.map { Self.makePin($0) }, selectedID: selectedID)
-        view?.showEmptyState(listings.isEmpty ? "No places found here. Try moving or zooming the map." : nil)
+        // When the map is too zoomed out to search, the "Zoom in" pill already explains the empty map.
+        let tooFarOut = (visibleRegion?.span.latitudeDelta ?? 0) > Self.maxSearchSpan
+        view?.showEmptyState(listings.isEmpty && !tooFarOut ? "No places found here. Try moving or zooming the map." : nil)
     }
 
     // MARK: - Formatting

@@ -5,31 +5,44 @@ protocol PlaceSearching: AnyObject {
     @MainActor func searchFoodPlaces(in region: MKCoordinateRegion, onBatch: ([Venue]) -> Void) async throws
 }
 
-// Finds real food places inside the visible map area using Apple's MKLocalSearch.
+// Finds real food places around the visible map area using Apple's points-of-interest request.
+// The older text search only treats the region as a hint and keeps returning the same popular places,
+// wherever the map is. This request really searches the circle around the centre.
 final class PlaceSearchService: PlaceSearching {
 
-    private static let maxResultsPerQuery = 15
-    private static let queries = ["restaurant", "cafe", "food court"]
+    // One request returns at most 50 places, so food types are split across several requests.
+    private static let categoryGroups: [[MKPointOfInterestCategory]] = [
+        [.restaurant],
+        [.cafe, .bakery],
+        [.foodMarket]
+    ]
+    private static let metersPerDegree = 111_000.0
 
-    // One search only returns a few places, so we run several searches at the same time.
     @MainActor
     func searchFoodPlaces(in region: MKCoordinateRegion, onBatch: ([Venue]) -> Void) async throws {
+        let radius = Self.radius(for: region)
         try await withThrowingTaskGroup(of: [Venue].self) { group in
-            for query in Self.queries {
-                group.addTask { try await Self.search(query, in: region) }
+            for categories in Self.categoryGroups {
+                group.addTask { try await Self.search(categories, around: region.center, radius: radius) }
             }
             for try await venues in group { onBatch(venues) }
         }
     }
 
-    private static func search(_ query: String, in region: MKCoordinateRegion) async throws -> [Venue] {
-        let request = MKLocalSearch.Request()
-        request.naturalLanguageQuery = query
-        request.region = region
-        request.resultTypes = .pointOfInterest
-        request.pointOfInterestFilter = MKPointOfInterestFilter(including: [.restaurant, .cafe, .bakery, .foodMarket])
+    // A circle that covers the whole rectangle on screen, kept within a sensible range.
+    static func radius(for region: MKCoordinateRegion) -> CLLocationDistance {
+        let latMeters = region.span.latitudeDelta * metersPerDegree
+        let lonMeters = region.span.longitudeDelta * metersPerDegree * cos(region.center.latitude * .pi / 180)
+        return min(max(max(latMeters, lonMeters) / 2, 300), 10_000)
+    }
+
+    private static func search(_ categories: [MKPointOfInterestCategory],
+                               around center: CLLocationCoordinate2D,
+                               radius: CLLocationDistance) async throws -> [Venue] {
+        let request = MKLocalPointsOfInterestRequest(center: center, radius: radius)
+        request.pointOfInterestFilter = MKPointOfInterestFilter(including: categories)
         let response = try await MKLocalSearch(request: request).start()
-        return response.mapItems.prefix(maxResultsPerQuery).compactMap(makeVenue)
+        return response.mapItems.compactMap(makeVenue)
     }
 
     static func makeVenue(from item: MKMapItem) -> Venue? {

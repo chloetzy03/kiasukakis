@@ -1,11 +1,13 @@
 import UIKit
+import UserNotifications
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        true
+        UNUserNotificationCenter.current().delegate = LocalTicketNotifier.shared
+        return true
     }
 
     // Tells iOS which class manages each window (scene).

@@ -40,18 +40,24 @@ final class QueueService: QueueServicing {
     private let store: LocalStore
 
     private(set) var tickets: [QueueTicket] {
-        didSet { store.save(tickets, to: Self.filename) }
+        didSet {
+            store.save(tickets, to: Self.filename)
+            syncAlerts()
+        }
     }
 
     private let simulator: QueueSimulating
+    private let notifier: TicketNotifying
     private let clock: () -> Date
     private var tickObserver: NSObjectProtocol?
 
     init(store: LocalStore = LocalStore(),
          simulator: QueueSimulating = QueueSimulator.shared,
+         notifier: TicketNotifying = LocalTicketNotifier.shared,
          clock: @escaping () -> Date = Date.init) {
         self.store = store
         self.simulator = simulator
+        self.notifier = notifier
         self.clock = clock
         self.tickets = store.load([QueueTicket].self, from: Self.filename) ?? []
         // Every simulator tick, move the user's tickets forward and tell the screens if anything changed.
@@ -60,8 +66,14 @@ final class QueueService: QueueServicing {
             guard let self else { return }
             let ticketsMoved = progressTickets(now: self.clock(), interval: simulator.speed.groupInterval)
             let waitsChanged = note.userInfo?["waitsChanged"] as? Bool ?? false
+            // The demo speed can change between ticks, which changes when alerts should fire.
+            self.syncAlerts()
             if ticketsMoved || waitsChanged { NotificationCenter.default.post(name: .queueDataDidChange, object: nil) }
         }
+    }
+
+    private func syncAlerts() {
+        notifier.sync(tickets: tickets, interval: simulator.speed.groupInterval, now: clock())
     }
 
     deinit {
@@ -95,6 +107,8 @@ final class QueueService: QueueServicing {
                                  createdAt: clock(),
                                  lastProgressAt: clock())
         tickets.insert(ticket, at: 0)
+        // Ask when the user first joins, so the reason for the question is clear.
+        notifier.requestPermissionIfNeeded()
         return .success(ticket)
     }
 

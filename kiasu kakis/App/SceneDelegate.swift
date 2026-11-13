@@ -3,6 +3,8 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    // A tapped alert can arrive before the main screen exists (cold launch), so remember it until then.
+    private var pendingTicketID: UUID?
 
     func scene(_ scene: UIScene,
                willConnectTo session: UISceneSession,
@@ -16,6 +18,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.tintColor = Theme.brandText
         window.makeKeyAndVisible()
         self.window = window
+        LocalTicketNotifier.shared.onOpenTicket = { [weak self] id in self?.openTicket(id) }
     }
 
     // The simulated queues only run while the app is on screen. Coming back also catches up the user's tickets.
@@ -34,5 +37,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         UIView.transition(with: window, duration: duration, options: .transitionCrossDissolve) {
             window.rootViewController = MainTabBarController()
         }
+        if let id = pendingTicketID { openTicket(id) }
+    }
+
+    private func openTicket(_ id: UUID) {
+        guard let tabs = window?.rootViewController as? MainTabBarController else { pendingTicketID = id; return }
+        pendingTicketID = nil
+        tabs.showTicket(id)
     }
 }

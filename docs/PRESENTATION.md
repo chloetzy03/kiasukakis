@@ -83,7 +83,7 @@
 - **MapKit:** `MKMapView`, custom annotation views, `MKLocalPointsOfInterestRequest`, `MKLocalSearch`, `MKDirections`.
 - **CoreLocation:** `CLLocationManager`, permission flow, `async/await` wrapper.
 - **Network:** `NWPathMonitor` for the offline banner.
-- **UIKit:** diffable-free tables, Auto Layout, `UIConfigurationTextAttributesTransformer`, gesture recognisers, Dynamic Type (`UIFontMetrics`).
+- **UIKit:** table views, Auto Layout, `UIConfigurationTextAttributesTransformer`, gesture recognisers, Dynamic Type (`UIFontMetrics`).
 - **Core Animation:** the moving eyes and the loading dots.
 - **Foundation:** `URLSession` + `Codable` for the Google Places API (New), `async/await`, `Task` cancellation.
 - **Google Places API (New):** autocomplete, place details, photos. A field mask keeps each request cheap. Responses are cached for 24 hours.

@@ -3,6 +3,7 @@ import Foundation
 enum QueueDataSource: String, Codable {
     case demoSimulation = "Simulated"
     case communityObservation = "Simulated community report"
+    case userReport = "Reported by you"
     case officialLive = "Official live data"
 }
 

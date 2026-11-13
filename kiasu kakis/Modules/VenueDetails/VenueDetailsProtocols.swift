@@ -69,6 +69,7 @@ protocol VenueDetailsInteractorProtocol: AnyObject {
     func loadTravel(requestPermission: Bool) async -> TravelResult
     func loadPlaceDetails() async -> PlaceDetails?
     func loadPhoto(for details: PlaceDetails) async -> Data?
+    func submitReport(minutes: Int)
 }
 
 protocol VenueDetailsRouterProtocol: AnyObject {
@@ -77,4 +78,5 @@ protocol VenueDetailsRouterProtocol: AnyObject {
     func showTicket(ticketID: UUID)
     func openSettings()
     func openExternalQueue(_ url: URL)
+    func showReportOptions(venueName: String, onPick: @escaping (CrowdReportOption) -> Void)
 }

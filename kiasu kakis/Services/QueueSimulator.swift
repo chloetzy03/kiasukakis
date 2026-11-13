@@ -41,6 +41,8 @@ enum SimulationSpeed: String, CaseIterable {
 protocol QueueSimulating: AnyObject {
     var speed: SimulationSpeed { get set }
     func snapshot(for venue: Venue) -> QueueSnapshot
+    // Someone standing in the line says how long it is. Only used for places with no queue system of their own.
+    func submitReport(minutes: Int, for venue: Venue)
     func start()
     func stop()
 }
@@ -75,6 +77,7 @@ final class QueueSimulator: QueueSimulating {
     }
 
     private let profiles: QueueProfileProviding
+    private let reports: CrowdReporting
     private let clock: () -> Date
     private var rng: any RandomNumberGenerator
     // A queue starts the first time anyone asks about a venue, so the app never simulates places nobody looks at.
@@ -84,10 +87,12 @@ final class QueueSimulator: QueueSimulating {
 
     init(speed: SimulationSpeed,
          profiles: QueueProfileProviding = SimulatedQueueCatalog(),
+         reports: CrowdReporting = CrowdReportStore.shared,
          clock: @escaping () -> Date = Date.init,
          random: any RandomNumberGenerator = SystemRandomNumberGenerator()) {
         self.speed = speed
         self.profiles = profiles
+        self.reports = reports
         self.clock = clock
         self.rng = random
     }
@@ -95,6 +100,10 @@ final class QueueSimulator: QueueSimulating {
     // MARK: - Reading
 
     func snapshot(for venue: Venue) -> QueueSnapshot {
+        // A fresh report from a real person beats the simulated number.
+        if venue.queueSupport == .crowd, let report = reports.latestFresh(for: venue.id, now: clock()) {
+            return QueueSnapshot(venueID: venue.id, waitMinutes: report.minutes, source: .userReport, timestamp: report.date)
+        }
         guard let state = state(for: venue) else {
             return QueueSnapshot(venueID: venue.id, waitMinutes: nil, source: .communityObservation, timestamp: .distantPast)
         }
@@ -103,6 +112,11 @@ final class QueueSimulator: QueueSimulating {
                              source: state.profile.source,
                              timestamp: state.updatedAt,
                              trend: Self.trend(of: state.history))
+    }
+
+    func submitReport(minutes: Int, for venue: Venue) {
+        reports.submit(CrowdReport(venueID: venue.id, minutes: minutes, date: clock()))
+        NotificationCenter.default.post(name: .queueDataDidChange, object: nil)
     }
 
     // Returns the venue's queue, starting it on first use. Venues without a queue are remembered, so asking again is cheap.

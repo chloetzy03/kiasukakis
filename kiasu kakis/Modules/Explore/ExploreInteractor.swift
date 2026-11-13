@@ -25,6 +25,8 @@ final class ExploreInteractor: ExploreInteractorProtocol {
         self.savedStore = savedStore
     }
 
+    func submitReport(minutes: Int, for venue: Venue) { simulator.submitReport(minutes: minutes, for: venue) }
+
     func listings(matching query: String, category: VenueCategory?) -> [VenueListing] {
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
         return repository.venues

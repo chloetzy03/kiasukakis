@@ -161,6 +161,12 @@ final class ExplorePresenter: ExplorePresenterProtocol {
             router.showJoinQueue(for: listing.venue)
         } else if listing.venue.queueSupport == .external, let url = listing.venue.externalQueueURL {
             router.openExternalQueue(url)
+        } else if listing.venue.queueSupport == .crowd {
+            let venue = listing.venue
+            // Submitting posts a queue-changed notification, which refreshes the list and this sheet.
+            router.showReportOptions(venueName: venue.name) { [weak self] option in
+                self?.interactor.submitReport(minutes: option.minutes, for: venue)
+            }
         }
     }
 

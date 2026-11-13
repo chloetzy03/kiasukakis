@@ -36,7 +36,11 @@ final class VenueDetailsPresenter: VenueDetailsPresenterProtocol {
         switch interactor.venue.queueSupport {
         case .native: router.showJoinQueue(for: interactor.venue)
         case .external: if let url = interactor.venue.externalQueueURL { router.openExternalQueue(url) }
-        case .crowd, .closed, .unsupported: break
+        case .crowd:
+            router.showReportOptions(venueName: interactor.venue.name) { [weak self] option in
+                self?.interactor.submitReport(minutes: option.minutes)
+            }
+        case .closed, .unsupported: break
         }
     }
 

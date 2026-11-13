@@ -29,8 +29,8 @@ struct QueueSupportInfo: Equatable {
         case .crowd:
             self = QueueSupportInfo(symbol: "person.2.fill", title: "Community-reported wait",
                                     message: "This stall has no remote queue. The wait comes from reports by people in line, so queue on site.",
-                                    shortText: "Community report · queue on site", actionTitle: "Queue on site",
-                                    isPositive: false, canAct: false)
+                                    shortText: "Community report · queue on site", actionTitle: "Report the line",
+                                    isPositive: false, canAct: true)
         case .closed:
             self = QueueSupportInfo(symbol: "moon.zzz.fill", title: "Queue closed",
                                     message: "This venue isn't accepting new tickets right now.",

@@ -29,6 +29,10 @@ final class ExploreRouter: ExploreRouterProtocol {
         viewController?.present(join, animated: true)
     }
 
+    func showReportOptions(venueName: String, onPick: @escaping (CrowdReportOption) -> Void) {
+        CrowdReportSheet.present(on: viewController, venueName: venueName, onPick: onPick)
+    }
+
     func openExternalQueue(_ url: URL) {
         UIApplication.shared.open(url)
     }

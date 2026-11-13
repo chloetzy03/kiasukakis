@@ -48,7 +48,7 @@
     <section class="hero" id="hero">
       <div class="hero-copy reveal">
         <p class="eyebrow">Your kiasu buddy for queues</p>
-        <h1>Don't kiasu in the queue.<br><span class="accent">Let your kaki do it.</span></h1>
+        <h1>Don't kiasu in the queue.<span class="accent" style="display:block">Let your kaki do it.</span></h1>
         <p class="lead">See the wait before you walk over. Join the queue from your phone. Eat when it's your turn.</p>
         <div class="cta-row">
           <span class="btn btn-soon" aria-disabled="true">App Store <em>coming soon</em></span>
@@ -61,16 +61,16 @@
         <svg class="peek-eyes" id="heroEyes" viewBox="0 0 320 120" role="img" aria-label="A pair of eyes that follow your cursor"></svg>
         <div class="phone phone-hero">
           <div class="phone-screen" id="heroScreens">
-            <img src="assets/screens/map.jpg" alt="The Kiasu Kakis map with colour-coded wait pins" class="is-on" width="600" height="1304">
-            <img src="assets/screens/list.jpg" alt="A ranked list of queues, shortest wait first" width="600" height="1304" loading="lazy">
-            <img src="assets/screens/summary.jpg" alt="A place summary with the wait, groups ahead and a Join queue button" width="600" height="1304" loading="lazy">
-            <img src="assets/screens/ticket3.jpg" alt="A ticket that has just been called" width="600" height="1304" loading="lazy">
+            <img src="assets/screens/map.jpg" alt="The Kiasu Kakis map with colour-coded wait pins" id="heroMap" width="600" height="1304">
+            <img src="assets/screens/summary.jpg" alt="A place summary with the wait, groups ahead and a Join queue button" id="heroSummary" width="600" height="1304">
           </div>
         </div>
         <span class="float-pill p1 g">8 min</span>
         <span class="float-pill p2 a">15 min</span>
         <span class="float-pill p3 o">35 min</span>
       </div>
+      <p class="hero-tag left" aria-hidden="true">Tap a pin.<br>See the wait.</p>
+      <p class="hero-tag right" aria-hidden="true">Join.<br><span>Eat when it's time.</span></p>
     </section>
     </div>
 
@@ -83,15 +83,18 @@
     </section>
 
     <!-- PROBLEM -->
-    <section class="section problem" id="problem">
+    <section class="problem-track" id="problem" aria-labelledby="probTitle">
+      <div class="problem-stick" id="problemStick">
+        <p class="eyebrow">The problem</p>
+        <h2 id="probTitle" class="words">Best food. Longest queue. Zero idea how long. <span class="accent">Aiyo.</span></h2>
+        <div class="big-wait" aria-hidden="true"><b id="bigNum">0</b><span id="bigUnit">min waiting</span></div>
+        <p class="big-cap" id="bigCap" aria-hidden="true">You only find out once you're already in line.</p>
+        <div class="stubs" id="stubs" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <section class="section problem-cards">
       <div class="wrap">
-        <p class="eyebrow reveal">The problem</p>
-        <h2 class="reveal">Best food. Longest queue. Zero idea how long. <span class="accent">Aiyo.</span></h2>
-        <div class="queue-meter reveal" aria-hidden="true">
-          <div class="queue-line" id="queueLine"></div>
-          <p class="queue-time">You've been standing here <strong id="queueTime">0 min</strong></p>
-        </div>
-        <p class="hint">Keep scrolling. The line only gets longer.</p>
         <div class="cards three">
           <article class="card pf reveal">
             <h3>You queue first, then find out</h3>

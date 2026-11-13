@@ -41,7 +41,6 @@
       if (onChange) onChange(i);
     }, ms);
   }
-  cycle($('#heroScreens'), 3400);
 
   /* ---------- Ticker with drifting waits ---------- */
   var places = [
@@ -192,76 +191,182 @@
   /* ---------- Scroll-driven animation ---------- */
   var clamp = function (v, lo, hi) { return Math.min(hi, Math.max(lo, v)); };
   var ease = function (t) { return t * t * (3 - 2 * t); };
+  var lerp = function (a, b, t) { return a + (b - a) * t; };
   var vh = function () { return window.innerHeight; };
   var narrow = function () { return window.innerWidth <= 900; };
+  // Progress of a tall track whose child is pinned: 0 when it starts pinning, 1 when it lets go.
+  function trackProgress(track) {
+    var r = track.getBoundingClientRect();
+    return clamp(-(r.top - 64) / (r.height - vh() + 64), 0, 1);
+  }
 
-  var heroWrap = $('#heroWrap'), heroPhone = $('.phone-hero'), pills = $$('.float-pill');
-  var pillMoves = [[-90, -40], [90, 30], [-70, 70]];
-  var queueDots = [], queueLine = $('#queueLine'), queueTime = $('#queueTime'), problem = $('#problem');
-  for (var n = 0; n < 22; n++) { var dot = document.createElement('i'); queueLine.appendChild(dot); queueDots.push(dot); }
+  /* Word-by-word text */
+  var words = $('#probTitle'), wordEls = [];
+  (function splitWords(node, accent) {
+    Array.prototype.slice.call(node.childNodes).forEach(function (child) {
+      if (child.nodeType === 3) {
+        var frag = document.createDocumentFragment();
+        child.textContent.split(/(\s+)/).forEach(function (part) {
+          if (!part) return;
+          if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(' ')); return; }
+          var w = document.createElement('span');
+          w.className = 'w' + (accent ? ' accent' : '');
+          w.textContent = part;
+          wordEls.push(w); frag.appendChild(w);
+        });
+        node.replaceChild(frag, child);
+      } else if (child.nodeType === 1) {
+        splitWords(child, true);
+        child.classList.remove('accent');
+      }
+    });
+  })(words, false);
+
+  /* Ticket stubs */
+  var stubsEl = $('#stubs'), stubs = [];
+  for (var n = 0; n < 11; n++) {
+    var stub = document.createElement('i');
+    stub.className = 'stub' + (n === 10 ? ' you' : '');
+    stub.textContent = n === 10 ? 'You' : '#' + String(11 + n).padStart(3, '0');
+    stubsEl.appendChild(stub); stubs.push(stub);
+  }
+
+  var heroWrap = $('#heroWrap'), heroPhone = $('.phone-hero'), heroScreen = $('#heroScreens');
+  var heroMap = $('#heroMap'), heroSummary = $('#heroSummary'), heroCopy = $('.hero-copy'), heroTags = $$('.hero-tag');
+  var pills = $$('.float-pill'), peek = $('#heroEyes');
+  var problemTrack = $('#problem'), bigNum = $('#bigNum'), bigUnit = $('#bigUnit'), bigCap = $('#bigCap');
   var howTrack = $('#howTrack'), howScreens = $$('#howScreens img'), howSteps = $$('#howSteps li'), howDots = $$('#howDots i');
   var paper = $('#paperTicket'), paperText = $('#paperText');
   var screenStep = [0, 1, 1, 2, 2, 2];
   var paperLines = ['Waiting · 3 groups ahead', 'Waiting · 2 groups ahead', 'Called · your turn!'];
-  var lastHow = -1, lastDots = -1, lastY = window.scrollY;
 
-  function updateHero() {
-    var p = narrow()
-      ? clamp(window.scrollY / (vh() * 0.7), 0, 1)
-      : clamp(window.scrollY / (heroWrap.offsetHeight - vh() + 64), 0, 1);
-    var e = ease(p);
-    // The phone starts tipped back and turned, then swings upright and grows as you scroll.
-    heroPhone.style.transform = 'rotateX(' + ((1 - e) * 38) + 'deg) rotateY(' + ((1 - e) * -26) + 'deg) rotateZ(' + ((1 - e) * 5) + 'deg) scale(' + (0.86 + 0.16 * e) + ')';
-    pills.forEach(function (el, i) {
-      el.style.translate = (pillMoves[i][0] * (1 - e)) + 'px ' + (pillMoves[i][1] * (1 - e) - e * 12) + 'px';
-      el.style.opacity = 0.55 + 0.45 * e;
+  // Where things sit at rest, measured with no transform applied.
+  var rest = null;
+  function measureHero() {
+    var saved = heroPhone.style.transform;
+    heroPhone.style.transform = 'none';
+    var phone = heroPhone.getBoundingClientRect(), screen = heroScreen.getBoundingClientRect();
+    rest = {
+      pin: { x: screen.left + screen.width * 0.75, y: screen.top + screen.height * 0.44 },
+      center: { x: phone.left + phone.width / 2, y: phone.top + phone.height / 2 }
+    };
+    heroPhone.style.transform = saved;
+  }
+
+  var ZOOM = 2.2;
+  function renderHero(p) {
+    if (narrow() || !rest) return;
+    var vp = { x: window.innerWidth / 2, y: (vh() + 64) / 2 };
+    var e1 = ease(clamp(p / 0.42, 0, 1)), e2 = ease(clamp((p - 0.5) / 0.32, 0, 1));
+    var s = lerp(lerp(1, ZOOM, e1), 1.12, e2);
+    // f is the point of the phone we keep pinned to `aim` on screen: first the pin, then the phone's centre.
+    var f = { x: lerp(rest.pin.x, rest.center.x, e2), y: lerp(rest.pin.y, rest.center.y, e2) };
+    var aim = { x: lerp(f.x, vp.x, e1), y: lerp(f.y, vp.y, e1) };
+    var tx = aim.x - rest.center.x - s * (f.x - rest.center.x);
+    var ty = aim.y - rest.center.y - s * (f.y - rest.center.y);
+    heroPhone.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + s + ')';
+  }
+
+  var state = { hero: 0, problem: 0, how: 0 };
+  var target = { hero: 0, problem: 0, how: 0 };
+  var lastHow = -1, wasWon = null;
+
+  function paintHero(p) {
+    var gone = clamp(p / 0.2, 0, 1);
+    heroCopy.style.opacity = 1 - gone;
+    heroCopy.style.transform = 'translateX(' + (-40 * ease(gone)) + 'px)';
+    pills.forEach(function (el) { el.style.opacity = 1 - gone; });
+    peek.style.opacity = 1 - gone;
+    var swap = ease(clamp((p - 0.38) / 0.2, 0, 1));
+    heroMap.style.opacity = 1 - swap;
+    heroSummary.style.opacity = swap;
+    var tag = clamp((p - 0.84) / 0.12, 0, 1);
+    heroTags.forEach(function (el, i) {
+      el.style.opacity = tag;
+      el.style.transform = 'translate(' + ((i ? 24 : -24) * (1 - tag)) + 'px, -50%)';
     });
+    renderHero(p);
   }
 
-  function updateQueue() {
-    var r = problem.getBoundingClientRect();
-    var p = clamp((vh() * 0.85 - r.top) / (vh() * 0.8), 0, 1);
-    var count = Math.round(p * queueDots.length);
-    if (count === lastDots) return;
-    lastDots = count;
-    queueDots.forEach(function (d, i) { d.classList.toggle('on', i < count); });
-    queueTime.textContent = Math.round(p * 50) + ' min';
+  function paintProblem(p) {
+    var wordP = clamp(p / 0.4, 0, 1) * (wordEls.length + 0.5);
+    wordEls.forEach(function (w, i) { w.classList.toggle('on', i < wordP); });
+    var climb = clamp((p - 0.1) / 0.62, 0, 1);
+    var fix = clamp((p - 0.84) / 0.12, 0, 1);
+    var wait = Math.round(lerp(50 * climb, 0, ease(fix)));
+    bigNum.textContent = wait;
+    bigNum.className = fix > 0.5 ? 'won' : (wait < 15 ? '' : (wait < 30 ? 'amber' : 'hot'));
+    var won = fix > 0.5;
+    if (won !== wasWon) {
+      wasWon = won;
+      bigUnit.textContent = won ? 'min standing' : 'min waiting';
+      bigCap.textContent = won ? 'With Kiasu Kakis you sit down. Your ticket does the standing.' : 'You only find out once you\u2019re already in line.';
+    }
+    var count = Math.round(climb * stubs.length);
+    stubs.forEach(function (st, i) { st.classList.toggle('on', i < count); });
+    stubsEl.classList.toggle('gone', fix > 0.05);
   }
 
-  function updateHow() {
-    var r = howTrack.getBoundingClientRect();
-    var p = clamp(-r.top / (r.height - vh()), 0, 0.999);
-    var idx = Math.floor(p * howScreens.length);
+  function paintHow(p) {
+    var idx = Math.floor(clamp(p, 0, 0.999) * howScreens.length);
     if (idx === lastHow) return;
     lastHow = idx;
     howScreens.forEach(function (img, i) { img.classList.toggle('is-on', i === idx); });
     var step = screenStep[idx];
     howSteps.forEach(function (li, i) { li.classList.toggle('is-active', i === step); });
     howDots.forEach(function (d, i) { d.classList.toggle('on', i === step); });
-    // The paper ticket slides out when you join, and keeps up with the ticket after that.
     var show = idx >= 3;
     paper.style.opacity = show ? 1 : 0;
     paper.style.transform = show ? 'translate(0,0) rotate(-4deg)' : 'translate(-60px, 30px) rotate(-12deg)';
-    paper.style.transition = reduceMotion ? 'none' : 'opacity .4s, transform .5s cubic-bezier(.3,1.4,.5,1)';
+    paper.style.transition = 'opacity .4s, transform .5s cubic-bezier(.3,1.4,.5,1)';
     paperText.textContent = paperLines[clamp(idx - 3, 0, 2)];
   }
 
+  // Eased catch-up gives the scroll a smooth, weighty feel without hijacking the scrollbar.
+  var running = false;
+  function loop() {
+    var moving = false;
+    ['hero', 'problem', 'how'].forEach(function (k) {
+      var d = target[k] - state[k];
+      if (Math.abs(d) > 0.0004) { state[k] += d * 0.14; moving = true; } else { state[k] = target[k]; }
+    });
+    paintHero(state.hero); paintProblem(state.problem); paintHow(state.how);
+    if (moving) requestAnimationFrame(loop); else running = false;
+  }
+  function kick() { if (!running) { running = true; requestAnimationFrame(loop); } }
+
+  var lastY = window.scrollY;
   function onScroll() {
     var dy = window.scrollY - lastY;
     lastY = window.scrollY;
     if (Math.abs(dy) > 2) {
       lastScrollAt = performance.now();
-      // Eyes look the way you scroll: down when going down, up when going back.
-      var er = heroEyes.getBoundingClientRect();
+      var er = peek.getBoundingClientRect();
       lookAt(er.left + er.width / 2, dy > 0 ? er.top + 600 : er.top - 600);
     }
-    if (!reduceMotion) { updateHero(); updateQueue(); updateHow(); }
+    if (reduceMotion) return;
+    target.hero = narrow() ? 0 : trackProgress(heroWrap);
+    target.problem = trackProgress(problemTrack);
+    target.how = trackProgress(howTrack);
+    kick();
   }
   var scrollFrame = 0;
   window.addEventListener('scroll', function () {
     if (scrollFrame) return;
     scrollFrame = requestAnimationFrame(function () { scrollFrame = 0; onScroll(); });
   }, { passive: true });
-  window.addEventListener('resize', function () { lastHow = -1; lastDots = -1; if (!reduceMotion) { updateHero(); updateQueue(); updateHow(); } });
-  if (!reduceMotion) { updateHero(); updateQueue(); updateHow(); }
+  window.addEventListener('resize', function () { measureHero(); lastHow = -1; onScroll(); });
+
+  if (reduceMotion) {
+    wordEls.forEach(function (w) { w.classList.add('on'); });
+    bigNum.textContent = '0'; bigNum.className = 'won'; bigUnit.textContent = 'min standing';
+    bigCap.textContent = 'With Kiasu Kakis you sit down. Your ticket does the standing.';
+    heroMap.style.opacity = 1;
+  } else {
+    measureHero();
+    state.hero = target.hero = narrow() ? 0 : trackProgress(heroWrap);
+    state.problem = target.problem = trackProgress(problemTrack);
+    state.how = target.how = trackProgress(howTrack);
+    paintHero(state.hero); paintProblem(state.problem); paintHow(state.how);
+  }
 })();

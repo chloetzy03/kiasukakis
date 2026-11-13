@@ -100,7 +100,7 @@ extension MyQueuesViewController: UITableViewDataSource, UITableViewDelegate {
             done(true)
         }
         action.image = UIImage(systemName: row.isSaved ? "bookmark.slash" : "bookmark")
-        action.backgroundColor = Theme.brand
+        action.backgroundColor = Theme.saveAction
         return UISwipeActionsConfiguration(actions: [action])
     }
 
@@ -112,7 +112,10 @@ extension MyQueuesViewController: UITableViewDataSource, UITableViewDelegate {
             self?.presenter.didDeleteTicket(id: row.id)
             done(true)
         }
-        return UISwipeActionsConfiguration(actions: [delete])
+        // A long swipe must not delete by accident, so the person has to tap the Delete button.
+        let configuration = UISwipeActionsConfiguration(actions: [delete])
+        configuration.performsFirstActionWithFullSwipe = false
+        return configuration
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

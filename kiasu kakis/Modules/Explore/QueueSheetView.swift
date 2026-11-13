@@ -32,6 +32,8 @@ final class QueueSheetView: UIView {
     // How much of the sheet shows in its smallest list position: the header and one row.
     var peekHeight: CGFloat { headerHeight + 66 }
     private let headerHeight: CGFloat = 64
+    // Space above the place name for the save and close buttons.
+    private static let detailTopInset: CGFloat = 52
 
     private let grabber = UIView()
     private let titleLabel = UILabel()
@@ -50,7 +52,7 @@ final class QueueSheetView: UIView {
     private let queueLabel = UILabel()
     private let joinButton = UIButton(type: .system)
     private let detailsButton = UIButton(type: .system)
-    private let saveButton = UIButton(type: .system)
+    private let bookmarkButton = UIButton(type: .system)
     private var detailBottom: NSLayoutConstraint!
 
     private let emptyView = UIView()
@@ -77,6 +79,7 @@ final class QueueSheetView: UIView {
         buildEmpty()
         // The close button was added early, so later views (the summary) would cover part of it and eat the taps.
         bringSubviewToFront(closeButton)
+        bringSubviewToFront(bookmarkButton)
         showListFace()
         enableDynamicType()
     }
@@ -129,11 +132,21 @@ final class QueueSheetView: UIView {
         closeButton.translatesAutoresizingMaskIntoConstraints = false
         closeButton.addAction(UIAction { [weak self] _ in self?.onClose?() }, for: .touchUpInside)
         addSubview(closeButton)
+
+        // Save sits top-left and close top-right, as far apart as possible so neither is tapped by mistake.
+        bookmarkButton.translatesAutoresizingMaskIntoConstraints = false
+        bookmarkButton.addAction(UIAction { [weak self] _ in self?.onTapSave?() }, for: .touchUpInside)
+        addSubview(bookmarkButton)
+
         NSLayoutConstraint.activate([
             closeButton.topAnchor.constraint(equalTo: topAnchor, constant: 10),
             closeButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
             closeButton.widthAnchor.constraint(greaterThanOrEqualToConstant: 44),
-            closeButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 44)
+            closeButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 44),
+            bookmarkButton.topAnchor.constraint(equalTo: topAnchor, constant: 10),
+            bookmarkButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
+            bookmarkButton.widthAnchor.constraint(greaterThanOrEqualToConstant: 44),
+            bookmarkButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 44)
         ])
     }
 
@@ -191,25 +204,22 @@ final class QueueSheetView: UIView {
         joinButton.configuration = joinConfig
         joinButton.addAction(UIAction { [weak self] _ in self?.onTapJoin?() }, for: .touchUpInside)
 
-        // Details is a plain text link. Save is a button, and the two sit side by side below Join queue.
+        // A clear text link under Join queue, so people can see there is more to read.
         var detailsConfig = UIButton.Configuration.plain()
-        detailsConfig.title = "Details"
+        detailsConfig.title = "See full details"
         detailsConfig.image = UIImage(systemName: "chevron.right")
         detailsConfig.imagePlacement = .trailing
         detailsConfig.imagePadding = 4
         detailsConfig.baseForegroundColor = Theme.brandText
+        detailsConfig.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { attributes in
+            var attributes = attributes
+            attributes.font = UIFontMetrics(forTextStyle: .subheadline).scaledFont(for: .systemFont(ofSize: 15, weight: .semibold))
+            return attributes
+        }
         detailsButton.configuration = detailsConfig
         detailsButton.addAction(UIAction { [weak self] _ in self?.onTapDetails?() }, for: .touchUpInside)
 
-        // Save sits beside Details, away from the close button, so the two can't be tapped by mistake.
-        saveButton.addAction(UIAction { [weak self] _ in self?.onTapSave?() }, for: .touchUpInside)
-        let secondaryActions = UIStackView(arrangedSubviews: [saveButton, UIView(), detailsButton])
-        secondaryActions.spacing = 10
-        secondaryActions.alignment = .center
-        saveButton.setContentHuggingPriority(.required, for: .horizontal)
-        detailsButton.setContentHuggingPriority(.required, for: .horizontal)
-
-        let stack = UIStackView(arrangedSubviews: [nameLabel, detailSubtitle, waitRow, aheadLabel, sourceLabel, queueLabel, joinButton, secondaryActions])
+        let stack = UIStackView(arrangedSubviews: [nameLabel, detailSubtitle, waitRow, aheadLabel, sourceLabel, queueLabel, joinButton, detailsButton])
         stack.axis = .vertical
         stack.spacing = 6
         stack.setCustomSpacing(12, after: detailSubtitle)
@@ -221,18 +231,16 @@ final class QueueSheetView: UIView {
         addSubview(detailView)
         detailBottom = detailView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12)
         NSLayoutConstraint.activate([
-            detailView.topAnchor.constraint(equalTo: topAnchor, constant: 28),
+            detailView.topAnchor.constraint(equalTo: topAnchor, constant: Self.detailTopInset),
             detailView.leadingAnchor.constraint(equalTo: leadingAnchor),
             detailView.trailingAnchor.constraint(equalTo: trailingAnchor),
             detailBottom,
             stack.topAnchor.constraint(equalTo: detailView.topAnchor),
             stack.leadingAnchor.constraint(equalTo: detailView.leadingAnchor, constant: 18),
-            stack.trailingAnchor.constraint(equalTo: detailView.trailingAnchor, constant: -52),
+            stack.trailingAnchor.constraint(equalTo: detailView.trailingAnchor, constant: -18),
             stack.bottomAnchor.constraint(lessThanOrEqualTo: detailView.bottomAnchor)
         ])
-        // The buttons use the full width, so they get their own trailing edge.
-        joinButton.trailingAnchor.constraint(equalTo: detailView.trailingAnchor, constant: -18).isActive = true
-        secondaryActions.trailingAnchor.constraint(equalTo: detailView.trailingAnchor, constant: -18).isActive = true
+
     }
 
     private func buildEmpty() {
@@ -323,15 +331,11 @@ final class QueueSheetView: UIView {
         config?.title = model.joinTitle
         joinButton.configuration = config
         joinButton.isEnabled = model.canJoin
-        var saveConfig = UIButton.Configuration.tinted()
-        saveConfig.title = model.isSaved ? "Saved" : "Save"
-        saveConfig.image = UIImage(systemName: model.isSaved ? "bookmark.fill" : "bookmark")
-        saveConfig.imagePadding = 6
-        saveConfig.cornerStyle = .large
-        saveConfig.baseForegroundColor = Theme.brandText
-        saveConfig.baseBackgroundColor = Theme.brand
-        saveButton.configuration = saveConfig
-        saveButton.accessibilityLabel = model.isSaved ? "Remove from saved" : "Save this place"
+        var bookmarkConfig = UIButton.Configuration.plain()
+        bookmarkConfig.image = UIImage(systemName: model.isSaved ? "bookmark.fill" : "bookmark")
+        bookmarkConfig.baseForegroundColor = Theme.brandText
+        bookmarkButton.configuration = bookmarkConfig
+        bookmarkButton.accessibilityLabel = model.isSaved ? "Remove from saved" : "Save this place"
         showDetailFace()
     }
 
@@ -346,6 +350,7 @@ final class QueueSheetView: UIView {
         titleLabel.isHidden = false
         subtitleLabel.isHidden = false
         closeButton.isHidden = true
+        bookmarkButton.isHidden = true
         tableView.isHidden = isEmpty
         emptyView.isHidden = !isEmpty
         detailView.isHidden = true
@@ -356,6 +361,7 @@ final class QueueSheetView: UIView {
         titleLabel.isHidden = true
         subtitleLabel.isHidden = true
         closeButton.isHidden = false
+        bookmarkButton.isHidden = false
         tableView.isHidden = true
         emptyView.isHidden = true
         detailView.isHidden = false
@@ -365,9 +371,9 @@ final class QueueSheetView: UIView {
 
     func detailHeight(width: CGFloat) -> CGFloat {
         layoutIfNeeded()
-        let target = CGSize(width: width - 70, height: UIView.layoutFittingCompressedSize.height)
+        let target = CGSize(width: width - 36, height: UIView.layoutFittingCompressedSize.height)
         let stack = detailView.subviews[0]
-        return 28 + 16 + stack.systemLayoutSizeFitting(target, withHorizontalFittingPriority: .required,
+        return Self.detailTopInset + 16 + stack.systemLayoutSizeFitting(target, withHorizontalFittingPriority: .required,
                                                        verticalFittingPriority: .fittingSizeLevel).height
     }
 

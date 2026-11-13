@@ -10,6 +10,9 @@ enum Theme {
     static let background = UIColor { $0.userInterfaceStyle == .dark ? UIColor(hex: 0x170C0D) : UIColor(hex: 0xFBF4EA) }
     static let surface = UIColor { $0.userInterfaceStyle == .dark ? UIColor(hex: 0x241618) : UIColor(hex: 0xFFFCF7) }
 
+    // Blue for "save", so it can't be mistaken for the red "delete" next to it.
+    static let saveAction = UIColor(hex: 0x1D6FA5)
+
     // Wait-time colours. Unknown is grey so missing data is never read as "0 min".
     // Green and orange are dark enough for white text on top (4.5:1 contrast or better).
     static let waitShort = UIColor(hex: 0x1F7A44)

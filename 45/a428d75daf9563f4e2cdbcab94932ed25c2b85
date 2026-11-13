@@ -1,0 +1,32 @@
+"kiasu kakis/Services/TicketNotifier.swift"
+  s_83605c29a5e567::t_891a4a3cdbecd4 1-78
+"kiasu kakis/App/AppDelegate.swift"
+  s_83605c29a5e567::t_891a4a3cdbecd4 2,9-10
+"kiasu kakis/App/SceneDelegate.swift"
+  s_83605c29a5e567::t_891a4a3cdbecd4 6-7,21,40-46
+"kiasu kakis/Services/QueueService.swift"
+  s_83605c29a5e567::t_891a4a3cdbecd4 43-46,50,56,60,69-70,75-78,110-111
+"kiasu kakis/Services/TicketNotificationPlan.swift"
+  s_83605c29a5e567::t_891a4a3cdbecd4 1-29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "45a428d75daf9563f4e2cdbcab94932ed25c2b85",
+  "prompts": {},
+  "humans": {
+    "h_ee194195c1c2bb": {
+      "author": "chloe <chloetzy03@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_83605c29a5e567": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "1e007083-5ef8-4fa4-a40d-8019fcebb6dc",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

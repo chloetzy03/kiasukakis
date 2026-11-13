@@ -1,0 +1,50 @@
+"kiasu kakis/Services/VenueRepository.swift"
+  s_83605c29a5e567::t_abdf5c3a8a665e 12,14,23,28,30,32-33,43-52,70-72
+"kiasu kakis/Modules/JoinQueue/JoinQueueInteractor.swift"
+  s_83605c29a5e567::t_d00ec63506c077 15
+"kiasu kakis/Services/SimulatedQueueCatalog.swift"
+  s_83605c29a5e567::t_a87ebe71f6713b 1-79
+"kiasu kakis/Modules/Saved/SavedInteractor.swift"
+  s_83605c29a5e567::t_d00ec63506c077 22
+"kiasu kakis/Modules/Explore/WaitPinView.swift"
+  s_83605c29a5e567::t_fa97298aa3a314 33-34
+"kiasu kakis/Services/DemoVenueData.swift"
+  s_83605c29a5e567::t_fa97298aa3a314 7-8
+"kiasu kakis/Entities/Venue.swift"
+  s_83605c29a5e567::t_d00ec63506c077 26
+"kiasu kakis/Modules/Explore/ExploreProtocols.swift"
+  s_83605c29a5e567::t_fa97298aa3a314 17-18
+"kiasu kakis/Services/QueueService.swift"
+  s_83605c29a5e567::t_d00ec63506c077 76
+"kiasu kakis/Modules/Explore/ExplorePresenter.swift"
+  s_83605c29a5e567::t_fa97298aa3a314 26-27,271-272,274,277-283,304,325
+"kiasu kakis/Services/QueueSimulator.swift"
+  s_83605c29a5e567::t_d00ec63506c077 156-157
+  s_83605c29a5e567::t_a87ebe71f6713b 43,55,77,80,82,86,90,97-99,101,103,108-124,159
+  s_83605c29a5e567::t_58a767cc52023a 125-126
+"kiasu kakis/Modules/Explore/ExploreInteractor.swift"
+  s_83605c29a5e567::t_d00ec63506c077 35,83
+"kiasu kakis/Modules/VenueDetails/VenueDetailsInteractor.swift"
+  s_83605c29a5e567::t_d00ec63506c077 32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e66706d778786394dd0cb324f796a80af53756ef",
+  "prompts": {},
+  "humans": {
+    "h_ee194195c1c2bb": {
+      "author": "chloe <chloetzy03@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_83605c29a5e567": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "1e007083-5ef8-4fa4-a40d-8019fcebb6dc",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

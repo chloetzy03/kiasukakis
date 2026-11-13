@@ -18,11 +18,6 @@ final class TicketDetailPresenter: TicketDetailPresenterProtocol {
         refreshTravel(requestPermission: false)
     }
 
-    func didTapCheckIn() {
-        interactor.checkIn()
-        render()
-    }
-
     func didTapProximityAction() { refreshTravel(requestPermission: true) }
 
     private func refreshTravel(requestPermission: Bool) {
@@ -99,17 +94,15 @@ final class TicketDetailPresenter: TicketDetailPresenterProtocol {
             ticketNumberText: String(format: "#%03d", ticket.ticketNumber),
             statusText: ticket.status.rawValue,
             statusColor: Theme.color(for: ticket.status),
-            positionText: positionText,
-            nowServingText: String(format: "#%03d", ticket.nowServing),
-            estimateText: isWaiting ? simulator.speed.estimateText(groups: position) : "-",
-            partyText: ticket.partySize == 1 ? "1 person" : "\(ticket.partySize) people",
+            summaryText: isWaiting ? "\(positionText) · \(simulator.speed.estimateText(groups: position))" : positionText,
+            footnoteText: String(format: "Now serving #%03d · ", ticket.nowServing) + (ticket.partySize == 1 ? "1 person" : "\(ticket.partySize) people"),
             message: message,
             stepIndex: step,
-            canAdvance: ticket.status.isActive,
+            // Skipping ahead is a presentation tool, so it hides unless demo controls are on. Finishing a called ticket always shows.
+            canAdvance: ticket.status == .called || (ticket.status.isActive && DemoControls.isEnabled),
             advanceTitle: ticket.status == .called ? "Mark as served" : "Skip ahead (demo)",
             canCancel: ticket.status.isActive,
             proximityText: proximity(for: ticket).text,
-            proximityActionTitle: proximity(for: ticket).action,
-            canCheckIn: ticket.status.isActive && ticket.arrivedAt == nil))
+            proximityActionTitle: proximity(for: ticket).action))
     }
 }

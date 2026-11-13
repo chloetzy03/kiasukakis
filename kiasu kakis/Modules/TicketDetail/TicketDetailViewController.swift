@@ -7,10 +7,8 @@ final class TicketDetailViewController: UIViewController {
     private let venueLabel = UILabel()
     private let numberLabel = UILabel()
     private let statusPill = UILabel()
-    private let positionValue = UILabel()
-    private let nowServingValue = UILabel()
-    private let estimateValue = UILabel()
-    private let partyValue = UILabel()
+    private let summaryLabel = UILabel()
+    private let footnoteLabel = UILabel()
     private let messageLabel = UILabel()
     private let stepsStack = UIStackView()
     private var stepBars: [UIView] = []
@@ -19,7 +17,6 @@ final class TicketDetailViewController: UIViewController {
     private let cancelButton = UIButton(type: .system)
     private let proximityLabel = UILabel()
     private let proximityActionButton = UIButton(type: .system)
-    private let checkInButton = UIButton(type: .system)
     private var proximityCard = UIView()
     private let stepTitles = ["Waiting", "Almost", "Called", "Done"]
     private var lastStatus: String?
@@ -58,11 +55,6 @@ final class TicketDetailViewController: UIViewController {
         pillRow.distribution = .equalCentering
 
         let ticketCard = card([venueLabel, numberLabel, pillRow], alignment: .fill, spacing: 10)
-
-        let info = card([infoRow("Position", positionValue),
-                         infoRow("Now serving", nowServingValue),
-                         infoRow("Estimated wait", estimateValue),
-                         infoRow("Party size", partyValue)], alignment: .fill, spacing: 10)
 
         stepsStack.distribution = .fillEqually
         stepsStack.spacing = 6
@@ -108,19 +100,17 @@ final class TicketDetailViewController: UIViewController {
         actionConfig.baseForegroundColor = Theme.brandText
         proximityActionButton.configuration = actionConfig
         proximityActionButton.addTarget(self, action: #selector(proximityActionTapped), for: .touchUpInside)
-        var checkInConfig = UIButton.Configuration.tinted()
-        checkInConfig.title = "I'm here"
-        checkInConfig.image = UIImage(systemName: "mappin.circle.fill")
-        checkInConfig.imagePadding = 6
-        checkInConfig.baseForegroundColor = Theme.brandText
-        checkInConfig.baseBackgroundColor = Theme.brand
-        checkInConfig.cornerStyle = .large
-        checkInButton.configuration = checkInConfig
-        checkInButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
-        checkInButton.addTarget(self, action: #selector(checkInTapped), for: .touchUpInside)
-        proximityCard = card([proximityLabel, proximityActionButton, checkInButton], alignment: .fill, spacing: 10)
+        proximityCard = card([proximityLabel, proximityActionButton], alignment: .fill, spacing: 6)
 
-        let content = UIStackView(arrangedSubviews: [ticketCard, stepsStack, messageLabel, proximityCard, info, cancelButton, advanceButton])
+        summaryLabel.font = .preferredFont(forTextStyle: .headline)
+        summaryLabel.textAlignment = .center
+        summaryLabel.numberOfLines = 0
+        footnoteLabel.font = .preferredFont(forTextStyle: .footnote)
+        footnoteLabel.textColor = Theme.secondaryText
+        footnoteLabel.textAlignment = .center
+        footnoteLabel.numberOfLines = 0
+
+        let content = UIStackView(arrangedSubviews: [ticketCard, stepsStack, summaryLabel, messageLabel, proximityCard, footnoteLabel, cancelButton, advanceButton])
         content.axis = .vertical
         content.spacing = 16
         content.translatesAutoresizingMaskIntoConstraints = false
@@ -140,17 +130,6 @@ final class TicketDetailViewController: UIViewController {
             content.trailingAnchor.constraint(equalTo: scroll.frameLayoutGuide.trailingAnchor, constant: -16),
             content.widthAnchor.constraint(equalTo: scroll.frameLayoutGuide.widthAnchor, constant: -32)
         ])
-    }
-
-    private func infoRow(_ title: String, _ value: UILabel) -> UIView {
-        let name = UILabel()
-        name.text = title
-        name.font = .preferredFont(forTextStyle: .subheadline)
-        name.textColor = Theme.secondaryText
-        value.font = .preferredFont(forTextStyle: .subheadline).withBold()
-        value.textAlignment = .right
-        value.numberOfLines = 0
-        return UIStackView(arrangedSubviews: [name, value])
     }
 
     private func card(_ views: [UIView], alignment: UIStackView.Alignment, spacing: CGFloat) -> UIView {
@@ -174,7 +153,6 @@ final class TicketDetailViewController: UIViewController {
 
     @objc private func advanceTapped() { presenter.didTapAdvance() }
     @objc private func cancelTapped() { presenter.didTapCancel() }
-    @objc private func checkInTapped() { presenter.didTapCheckIn() }
     @objc private func proximityActionTapped() { presenter.didTapProximityAction() }
 }
 
@@ -188,14 +166,12 @@ extension TicketDetailViewController: TicketDetailViewProtocol {
         if let number = Int(model.ticketNumberText.dropFirst()) { numberLabel.accessibilityLabel = "Ticket number \(number)" }
         // The status changes by itself now, so tell VoiceOver users when it does.
         if let lastStatus, lastStatus != model.statusText {
-            UIAccessibility.post(notification: .announcement, argument: "Your ticket is now \(model.statusText). \(model.positionText).")
+            UIAccessibility.post(notification: .announcement, argument: "Your ticket is now \(model.statusText). \(model.summaryText).")
         }
         lastStatus = model.statusText
         statusPill.backgroundColor = model.statusColor
-        positionValue.text = model.positionText
-        nowServingValue.text = model.nowServingText
-        estimateValue.text = model.estimateText
-        partyValue.text = model.partyText
+        summaryLabel.text = model.summaryText
+        footnoteLabel.text = model.footnoteText
         messageLabel.text = model.message
 
         stepsStack.isHidden = model.stepIndex == nil
@@ -222,8 +198,7 @@ extension TicketDetailViewController: TicketDetailViewProtocol {
         action?.title = model.proximityActionTitle
         proximityActionButton.configuration = action
         proximityActionButton.isHidden = model.proximityActionTitle == nil
-        checkInButton.isHidden = !model.canCheckIn
-        proximityCard.isHidden = model.proximityText == nil && !model.canCheckIn
+        proximityCard.isHidden = model.proximityText == nil
     }
 
     func askToConfirmCancel() {

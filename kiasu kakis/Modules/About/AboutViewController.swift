@@ -37,6 +37,7 @@ final class AboutViewController: UIViewController {
             stack.addArrangedSubview(section)
         }
         stack.addArrangedSubview(makeSpeedSection())
+        stack.addArrangedSubview(makeDemoControlsSection())
         if iconService.isSupported { stack.addArrangedSubview(makeIconSection()) }
         stack.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(stack)
@@ -104,6 +105,30 @@ final class AboutViewController: UIViewController {
         let section = UIStackView(arrangedSubviews: [heading, control, detail])
         section.axis = .vertical
         section.spacing = 8
+        return section
+    }
+
+    // Presentation helpers stay out of the way unless asked for.
+    private func makeDemoControlsSection() -> UIView {
+        let label = UILabel()
+        label.text = "Demo controls"
+        label.font = .preferredFont(forTextStyle: .headline)
+        let toggle = UISwitch()
+        toggle.isOn = DemoControls.isEnabled
+        toggle.accessibilityLabel = "Demo controls"
+        toggle.addAction(UIAction { [weak toggle] _ in DemoControls.isEnabled = toggle?.isOn ?? false }, for: .valueChanged)
+        let row = UIStackView(arrangedSubviews: [label, UIView(), toggle])
+        row.alignment = .center
+
+        let detail = UILabel()
+        detail.text = "Adds a \"Skip ahead\" button to tickets, for presenting the app."
+        detail.font = .preferredFont(forTextStyle: .footnote)
+        detail.textColor = Theme.secondaryText
+        detail.numberOfLines = 0
+
+        let section = UIStackView(arrangedSubviews: [row, detail])
+        section.axis = .vertical
+        section.spacing = 6
         return section
     }
 }

@@ -15,19 +15,17 @@ final class MainTabBarController: UITabBarController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        showPrototypeNoticeIfNeeded()
+        showIntroIfNeeded()
     }
 
     // Shown once, the first time the app opens.
-    private func showPrototypeNoticeIfNeeded() {
-        let key = "hasSeenPrototypeNotice"
+    private func showIntroIfNeeded() {
+        let key = "hasSeenIntro"
         guard !UserDefaults.standard.bool(forKey: key) else { return }
         UserDefaults.standard.set(true, forKey: key)
-        let alert = UIAlertController(title: "Welcome to Kiasu Kakis",
-                                      message: "This is a prototype. The places are real, but wait times and queues are simulated for demonstration. Other food places on the map have no queue data.",
-                                      preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Got it", style: .default))
-        present(alert, animated: true)
+        let intro = IntroViewController()
+        intro.modalPresentationStyle = .fullScreen
+        present(intro, animated: true)
     }
 
     // Jumps to My Queues and opens the given ticket.

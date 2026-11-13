@@ -42,16 +42,6 @@
     }, ms);
   }
   cycle($('#heroScreens'), 3400);
-  var ticketText = ['Waiting · 3 groups ahead', 'Waiting · 2 groups ahead', 'Called · it\u2019s your turn!'];
-  cycle($('#ticketScreens'), 2600, function (i) { $('#ticketStatus').textContent = ticketText[i]; });
-
-  /* ---------- Queue of little people ---------- */
-  var line = $('#queueLine');
-  for (var n = 0; n < 16; n++) {
-    var person = document.createElement('i');
-    person.style.animationDelay = (n * 0.15) + 's';
-    line.appendChild(person);
-  }
 
   /* ---------- Ticker with drifting waits ---------- */
   var places = [
@@ -136,7 +126,7 @@
     [-1, 1].forEach(function (side) {
       var x = cx + side * gap;
       svgEl('circle', { cx: x, cy: cy, r: r, fill: '#fffdf8', stroke: INK, 'stroke-width': r * 0.1 }, g);
-      var pupil = svgEl('g', { style: 'transition: transform .12s linear' }, g);
+      var pupil = svgEl('g', {}, g);
       svgEl('circle', { cx: x, cy: cy, r: r * 0.52, fill: INK }, pupil);
       svgEl('circle', { cx: x + r * 0.16, cy: cy - r * 0.18, r: r * 0.15, fill: '#fffdf8' }, pupil);
       var by = cy - r * 1.38;
@@ -150,6 +140,7 @@
   }
 
   var pointer = null;
+  var lastScrollAt = -9999;
   function lookAt(clientX, clientY) {
     eyeSets.forEach(function (e) {
       if (!e.svg.isConnected) return;
@@ -161,7 +152,7 @@
       var dx = local.x - e.x, dy = local.y - e.y;
       var dist = Math.hypot(dx, dy) || 1;
       var travel = Math.min(e.r * 0.42, dist);
-      e.pupil.style.transform = 'translate(' + (dx / dist * travel) + 'px,' + (dy / dist * travel) + 'px)';
+      e.pupil.setAttribute('transform', 'translate(' + (dx / dist * travel) + ' ' + (dy / dist * travel) + ')');
     });
   }
   var frame = 0;
@@ -175,51 +166,16 @@
   var heroEyes = $('#heroEyes');
   var heroGroup = svgEl('g', {}, heroEyes);
   drawEyes(heroGroup, 160, 70, 52, 34, 'var(--ink)');
-  // The pupils' transform needs the SVG's own unit scale, so the helper above reads r in SVG units.
+  var footEyes = $('#footEyes');
+  drawEyes(svgEl('g', {}, footEyes), 160, 70, 52, 34, 'var(--ink)');
 
-  // Food that changes with the time of day, wearing the same eyes
-  var foods = [
-    { name: 'toast', hours: [5, 10], eyes: [515, 470, 80, 56], hello: 'Good morning. Save your spot.', label: 'a slice of kaya toast' },
-    { name: 'bowl', hours: [11, 14], eyes: [512, 630, 86, 58], hello: 'Lunch crowd? We got you.', label: 'a bowl of noodles' },
-    { name: 'boba', hours: [15, 17], eyes: [512, 590, 86, 58], hello: 'Boba run? Check the queue first.', label: 'a bubble tea' },
-    { name: 'chilli', hours: [18, 21], eyes: [585, 500, 72, 52], hello: 'Dinner rush. Be first in line.', label: 'a chilli' },
-    { name: 'dumpling', hours: [22, 4], eyes: [512, 630, 88, 60], hello: 'Late-night craving? We got you.', label: 'a dumpling' }
-  ];
-  function foodFor(hour) {
-    for (var i = 0; i < foods.length; i++) {
-      var h = foods[i].hours;
-      if (h[0] <= h[1] ? (hour >= h[0] && hour <= h[1]) : (hour >= h[0] || hour <= h[1])) return foods[i];
-    }
-    return foods[0];
-  }
-  var foodSvg = $('#foodSvg');
-  var currentFood = null;
-  function clock12(h) { return ((h + 11) % 12 + 1) + ':00 ' + (h < 12 ? 'am' : 'pm'); }
-  function showFood(hour) {
-    var food = foodFor(hour);
-    $('#hourLabel').textContent = clock12(hour);
-    if (food === currentFood) return;
-    currentFood = food;
-    // Drop old eye sets that belonged to the previous food drawing
-    eyeSets = eyeSets.filter(function (e) { return e.svg !== foodSvg; });
-    while (foodSvg.firstChild) foodSvg.removeChild(foodSvg.firstChild);
-    svgEl('image', { href: 'assets/food/' + food.name + '.png', x: 0, y: 0, width: 1024, height: 1024 }, foodSvg);
-    drawEyes(svgEl('g', {}, foodSvg), food.eyes[0], food.eyes[1], food.eyes[2], food.eyes[3]);
-    foodSvg.setAttribute('aria-label', 'A character made of ' + food.label + ', wearing the Kiasu Kakis eyes');
-    $('#foodGreeting').textContent = food.hello;
-    if (!reduceMotion) { foodSvg.classList.add('pop'); setTimeout(function () { foodSvg.classList.remove('pop'); }, 350); }
-  }
-  var hourInput = $('#hour');
-  hourInput.value = new Date().getHours();
-  showFood(+hourInput.value);
-  hourInput.addEventListener('input', function () { showFood(+hourInput.value); });
-
-  // When nobody is moving the mouse, the eyes glance around by themselves.
+  // When nobody is moving the mouse, the hero eyes glance around by themselves.
   if (!reduceMotion) {
     setInterval(function () {
-      if (pointer && Date.now() - (pointer.timeStamp ? performance.timeOrigin + pointer.timeStamp : 0) < 3500) return;
-      var rect = foodSvg.getBoundingClientRect();
-      var spots = [[0.2, 0.4], [0.8, 0.45], [0.5, 0.2], [0.5, 0.7]];
+      if (pointer && performance.now() - pointer.timeStamp < 3500) return;
+      if (performance.now() - lastScrollAt < 1200) return;
+      var rect = heroEyes.getBoundingClientRect();
+      var spots = [[-0.6, 0.6], [1.6, 0.7], [0.5, -2], [0.5, 4]];
       var s = spots[Math.floor(Math.random() * spots.length)];
       lookAt(rect.left + rect.width * s[0], rect.top + rect.height * s[1]);
     }, 2400);
@@ -233,20 +189,79 @@
     }, 5200);
   }
 
-  /* ---------- Count-up numbers ---------- */
-  var statsEl = $('.stats');
-  new IntersectionObserver(function (entries, obs) {
-    if (!entries[0].isIntersecting) return;
-    obs.disconnect();
-    $$('[data-count]', statsEl).forEach(function (el) {
-      var target = +el.dataset.count;
-      if (reduceMotion || target === 0) { el.textContent = target.toLocaleString(); return; }
-      var start = performance.now(), dur = 1300;
-      (function tick(now) {
-        var p = Math.min(1, (now - start) / dur);
-        el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3))).toLocaleString();
-        if (p < 1) requestAnimationFrame(tick);
-      })(start);
+  /* ---------- Scroll-driven animation ---------- */
+  var clamp = function (v, lo, hi) { return Math.min(hi, Math.max(lo, v)); };
+  var ease = function (t) { return t * t * (3 - 2 * t); };
+  var vh = function () { return window.innerHeight; };
+  var narrow = function () { return window.innerWidth <= 900; };
+
+  var heroWrap = $('#heroWrap'), heroPhone = $('.phone-hero'), pills = $$('.float-pill');
+  var pillMoves = [[-90, -40], [90, 30], [-70, 70]];
+  var queueDots = [], queueLine = $('#queueLine'), queueTime = $('#queueTime'), problem = $('#problem');
+  for (var n = 0; n < 22; n++) { var dot = document.createElement('i'); queueLine.appendChild(dot); queueDots.push(dot); }
+  var howTrack = $('#howTrack'), howScreens = $$('#howScreens img'), howSteps = $$('#howSteps li'), howDots = $$('#howDots i');
+  var paper = $('#paperTicket'), paperText = $('#paperText');
+  var screenStep = [0, 1, 1, 2, 2, 2];
+  var paperLines = ['Waiting · 3 groups ahead', 'Waiting · 2 groups ahead', 'Called · your turn!'];
+  var lastHow = -1, lastDots = -1, lastY = window.scrollY;
+
+  function updateHero() {
+    var p = narrow()
+      ? clamp(window.scrollY / (vh() * 0.7), 0, 1)
+      : clamp(window.scrollY / (heroWrap.offsetHeight - vh() + 64), 0, 1);
+    var e = ease(p);
+    // The phone starts tipped back and turned, then swings upright and grows as you scroll.
+    heroPhone.style.transform = 'rotateX(' + ((1 - e) * 38) + 'deg) rotateY(' + ((1 - e) * -26) + 'deg) rotateZ(' + ((1 - e) * 5) + 'deg) scale(' + (0.86 + 0.16 * e) + ')';
+    pills.forEach(function (el, i) {
+      el.style.translate = (pillMoves[i][0] * (1 - e)) + 'px ' + (pillMoves[i][1] * (1 - e) - e * 12) + 'px';
+      el.style.opacity = 0.55 + 0.45 * e;
     });
-  }, { threshold: 0.4 }).observe(statsEl);
+  }
+
+  function updateQueue() {
+    var r = problem.getBoundingClientRect();
+    var p = clamp((vh() * 0.85 - r.top) / (vh() * 0.8), 0, 1);
+    var count = Math.round(p * queueDots.length);
+    if (count === lastDots) return;
+    lastDots = count;
+    queueDots.forEach(function (d, i) { d.classList.toggle('on', i < count); });
+    queueTime.textContent = Math.round(p * 50) + ' min';
+  }
+
+  function updateHow() {
+    var r = howTrack.getBoundingClientRect();
+    var p = clamp(-r.top / (r.height - vh()), 0, 0.999);
+    var idx = Math.floor(p * howScreens.length);
+    if (idx === lastHow) return;
+    lastHow = idx;
+    howScreens.forEach(function (img, i) { img.classList.toggle('is-on', i === idx); });
+    var step = screenStep[idx];
+    howSteps.forEach(function (li, i) { li.classList.toggle('is-active', i === step); });
+    howDots.forEach(function (d, i) { d.classList.toggle('on', i === step); });
+    // The paper ticket slides out when you join, and keeps up with the ticket after that.
+    var show = idx >= 3;
+    paper.style.opacity = show ? 1 : 0;
+    paper.style.transform = show ? 'translate(0,0) rotate(-4deg)' : 'translate(-60px, 30px) rotate(-12deg)';
+    paper.style.transition = reduceMotion ? 'none' : 'opacity .4s, transform .5s cubic-bezier(.3,1.4,.5,1)';
+    paperText.textContent = paperLines[clamp(idx - 3, 0, 2)];
+  }
+
+  function onScroll() {
+    var dy = window.scrollY - lastY;
+    lastY = window.scrollY;
+    if (Math.abs(dy) > 2) {
+      lastScrollAt = performance.now();
+      // Eyes look the way you scroll: down when going down, up when going back.
+      var er = heroEyes.getBoundingClientRect();
+      lookAt(er.left + er.width / 2, dy > 0 ? er.top + 600 : er.top - 600);
+    }
+    if (!reduceMotion) { updateHero(); updateQueue(); updateHow(); }
+  }
+  var scrollFrame = 0;
+  window.addEventListener('scroll', function () {
+    if (scrollFrame) return;
+    scrollFrame = requestAnimationFrame(function () { scrollFrame = 0; onScroll(); });
+  }, { passive: true });
+  window.addEventListener('resize', function () { lastHow = -1; lastDots = -1; if (!reduceMotion) { updateHero(); updateQueue(); updateHow(); } });
+  if (!reduceMotion) { updateHero(); updateQueue(); updateHow(); }
 })();

@@ -31,10 +31,10 @@
       <span>kiasu kakis</span>
     </a>
     <nav class="nav-links" aria-label="Sections">
+      <a href="#problem">The problem</a>
       <a href="#how">How it works</a>
       <a href="#features">Features</a>
-      <a href="#eyes">The eyes</a>
-      <a href="#class">Problems solved</a>
+      <a href="#why">Why use it</a>
       <a href="#download">Download</a>
     </nav>
     <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch between light and dark mode">
@@ -44,7 +44,8 @@
 
   <main id="main">
     <!-- HERO -->
-    <section class="hero">
+    <div class="hero-wrap" id="heroWrap">
+    <section class="hero" id="hero">
       <div class="hero-copy reveal">
         <p class="eyebrow">Your kiasu buddy for queues</p>
         <h1>Don't kiasu in the queue.<br><span class="accent">Let your kaki do it.</span></h1>
@@ -71,6 +72,7 @@
         <span class="float-pill p3 o">35 min</span>
       </div>
     </section>
+    </div>
 
     <!-- TICKER -->
     <section class="ticker" aria-label="Examples of live waits">
@@ -85,56 +87,60 @@
       <div class="wrap">
         <p class="eyebrow reveal">The problem</p>
         <h2 class="reveal">Best food. Longest queue. Zero idea how long. <span class="accent">Aiyo.</span></h2>
-        <div class="queue-line reveal" id="queueLine" aria-hidden="true"></div>
+        <div class="queue-meter reveal" aria-hidden="true">
+          <div class="queue-line" id="queueLine"></div>
+          <p class="queue-time">You've been standing here <strong id="queueTime">0 min</strong></p>
+        </div>
+        <p class="hint">Keep scrolling. The line only gets longer.</p>
         <div class="cards three">
-          <article class="card reveal">
+          <article class="card pf reveal">
             <h3>You queue first, then find out</h3>
             <p>By the time you know it's 50 minutes, you've already been standing there for 20.</p>
+            <p class="fixline"><strong>Kiasu Kakis:</strong> the wait is on the map before you leave your seat.</p>
           </article>
-          <article class="card reveal">
+          <article class="card pf reveal">
             <h3>Maps show places, not waits</h3>
-            <p>You get the address and the opening hours. You don't get how long the line is.</p>
+            <p>You get the address and opening hours. Nobody tells you how long the line is, or whether it's even worth it.</p>
+            <p class="fixline"><strong>Kiasu Kakis:</strong> opens on queues, not places. Food spots only, ranked shortest first.</p>
           </article>
-          <article class="card reveal">
+          <article class="card pf reveal">
             <h3>Leave to check, lose your spot</h3>
             <p>Walk off to see another stall and your place is gone. That's why everyone stands guard.</p>
+            <p class="fixline"><strong>Kiasu Kakis:</strong> join from your phone. Sit down, shop, scroll. We'll tell you when it's close.</p>
           </article>
         </div>
-        <p class="answer reveal">Kiasu Kakis opens on <strong>queues</strong>, not places. Only food spots where a queue makes sense. No malls. No shoe shops.</p>
       </div>
     </section>
 
-    <!-- HOW IT WORKS -->
-    <section class="section how" id="how">
-      <div class="wrap">
-        <p class="eyebrow reveal">How it works</p>
-        <h2 class="reveal">Three steps. Zero standing around.</h2>
-        <div class="steps">
-          <article class="step reveal">
-            <div class="step-num">1</div>
-            <h3>Check the wait</h3>
-            <p>Colour-coded pins show the wait in minutes. Green is quick, orange means go for a walk first.</p>
-            <div class="phone phone-sm"><div class="phone-screen"><img src="assets/screens/map.jpg" alt="Map with wait pins" width="600" height="1304" loading="lazy"></div></div>
-          </article>
-          <article class="step reveal">
-            <div class="step-num">2</div>
-            <h3>Join from your phone</h3>
-            <p>Pick your party size and tap join. You get a virtual ticket, so you can sit, shop or scroll.</p>
-            <div class="phone phone-sm"><div class="phone-screen"><img src="assets/screens/summary.jpg" alt="Place summary with Join queue button" width="600" height="1304" loading="lazy"></div></div>
-          </article>
-          <article class="step reveal">
-            <div class="step-num">3</div>
-            <h3>Walk in when it's your turn</h3>
-            <p>Watch the ticket move: waiting, almost, called. You walk in. No need to kiasu.</p>
-            <div class="phone phone-sm">
-              <div class="phone-screen" id="ticketScreens">
-                <img src="assets/screens/ticket1.jpg" alt="Ticket waiting, 3 groups ahead" class="is-on" width="600" height="1304" loading="lazy">
-                <img src="assets/screens/ticket2.jpg" alt="Ticket waiting, 2 groups ahead" width="600" height="1304" loading="lazy">
-                <img src="assets/screens/ticket3.jpg" alt="Ticket called: it's your turn" width="600" height="1304" loading="lazy">
-              </div>
+    <!-- HOW IT WORKS (pinned, driven by scroll) -->
+    <section class="how" id="how" aria-labelledby="howTitle">
+      <div class="how-track" id="howTrack">
+        <div class="how-stick">
+          <div class="how-grid">
+            <div class="how-copy">
+              <p class="eyebrow">How it works</p>
+              <h2 id="howTitle">Three steps. Zero standing around.</h2>
+              <ol class="how-steps" id="howSteps">
+                <li class="how-step is-active"><span class="step-num">1</span><div><h3>Check the wait</h3><p>Colour-coded pins show the wait in minutes. Green is quick, orange means go for a walk first.</p></div></li>
+                <li class="how-step"><span class="step-num">2</span><div><h3>Join from your phone</h3><p>Pick your party size and tap join. You get a virtual ticket, so you can sit, shop or scroll.</p></div></li>
+                <li class="how-step"><span class="step-num">3</span><div><h3>Walk in when it's your turn</h3><p>Watch the ticket move: waiting, almost, called. You walk in. No need to kiasu.</p></div></li>
+              </ol>
             </div>
-            <p class="ticket-status" id="ticketStatus" aria-live="off">Waiting · 3 groups ahead</p>
-          </article>
+            <div class="how-stage">
+              <div class="phone phone-how">
+                <div class="phone-screen" id="howScreens">
+                  <img class="is-on" src="assets/screens/map.jpg" alt="Map with wait pins" width="600" height="1304">
+                  <img src="assets/screens/summary.jpg" alt="Place summary with Join queue button" width="600" height="1304">
+                  <img src="assets/screens/joinform.jpg" alt="Choosing the party size" width="600" height="1304">
+                  <img src="assets/screens/ticket1.jpg" alt="Ticket waiting, 3 groups ahead" width="600" height="1304">
+                  <img src="assets/screens/ticket2.jpg" alt="Ticket waiting, 2 groups ahead" width="600" height="1304">
+                  <img src="assets/screens/ticket3.jpg" alt="Ticket called: it's your turn" width="600" height="1304">
+                </div>
+              </div>
+              <div class="paper-ticket" id="paperTicket" aria-hidden="true"><b>#023</b><span id="paperText">Waiting · 3 groups ahead</span></div>
+            </div>
+          </div>
+          <div class="how-dots" id="howDots" aria-hidden="true"><i class="on"></i><i></i><i></i></div>
         </div>
       </div>
     </section>
@@ -167,78 +173,18 @@
       </div>
     </section>
 
-    <!-- EYES -->
-    <section class="section eyes" id="eyes">
+    <!-- WHY -->
+    <section class="section why" id="why">
       <div class="wrap">
-        <p class="eyebrow reveal">Meet the eyes</p>
-        <h2 class="reveal">Why eyes? Because being kiasu is a <span class="accent">look</span>.</h2>
-        <div class="eyes-grid">
-          <div class="eyes-card reveal" id="foodCard">
-            <svg class="food-svg" id="foodSvg" viewBox="0 0 1024 1024" role="img" aria-label="A food character that changes with the time of day"></svg>
-            <p class="greeting" id="foodGreeting" aria-live="polite">Good morning. Save your spot.</p>
-          </div>
-          <div class="eyes-copy reveal">
-            <p>Every time you open the app, a different food wearing the same eyes greets you. It depends on the time of day. Try it.</p>
-            <label class="slider" for="hour">
-              <span>What time is it? <strong id="hourLabel">8:00 am</strong></span>
-              <input type="range" id="hour" min="0" max="23" value="8">
-            </label>
-            <ul class="bullets">
-              <li><strong>Watching the queue.</strong> Eyes show what being kiasu feels like, without any words.</li>
-              <li><strong>No clichés.</strong> No map pin, no ticket, no merlion. It works tiny, in one colour, light or dark.</li>
-              <li><strong>Kaki means buddy.</strong> The eyes keep an eye on the queue for you.</li>
-            </ul>
-            <p class="fine">Move your mouse. They are watching.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- FOR THE CLASS -->
-    <section class="section class" id="class">
-      <div class="wrap">
-        <p class="eyebrow reveal">For the class</p>
-        <h2 class="reveal">The tough bits, and how we solved them.</h2>
-        <div class="stats reveal">
-          <div><strong data-count="5757">0</strong><span>lines of Swift</span></div>
-          <div><strong data-count="41">0</strong><span>commits</span></div>
-          <div><strong data-count="12">0</strong><span>hand-picked queue places</span></div>
-          <div><strong data-count="0">0</strong><span>compiler warnings</span></div>
-        </div>
-        <div class="chips reveal" aria-label="Built with">
-          <span>Swift</span><span>UIKit</span><span>VIPER</span><span>MapKit</span><span>CoreLocation</span><span>Google Places API</span><span>Core Animation</span><span>async / await</span>
-        </div>
-        <div class="cards three problems">
-          <article class="card flip reveal" tabindex="0">
-            <h3>Crash on launch</h3>
-            <p class="what">Two saved places had the same ID, and the map choked on the duplicate.</p>
-            <p class="fix"><strong>Fix:</strong> remove duplicates when saving and loading, and make the map tolerate them.</p>
-          </article>
-          <article class="card flip reveal" tabindex="0">
-            <h3>Places that wouldn't show up</h3>
-            <p class="what">Apple's text search treats the map area as a hint, so it kept returning city-centre places everywhere.</p>
-            <p class="fix"><strong>Fix:</strong> switched to an area-based request that really searches a circle around the map.</p>
-          </article>
-          <article class="card flip reveal" tabindex="0">
-            <h3>A close button that only worked sometimes</h3>
-            <p class="what">A later view covered part of it, so only the top sliver took taps.</p>
-            <p class="fix"><strong>Fix:</strong> brought it to the front, then hit-tested four points to prove it.</p>
-          </article>
-          <article class="card flip reveal" tabindex="0">
-            <h3>Grey text you couldn't read</h3>
-            <p class="what">Secondary text was 3.15 to 1 contrast on cream. The accessibility standard needs 4.5.</p>
-            <p class="fix"><strong>Fix:</strong> a warmer, darker grey, and darker green and orange so white text reads on the pins.</p>
-          </article>
-          <article class="card flip reveal" tabindex="0">
-            <h3>A map full of malls and shops</h3>
-            <p class="what">A "food market" category dragged in supermarkets. Nobody queues for those.</p>
-            <p class="fix"><strong>Fix:</strong> food-only categories, plus a food-only filter on search.</p>
-          </article>
-          <article class="card flip reveal" tabindex="0">
-            <h3>Pins stacked like rojak</h3>
-            <p class="what">Hundreds of places in the city centre, all with queues, piled on top of each other.</p>
-            <p class="fix"><strong>Fix:</strong> overlapping pins hide until you zoom, and the list shows the shortest 40.</p>
-          </article>
+        <p class="eyebrow reveal">Why use it</p>
+        <h2 class="reveal">Less waiting around. More actually eating.</h2>
+        <div class="cards three why-grid">
+          <article class="card reveal"><span class="ico" aria-hidden="true">⏱</span><h3>Know before you go</h3><p>See the wait on every pin and skip the lines that aren't worth it.</p></article>
+          <article class="card reveal"><span class="ico" aria-hidden="true">🍜</span><h3>Only places worth queuing</h3><p>Hawker, restaurant, café, dessert and bar. No malls, no shoe shops, no clutter.</p></article>
+          <article class="card reveal"><span class="ico" aria-hidden="true">🛋</span><h3>Hands-free waiting</h3><p>Join from your phone and go do something else. Your ticket moves without you.</p></article>
+          <article class="card reveal"><span class="ico" aria-hidden="true">🤝</span><h3>Fair for everyone</h3><p>Two queues at a time and one per place, so nobody hogs every line.</p></article>
+          <article class="card reveal"><span class="ico" aria-hidden="true">♿</span><h3>Easy for everyone</h3><p>VoiceOver, big text, high contrast and Reduce Motion are all supported.</p></article>
+          <article class="card reveal"><span class="ico" aria-hidden="true">🔌</span><h3>Built to grow</h3><p>Queues are simulated for now. The app is ready for real restaurant data to plug in.</p></article>
         </div>
       </div>
     </section>
@@ -273,6 +219,7 @@
   </main>
 
   <footer class="footer">
+    <svg class="foot-eyes" id="footEyes" viewBox="0 0 320 120" role="img" aria-label="A pair of eyes watching you scroll"></svg>
     <p>Kiasu Kakis is a student prototype. The places are real. The queues are simulated.</p>
     <p><a href="https://github.com/chloetzy03/kiasukakis" target="_blank" rel="noopener">GitHub</a> · <a href="#top">Back to top</a></p>
   </footer>

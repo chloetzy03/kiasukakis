@@ -1,0 +1,40 @@
+"kiasu kakis/Modules/TicketDetail/TicketDetailInteractor.swift"
+  s_83605c29a5e567::t_e91f6374975b18 19
+"kiasu kakis/Services/QueueService.swift"
+  s_83605c29a5e567::t_e91f6374975b18 135,160,187-188,216-218
+  s_83605c29a5e567::t_3e7027b047d252 219-220
+"kiasu kakis/Entities/QueueTicket.swift"
+  s_83605c29a5e567::t_e91f6374975b18 47-51,54
+"kiasu kakis/Modules/TicketDetail/TicketDetailProtocols.swift"
+  s_83605c29a5e567::t_e91f6374975b18 16-17,41
+"kiasu kakis/Modules/TicketDetail/TicketDetailPresenter.swift"
+  s_83605c29a5e567::t_e91f6374975b18 50,52,63,65-67,72,122,124-125
+"kiasu kakis/Services/QueueSimulator.swift"
+  s_83605c29a5e567::t_e91f6374975b18 35-40
+"kiasu kakis/Services/TicketNotificationPlan.swift"
+  s_83605c29a5e567::t_e91f6374975b18 14,46
+"kiasu kakis/Modules/TicketDetail/TicketDetailViewController.swift"
+  s_83605c29a5e567::t_e91f6374975b18 196-202
+  s_83605c29a5e567::t_fa86660db0aa80 106
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0522ed69e1cd2a768e0b0f85a2fed4dd8744b413",
+  "prompts": {},
+  "humans": {
+    "h_ee194195c1c2bb": {
+      "author": "chloe <chloetzy03@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_83605c29a5e567": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "1e007083-5ef8-4fa4-a40d-8019fcebb6dc",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

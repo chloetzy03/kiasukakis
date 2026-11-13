@@ -44,8 +44,13 @@ struct QueueTicket: Codable, Identifiable, Equatable {
     var extensionCount: Int { lateExtensions ?? 0 }
     var canRequestMoreTime: Bool { status == .called && extensionCount < Self.maxExtensions }
 
+    // Asking for more time adds half the normal grace period.
+    static func graceWindow(grace: TimeInterval, extensions: Int) -> TimeInterval {
+        grace * (1 + 0.5 * Double(extensions))
+    }
+
     // When a called ticket is given up on. nil until it has been called.
     func deadline(grace: TimeInterval) -> Date? {
-        calledAt.map { $0.addingTimeInterval(grace * Double(1 + extensionCount)) }
+        calledAt.map { $0.addingTimeInterval(Self.graceWindow(grace: grace, extensions: extensionCount)) }
     }
 }

@@ -47,8 +47,9 @@ final class TicketDetailPresenter: TicketDetailPresenterProtocol {
         return (nil, nil)
     }
 
+    // After being called this is "I'm here". Otherwise it is the demo's skip-ahead.
     func didTapAdvance() {
-        interactor.advance()
+        if interactor.ticket?.status == .called { interactor.checkIn() } else { interactor.advance() }
         render()
     }
 
@@ -59,15 +60,16 @@ final class TicketDetailPresenter: TicketDetailPresenterProtocol {
         render()
     }
 
-    // "Go in now · 25 sec left". The countdown refreshes with every queue tick.
+    // "Your turn · 8 min left". The countdown refreshes with every queue tick.
     private func calledMessage(for ticket: QueueTicket) -> String {
-        guard ticket.arrivedAt == nil, let deadline = ticket.deadline(grace: simulator.speed.graceSeconds) else { return "It's your turn. Go in now." }
-        return "Go in now · \(QueueFormatting.remaining(deadline.timeIntervalSinceNow)) left"
+        guard let deadline = ticket.deadline(grace: simulator.speed.graceSeconds) else { return "Your turn" }
+        let left = deadline.timeIntervalSinceNow * simulator.speed.displayScale
+        return "Your turn · \(QueueFormatting.remaining(left)) left"
     }
 
     private func promptAction(for ticket: QueueTicket, locationAction: String?) -> String? {
         switch ticket.status {
-        case .called: return ticket.canRequestMoreTime ? "I'm running late (+\(simulator.speed.graceText))" : nil
+        case .called: return ticket.canRequestMoreTime ? "Running late? \(simulator.speed.extraTimeText)" : nil
         case .waiting: return locationAction
         default: return nil
         }
@@ -117,9 +119,10 @@ final class TicketDetailPresenter: TicketDetailPresenterProtocol {
             partyText: ticket.partySize == 1 ? "1 person" : "\(ticket.partySize) people",
             message: message,
             stepIndex: step,
-            // Skipping ahead is a presentation tool, so it hides unless demo controls are on. Finishing a called ticket always shows.
+            // Skipping ahead is a presentation tool, so it hides unless demo controls are on. "I'm here" always shows once called.
             canAdvance: ticket.status == .called || (ticket.status.isActive && DemoControls.isEnabled),
-            advanceTitle: ticket.status == .called ? "Mark as served" : "Skip ahead (demo)",
+            advanceTitle: ticket.status == .called ? "I'm here" : "Skip ahead (demo)",
+            advanceIsPrimary: ticket.status == .called,
             canCancel: ticket.status.isActive,
             promptActionTitle: promptAction(for: ticket, locationAction: prompt.action)))
     }

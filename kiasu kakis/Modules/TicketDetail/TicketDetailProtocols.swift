@@ -13,6 +13,8 @@ struct TicketDetailViewModel {
     let stepIndex: Int?
     let canAdvance: Bool
     let advanceTitle: String
+    // True when the button is the main thing to do ("I'm here" after being called).
+    let advanceIsPrimary: Bool
     let canCancel: Bool
     // A button under the prompt, for example to turn on location. nil when there is nothing to do.
     let promptActionTitle: String?
@@ -36,6 +38,7 @@ protocol TicketDetailInteractorProtocol: AnyObject {
     func advance()
     func cancel()
     func requestMoreTime()
+    func checkIn()
     var locationStatus: LocationAuthorization { get }
     func refreshTravel(requestPermission: Bool) async
 }

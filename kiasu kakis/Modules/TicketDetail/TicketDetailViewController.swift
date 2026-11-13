@@ -103,7 +103,7 @@ final class TicketDetailViewController: UIViewController {
                          infoRow("Estimated wait", estimateValue),
                          infoRow("Party size", partyValue)], alignment: .fill, spacing: 10)
 
-        let content = UIStackView(arrangedSubviews: [ticketCard, stepsStack, messageLabel, proximityActionButton, info, cancelButton, advanceButton])
+        let content = UIStackView(arrangedSubviews: [ticketCard, stepsStack, messageLabel, advanceButton, proximityActionButton, info, cancelButton])
         content.axis = .vertical
         content.spacing = 16
         content.translatesAutoresizingMaskIntoConstraints = false
@@ -193,8 +193,13 @@ extension TicketDetailViewController: TicketDetailViewProtocol {
             }
         }
 
-        var config = advanceButton.configuration
-        config?.title = model.advanceTitle
+        // "I'm here" is the main action once called, so it stands out. Skip-ahead stays quiet.
+        var config: UIButton.Configuration = model.advanceIsPrimary ? .filled() : .plain()
+        config.title = model.advanceTitle
+        config.cornerStyle = .large
+        config.baseBackgroundColor = Theme.brand
+        config.baseForegroundColor = model.advanceIsPrimary ? .white : Theme.secondaryText
+        config.buttonSize = model.advanceIsPrimary ? .large : .small
         advanceButton.configuration = config
         advanceButton.isHidden = !model.canAdvance
         cancelButton.isHidden = !model.canCancel

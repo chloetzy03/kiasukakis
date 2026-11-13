@@ -132,6 +132,7 @@ final class QueueService: QueueServicing {
         tickets[index].lastProgressAt = clock()
         tickets[index].status = Self.status(for: tickets[index])
         if tickets[index].status == .called { tickets[index].calledAt = clock() }
+        completeIfArrived(index)
     }
 
     // Moves waiting tickets forward by however many groups have been served since they last moved.
@@ -156,6 +157,7 @@ final class QueueService: QueueServicing {
             // Count the grace period from when the ticket was actually called, even if the app was closed then.
             if updated[index].status == .called {
                 updated[index].calledAt = last.addingTimeInterval(Double(positionBefore) * interval)
+                if updated[index].arrivedAt != nil { updated[index].status = .completed }
             }
             changed = true
         }
@@ -182,6 +184,8 @@ final class QueueService: QueueServicing {
         guard let index = tickets.firstIndex(where: { $0.id == ticketID }), tickets[index].status.isActive,
               tickets[index].arrivedAt == nil else { return }
         tickets[index].arrivedAt = clock()
+        // Arriving after being called means the user is being seated, so the ticket is done.
+        if tickets[index].status == .called { tickets[index].status = .completed }
     }
 
     func requestMoreTime(ticketID: UUID) {
@@ -207,6 +211,11 @@ final class QueueService: QueueServicing {
     func cancel(ticketID: UUID) {
         guard let index = tickets.firstIndex(where: { $0.id == ticketID }), tickets[index].status.isActive else { return }
         tickets[index].status = .cancelled
+    }
+
+    // A ticket that is called while its owner is already at the venue needs no countdown.
+    private func completeIfArrived(_ index: Int) {
+        if tickets[index].status == .called, tickets[index].arrivedAt != nil { tickets[index].status = .completed }
     }
 
     private static func status(for ticket: QueueTicket) -> QueueStatus {

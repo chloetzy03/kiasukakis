@@ -32,8 +32,12 @@ enum SimulationSpeed: String, CaseIterable {
     var groupInterval: TimeInterval { self == .demo ? 8 : 300 }
 
     // How long a called group has to arrive before the place is given to the next one.
-    var graceSeconds: TimeInterval { self == .demo ? 40 : 300 }
-    var graceText: String { self == .demo ? "\(Int(graceSeconds)) sec" : "\(Int(graceSeconds / 60)) min" }
+    // Realistic is 10 minutes. Demo squeezes the same 10 minutes into 40 seconds.
+    var graceSeconds: TimeInterval { self == .demo ? 40 : 600 }
+    // How much faster than real life the clock runs, so countdowns can still be shown in real minutes.
+    var displayScale: Double { self == .demo ? 15 : 1 }
+    // The extra time you get when you say you're running late, in real minutes (half the grace period).
+    var extraTimeText: String { "+\(Int(graceSeconds / 2 * displayScale / 60)) min" }
 
     func estimateText(groups: Int) -> String {
         let seconds = Double(groups) * groupInterval

@@ -11,7 +11,7 @@ struct PlannedNotification: Equatable {
 // After being called, the user has `grace` seconds to arrive (more if they asked for time).
 enum TicketNotificationPlan {
 
-    static func plan(for ticket: QueueTicket, interval: TimeInterval, grace: TimeInterval = 300, now: Date) -> [PlannedNotification] {
+    static func plan(for ticket: QueueTicket, interval: TimeInterval, grace: TimeInterval = 600, now: Date) -> [PlannedNotification] {
         guard interval > 0, grace > 0 else { return [] }
         switch ticket.status {
         case .waiting, .almostYourTurn: return waitingPlan(for: ticket, interval: interval, grace: grace, now: now)
@@ -43,7 +43,7 @@ enum TicketNotificationPlan {
     // A last call shortly before the spot is given away, and a note once it has been.
     private static func latePlan(calledAt: Date, for ticket: QueueTicket, grace: TimeInterval, now: Date) -> [PlannedNotification] {
         guard ticket.arrivedAt == nil else { return [] }
-        let deadline = calledAt.addingTimeInterval(grace * Double(1 + ticket.extensionCount))
+        let deadline = calledAt.addingTimeInterval(QueueTicket.graceWindow(grace: grace, extensions: ticket.extensionCount))
         let lead = min(60, grace / 3)
         return [PlannedNotification(kind: .lastCall, delay: max(1, deadline.addingTimeInterval(-lead).timeIntervalSince(now))),
                 PlannedNotification(kind: .expired, delay: max(1, deadline.timeIntervalSince(now)))]

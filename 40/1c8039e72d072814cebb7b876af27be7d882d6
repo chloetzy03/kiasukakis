@@ -1,0 +1,54 @@
+"kiasu kakis/App/Theme.swift"
+  s_83605c29a5e567::t_132a639667acaf 14-15,17-22
+"kiasu kakis/Modules/Explore/ExplorePresenter.swift"
+  s_83605c29a5e567::t_132a639667acaf 233-236
+"kiasu kakis/Modules/VenueDetails/VenueDetailsViewController.swift"
+  s_83605c29a5e567::t_132a639667acaf 38,52,56,72,82,84,103,111,128,157,188,237,240,261,266
+  s_83605c29a5e567::t_0a33b8d41a714e 100-101
+"kiasu kakis/Modules/JoinQueue/JoinQueueViewController.swift"
+  s_83605c29a5e567::t_fa482c0bc41894 25
+  s_83605c29a5e567::t_132a639667acaf 44,53,87
+"kiasu kakis/Modules/MyQueues/MyQueuesViewController.swift"
+  s_83605c29a5e567::t_132a639667acaf 31,85
+"kiasu kakis/App/Accessibility.swift"
+  s_83605c29a5e567::t_132a639667acaf 1-38
+"kiasu kakis/Modules/Explore/ExploreProtocols.swift"
+  s_83605c29a5e567::t_132a639667acaf 17-18
+"kiasu kakis/Modules/Explore/ExploreViewController.swift"
+  s_83605c29a5e567::t_132a639667acaf 43-44,82-84,88-89,147-148,171,181,206,212,306,314,354,371-374,379,512,516
+"kiasu kakis/Modules/TicketDetail/TicketDetailViewController.swift"
+  s_83605c29a5e567::t_0a33b8d41a714e 50,73-75
+  s_83605c29a5e567::t_132a639667acaf 21,29,38-40,90,127,163-169,178-181,185
+"kiasu kakis/Modules/Saved/SavedViewController.swift"
+  s_83605c29a5e567::t_132a639667acaf 31,81,87
+"kiasu kakis/Modules/About/AboutViewController.swift"
+  s_83605c29a5e567::t_132a639667acaf 30,40,60
+"kiasu kakis/Modules/Explore/VenuePreviewCardView.swift"
+  s_83605c29a5e567::t_132a639667acaf 16-18,30,33,60,79-81
+  s_83605c29a5e567::t_0a33b8d41a714e 26-28
+"kiasu kakis/Modules/PlaceholderViewController.swift"
+  s_83605c29a5e567::t_132a639667acaf 36
+"kiasu kakis/Modules/Explore/WaitPinView.swift"
+  s_83605c29a5e567::t_132a639667acaf 12-14,20,41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "401c8039e72d072814cebb7b876af27be7d882d6",
+  "prompts": {},
+  "humans": {
+    "h_ee194195c1c2bb": {
+      "author": "chloe <chloetzy03@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_83605c29a5e567": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "1e007083-5ef8-4fa4-a40d-8019fcebb6dc",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

@@ -26,6 +26,7 @@ final class SavedViewController: UIViewController {
         chipBar.onSelect = { [weak self] index in self?.presenter.didSelectCategory(at: index) }
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
+        setContentScrollView(tableView, for: .top)
 
         let icon = UIImageView(image: UIImage(systemName: "bookmark"))
         icon.tintColor = Theme.brandText
@@ -82,7 +83,8 @@ extension SavedViewController: SavedViewProtocol {
 
     func showEmptyState(_ isEmpty: Bool) {
         emptyView.isHidden = !isEmpty
-        tableView.isHidden = isEmpty
+        // The table stays visible (just empty) so the navigation bar keeps tracking it and shows the large title.
+        tableView.alwaysBounceVertical = true
     }
 }
 

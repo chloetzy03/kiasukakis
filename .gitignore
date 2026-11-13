@@ -6,3 +6,7 @@ DerivedData/
 
 # Local secrets (never commit)
 Secrets.xcconfig
+
+# Personal presentation notes (local only)
+docs/PRESENTATION.md
+design/

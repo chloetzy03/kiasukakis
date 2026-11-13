@@ -18,6 +18,7 @@ final class MyQueuesViewController: UIViewController {
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "TicketCell")
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
+        setContentScrollView(tableView, for: .top)
 
         let icon = UIImageView(image: UIImage(systemName: "ticket"))
         icon.tintColor = Theme.brandText
@@ -65,7 +66,8 @@ extension MyQueuesViewController: MyQueuesViewProtocol {
 
     func showEmptyState(_ isEmpty: Bool) {
         emptyView.isHidden = !isEmpty
-        tableView.isHidden = isEmpty
+        // The table stays visible (just empty) so the navigation bar keeps tracking it and shows the large title.
+        tableView.alwaysBounceVertical = true
     }
 }
 

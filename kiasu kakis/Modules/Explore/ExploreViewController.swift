@@ -64,9 +64,19 @@ final class ExploreViewController: UIViewController {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        sheet.bottomInset = view.safeAreaInsets.bottom
+        sheet.bottomInset = coveredBottom
         if !isDraggingSheet { sheetTop.constant = top(for: sheetStop) }
         updateLocateVisibility()
+    }
+
+    // The tab bar can cover more than the safe area reports, so use whichever is larger.
+    private var coveredBottom: CGFloat {
+        var covered = view.safeAreaInsets.bottom
+        if let tabBar = tabBarController?.tabBar, !tabBar.isHidden {
+            let frame = view.convert(tabBar.bounds, from: tabBar)
+            covered = max(covered, view.bounds.maxY - frame.minY)
+        }
+        return covered
     }
 
     // MARK: - Layout
@@ -180,7 +190,7 @@ final class ExploreViewController: UIViewController {
 
     private func visibleHeight(for stop: SheetStop) -> CGFloat {
         let height = view.bounds.height
-        let bottom = view.safeAreaInsets.bottom
+        let bottom = coveredBottom
         switch stop {
         case .peek: return sheet.peekHeight + bottom
         case .half: return height * 0.5

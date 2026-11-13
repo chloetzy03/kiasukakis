@@ -12,6 +12,7 @@ final class MyQueuesViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = Theme.background
 
+        tableView.backgroundColor = Theme.background
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "TicketCell")

@@ -101,7 +101,7 @@ final class ExplorePresenter: ExplorePresenterProtocol {
             view?.showCategories(["All"] + categories.map(\.rawValue), selectedIndex: 0)
             selectedID = venue.id
             refresh()
-            view?.showPreview(interactor.listing(id: venue.id).map { makePreview($0) })
+            view?.showPreview(interactor.listing(id: venue.id).map { self.makePreview($0) })
             view?.focusMap(on: region)
         }
     }

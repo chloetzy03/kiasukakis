@@ -65,6 +65,7 @@ final class VenueRepository: VenueProviding {
     }
 
     // Returns how many were new.
+    @discardableResult
     func add(_ newVenues: [Venue]) -> Int {
         var known = Set(venues.map(\.id))
         let fresh = newVenues

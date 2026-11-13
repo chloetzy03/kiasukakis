@@ -1,0 +1,28 @@
+"kiasu kakis/Modules/MyQueues/MyQueuesViewController.swift"
+  s_83605c29a5e567::t_07b382acb6fcdc 103,115-118
+"kiasu kakis/Modules/Explore/QueueSheetView.swift"
+  s_83605c29a5e567::t_07b382acb6fcdc 35-36,55,82,135-140,145-149,207,209,214-218,222,234,240,243,334-338,353,364,374,376
+"kiasu kakis/App/Theme.swift"
+  s_83605c29a5e567::t_07b382acb6fcdc 13-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "356a7a7a1dae4249a45d40a1a031b64b15495018",
+  "prompts": {},
+  "humans": {
+    "h_ee194195c1c2bb": {
+      "author": "chloe <chloetzy03@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_83605c29a5e567": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "1e007083-5ef8-4fa4-a40d-8019fcebb6dc",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

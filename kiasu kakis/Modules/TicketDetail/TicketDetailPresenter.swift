@@ -58,16 +58,17 @@ final class TicketDetailPresenter: TicketDetailPresenterProtocol {
 
         let positionText: String
         switch ticket.status {
-        case .waiting, .almostYourTurn: positionText = position == 1 ? "1 group ahead" : "\(position) groups ahead"
+        case .waiting, .almostYourTurn: positionText = position == 1 ? "1 group ahead of you" : "\(position) groups ahead of you"
         case .called: positionText = "It's your turn"
         default: positionText = "Not in queue"
         }
 
-        // Only say something when the user needs to act. A waiting ticket speaks for itself.
+        // One line under the progress bar. A waiting ticket shows when to leave, other states say what to do.
+        let prompt = proximity(for: ticket)
         let message: String
         switch ticket.status {
-        case .waiting: message = ""
-        case .almostYourTurn: message = "You're next. Head over now."
+        case .waiting: message = prompt.text ?? ""
+        case .almostYourTurn: message = ticket.arrivedAt == nil ? "You're next. Head over now." : "You're here. You're next!"
         case .called: message = "It's your turn. Go in now."
         case .completed: message = "Done. Enjoy!"
         case .cancelled: message = "You left this queue."
@@ -88,15 +89,16 @@ final class TicketDetailPresenter: TicketDetailPresenterProtocol {
             ticketNumberText: String(format: "#%03d", ticket.ticketNumber),
             statusText: ticket.status.rawValue,
             statusColor: Theme.color(for: ticket.status),
-            summaryText: isWaiting ? "\(positionText) · " + simulator.speed.estimateText(groups: position).replacingOccurrences(of: "About ", with: "~") : positionText,
-            footnoteText: String(format: "Now serving #%03d", ticket.nowServing),
+            positionText: positionText,
+            nowServingText: String(format: "#%03d", ticket.nowServing),
+            estimateText: isWaiting ? simulator.speed.estimateText(groups: position) : "-",
+            partyText: ticket.partySize == 1 ? "1 person" : "\(ticket.partySize) people",
             message: message,
             stepIndex: step,
             // Skipping ahead is a presentation tool, so it hides unless demo controls are on. Finishing a called ticket always shows.
             canAdvance: ticket.status == .called || (ticket.status.isActive && DemoControls.isEnabled),
             advanceTitle: ticket.status == .called ? "Mark as served" : "Skip ahead (demo)",
             canCancel: ticket.status.isActive,
-            proximityText: proximity(for: ticket).text,
-            proximityActionTitle: proximity(for: ticket).action))
+            promptActionTitle: ticket.status == .waiting ? prompt.action : nil))
     }
 }

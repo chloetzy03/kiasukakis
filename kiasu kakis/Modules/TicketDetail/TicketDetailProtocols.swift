@@ -5,18 +5,17 @@ struct TicketDetailViewModel {
     let ticketNumberText: String
     let statusText: String
     let statusColor: UIColor
-    // For example "6 groups ahead of you · About 30 min".
-    let summaryText: String
-    // For example "Now serving #052 · 2 people". Small print.
-    let footnoteText: String
+    let positionText: String
+    let nowServingText: String
+    let estimateText: String
+    let partyText: String
     let message: String
     let stepIndex: Int?
     let canAdvance: Bool
     let advanceTitle: String
     let canCancel: Bool
-    // The "getting there" card. Hidden when there is nothing useful to say.
-    let proximityText: String?
-    let proximityActionTitle: String?
+    // A button under the prompt, for example to turn on location. nil when there is nothing to do.
+    let promptActionTitle: String?
 }
 
 protocol TicketDetailViewProtocol: AnyObject {

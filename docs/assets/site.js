@@ -240,15 +240,17 @@
   var screenStep = [0, 1, 1, 2, 2, 2];
   var paperLines = ['Waiting · 3 groups ahead', 'Waiting · 2 groups ahead', 'Called · your turn!'];
 
-  // Where things sit at rest, measured with no transform applied.
+  // Where things sit at rest, as offsets from the hero box so they stay right wherever the page is scrolled.
+  var heroBox = $('#hero');
   var rest = null;
   function measureHero() {
     var saved = heroPhone.style.transform;
     heroPhone.style.transform = 'none';
-    var phone = heroPhone.getBoundingClientRect(), screen = heroScreen.getBoundingClientRect();
+    var box = heroBox.getBoundingClientRect(), phone = heroPhone.getBoundingClientRect(), screen = heroScreen.getBoundingClientRect();
     rest = {
-      pin: { x: screen.left + screen.width * 0.75, y: screen.top + screen.height * 0.44 },
-      center: { x: phone.left + phone.width / 2, y: phone.top + phone.height / 2 }
+      final: Math.min(1.12, box.height * 0.92 / phone.height),
+      pin: { x: screen.left + screen.width * 0.75 - box.left, y: screen.top + screen.height * 0.44 - box.top },
+      center: { x: phone.left + phone.width / 2 - box.left, y: phone.top + phone.height / 2 - box.top }
     };
     heroPhone.style.transform = saved;
   }
@@ -256,14 +258,17 @@
   var ZOOM = 2.2;
   function renderHero(p) {
     if (narrow() || !rest) return;
-    var vp = { x: window.innerWidth / 2, y: (vh() + 64) / 2 };
+    var box = heroBox.getBoundingClientRect();
+    var pin = { x: box.left + rest.pin.x, y: box.top + rest.pin.y };
+    var mid = { x: box.left + rest.center.x, y: box.top + rest.center.y };
+    var vp = { x: window.innerWidth / 2, y: box.top + box.height / 2 };
     var e1 = ease(clamp(p / 0.42, 0, 1)), e2 = ease(clamp((p - 0.5) / 0.32, 0, 1));
-    var s = lerp(lerp(1, ZOOM, e1), 1.12, e2);
+    var s = lerp(lerp(1, ZOOM, e1), rest.final, e2);
     // f is the point of the phone we keep pinned to `aim` on screen: first the pin, then the phone's centre.
-    var f = { x: lerp(rest.pin.x, rest.center.x, e2), y: lerp(rest.pin.y, rest.center.y, e2) };
+    var f = { x: lerp(pin.x, mid.x, e2), y: lerp(pin.y, mid.y, e2) };
     var aim = { x: lerp(f.x, vp.x, e1), y: lerp(f.y, vp.y, e1) };
-    var tx = aim.x - rest.center.x - s * (f.x - rest.center.x);
-    var ty = aim.y - rest.center.y - s * (f.y - rest.center.y);
+    var tx = aim.x - mid.x - s * (f.x - mid.x);
+    var ty = aim.y - mid.y - s * (f.y - mid.y);
     heroPhone.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + s + ')';
   }
 
@@ -348,6 +353,7 @@
     target.hero = narrow() ? 0 : trackProgress(heroWrap);
     target.problem = trackProgress(problemTrack);
     target.how = trackProgress(howTrack);
+    paintHero(state.hero);
     kick();
   }
   var scrollFrame = 0;

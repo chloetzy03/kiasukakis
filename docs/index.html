@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kiasu Kakis: your kiasu buddy for queues</title>
+  <meta name="description" content="See the wait before you walk over. Join the queue from your phone. Eat when it's your turn. A Singapore queue companion for iPhone.">
+  <meta name="theme-color" content="#BD091C">
+  <meta property="og:title" content="Kiasu Kakis: your kiasu buddy for queues">
+  <meta property="og:description" content="Don't kiasu in the queue. Let your kaki do it.">
+  <meta property="og:image" content="assets/screens/map.jpg">
+  <link rel="icon" type="image/png" href="assets/icon/favicon.png">
+  <link rel="apple-touch-icon" href="assets/icon/apple-touch-icon.png">
+  <link rel="stylesheet" href="assets/site.css">
+  <script>
+    // Set the theme before the page paints, so there is no flash of the wrong colours.
+    (function () {
+      var saved = localStorage.getItem('kk-theme');
+      var dark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    })();
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav" id="top">
+    <a class="brand" href="#top" aria-label="Kiasu Kakis, back to top">
+      <img class="brand-icon icon-light" src="assets/icon/icon-light.png" alt="" width="36" height="36">
+      <img class="brand-icon icon-dark" src="assets/icon/icon-dark.png" alt="" width="36" height="36">
+      <span>kiasu kakis</span>
+    </a>
+    <nav class="nav-links" aria-label="Sections">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#eyes">The eyes</a>
+      <a href="#class">Problems solved</a>
+      <a href="#download">Download</a>
+    </nav>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch between light and dark mode">
+      <span class="sun" aria-hidden="true">☀</span><span class="moon" aria-hidden="true">☾</span>
+    </button>
+  </header>
+
+  <main id="main">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-copy reveal">
+        <p class="eyebrow">Your kiasu buddy for queues</p>
+        <h1>Don't kiasu in the queue.<br><span class="accent">Let your kaki do it.</span></h1>
+        <p class="lead">See the wait before you walk over. Join the queue from your phone. Eat when it's your turn.</p>
+        <div class="cta-row">
+          <span class="btn btn-soon" aria-disabled="true">App Store <em>coming soon</em></span>
+          <a class="btn btn-ghost" href="https://github.com/chloetzy03/kiasukakis" target="_blank" rel="noopener">View the code</a>
+        </div>
+        <p class="fine">For iPhone, iOS 17 and later. Made in Singapore.</p>
+      </div>
+
+      <div class="hero-stage" aria-hidden="false">
+        <svg class="peek-eyes" id="heroEyes" viewBox="0 0 320 120" role="img" aria-label="A pair of eyes that follow your cursor"></svg>
+        <div class="phone phone-hero">
+          <div class="phone-screen" id="heroScreens">
+            <img src="assets/screens/map.jpg" alt="The Kiasu Kakis map with colour-coded wait pins" class="is-on" width="600" height="1304">
+            <img src="assets/screens/list.jpg" alt="A ranked list of queues, shortest wait first" width="600" height="1304" loading="lazy">
+            <img src="assets/screens/summary.jpg" alt="A place summary with the wait, groups ahead and a Join queue button" width="600" height="1304" loading="lazy">
+            <img src="assets/screens/ticket3.jpg" alt="A ticket that has just been called" width="600" height="1304" loading="lazy">
+          </div>
+        </div>
+        <span class="float-pill p1 g">8 min</span>
+        <span class="float-pill p2 a">15 min</span>
+        <span class="float-pill p3 o">35 min</span>
+      </div>
+    </section>
+
+    <!-- TICKER -->
+    <section class="ticker" aria-label="Examples of live waits">
+      <p class="ticker-label">Simulated waits at real places <span>(demo data, see the note below)</span></p>
+      <div class="marquee" aria-hidden="true">
+        <div class="marquee-track" id="marqueeTrack"></div>
+      </div>
+    </section>
+
+    <!-- PROBLEM -->
+    <section class="section problem" id="problem">
+      <div class="wrap">
+        <p class="eyebrow reveal">The problem</p>
+        <h2 class="reveal">Best food. Longest queue. Zero idea how long. <span class="accent">Aiyo.</span></h2>
+        <div class="queue-line reveal" id="queueLine" aria-hidden="true"></div>
+        <div class="cards three">
+          <article class="card reveal">
+            <h3>You queue first, then find out</h3>
+            <p>By the time you know it's 50 minutes, you've already been standing there for 20.</p>
+          </article>
+          <article class="card reveal">
+            <h3>Maps show places, not waits</h3>
+            <p>You get the address and the opening hours. You don't get how long the line is.</p>
+          </article>
+          <article class="card reveal">
+            <h3>Leave to check, lose your spot</h3>
+            <p>Walk off to see another stall and your place is gone. That's why everyone stands guard.</p>
+          </article>
+        </div>
+        <p class="answer reveal">Kiasu Kakis opens on <strong>queues</strong>, not places. Only food spots where a queue makes sense. No malls. No shoe shops.</p>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="section how" id="how">
+      <div class="wrap">
+        <p class="eyebrow reveal">How it works</p>
+        <h2 class="reveal">Three steps. Zero standing around.</h2>
+        <div class="steps">
+          <article class="step reveal">
+            <div class="step-num">1</div>
+            <h3>Check the wait</h3>
+            <p>Colour-coded pins show the wait in minutes. Green is quick, orange means go for a walk first.</p>
+            <div class="phone phone-sm"><div class="phone-screen"><img src="assets/screens/map.jpg" alt="Map with wait pins" width="600" height="1304" loading="lazy"></div></div>
+          </article>
+          <article class="step reveal">
+            <div class="step-num">2</div>
+            <h3>Join from your phone</h3>
+            <p>Pick your party size and tap join. You get a virtual ticket, so you can sit, shop or scroll.</p>
+            <div class="phone phone-sm"><div class="phone-screen"><img src="assets/screens/summary.jpg" alt="Place summary with Join queue button" width="600" height="1304" loading="lazy"></div></div>
+          </article>
+          <article class="step reveal">
+            <div class="step-num">3</div>
+            <h3>Walk in when it's your turn</h3>
+            <p>Watch the ticket move: waiting, almost, called. You walk in. No need to kiasu.</p>
+            <div class="phone phone-sm">
+              <div class="phone-screen" id="ticketScreens">
+                <img src="assets/screens/ticket1.jpg" alt="Ticket waiting, 3 groups ahead" class="is-on" width="600" height="1304" loading="lazy">
+                <img src="assets/screens/ticket2.jpg" alt="Ticket waiting, 2 groups ahead" width="600" height="1304" loading="lazy">
+                <img src="assets/screens/ticket3.jpg" alt="Ticket called: it's your turn" width="600" height="1304" loading="lazy">
+              </div>
+            </div>
+            <p class="ticket-status" id="ticketStatus" aria-live="off">Waiting · 3 groups ahead</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="section features" id="features">
+      <div class="wrap">
+        <p class="eyebrow reveal">Feature tour</p>
+        <h2 class="reveal">Made for queues. Not another map.</h2>
+        <div class="tour reveal">
+          <div class="tour-tabs" role="tablist" aria-label="Features" id="tourTabs">
+            <button role="tab" aria-selected="true" data-i="0" data-img="map" data-title="Queues first" data-text="Opens on queues, not places. Colour-coded pins show the wait in minutes, and only food places appear.">Queues first</button>
+            <button role="tab" aria-selected="false" data-i="1" data-img="list" data-title="Ranked, and always moving" data-text="The shortest waits are on top. Waits drift live, with arrows showing which way they are going.">Ranked and live</button>
+            <button role="tab" aria-selected="false" data-i="2" data-img="summary" data-title="Tap for the full picture" data-text="The wait, how many groups ahead, and one button to join. Save the place with the bookmark.">Place summary</button>
+            <button role="tab" aria-selected="false" data-i="3" data-img="joinform" data-title="Join in seconds" data-text="Choose how many people, and you are in. You can hold two queues at most, so nobody hogs every line.">Join in seconds</button>
+            <button role="tab" aria-selected="false" data-i="4" data-img="details" data-title="Real details" data-text="Photo, rating, opening hours and travel time, so you can decide if it's worth it.">Real details</button>
+            <button role="tab" aria-selected="false" data-i="5" data-img="search" data-title="Search that finds food" data-text="Type 'yakun' and find Ya Kun. Search a mall and see the restaurants inside it.">Smart search</button>
+            <button role="tab" aria-selected="false" data-i="6" data-img="saved" data-title="Saved, sorted" data-text="Keep your favourites and filter them by Hawker, Restaurant, Café, Dessert or Bar.">Saved places</button>
+            <button role="tab" aria-selected="false" data-i="7" data-img="dark" data-title="Light and dark" data-text="Looks good day and night. Big text, VoiceOver and Reduce Motion work too.">Dark mode</button>
+          </div>
+          <div class="tour-stage">
+            <div class="phone phone-tour"><div class="phone-screen" id="tourScreen"><img id="tourImg" src="assets/screens/map.jpg" alt="The map with wait pins" width="600" height="1304" loading="lazy"></div></div>
+            <div class="tour-caption">
+              <h3 id="tourTitle">Queues first</h3>
+              <p id="tourText">Opens on queues, not places. Colour-coded pins show the wait in minutes, and only food places appear.</p>
+            </div>
+          </div>
+        </div>
+        <p class="honest reveal"><strong>Honest note:</strong> the places are real, but the queues are <strong>simulated</strong> for this demo, because there is no public Singapore queue data. The app is built so real data can slot in later.</p>
+      </div>
+    </section>
+
+    <!-- EYES -->
+    <section class="section eyes" id="eyes">
+      <div class="wrap">
+        <p class="eyebrow reveal">Meet the eyes</p>
+        <h2 class="reveal">Why eyes? Because being kiasu is a <span class="accent">look</span>.</h2>
+        <div class="eyes-grid">
+          <div class="eyes-card reveal" id="foodCard">
+            <svg class="food-svg" id="foodSvg" viewBox="0 0 1024 1024" role="img" aria-label="A food character that changes with the time of day"></svg>
+            <p class="greeting" id="foodGreeting" aria-live="polite">Good morning. Save your spot.</p>
+          </div>
+          <div class="eyes-copy reveal">
+            <p>Every time you open the app, a different food wearing the same eyes greets you. It depends on the time of day. Try it.</p>
+            <label class="slider" for="hour">
+              <span>What time is it? <strong id="hourLabel">8:00 am</strong></span>
+              <input type="range" id="hour" min="0" max="23" value="8">
+            </label>
+            <ul class="bullets">
+              <li><strong>Watching the queue.</strong> Eyes show what being kiasu feels like, without any words.</li>
+              <li><strong>No clichés.</strong> No map pin, no ticket, no merlion. It works tiny, in one colour, light or dark.</li>
+              <li><strong>Kaki means buddy.</strong> The eyes keep an eye on the queue for you.</li>
+            </ul>
+            <p class="fine">Move your mouse. They are watching.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOR THE CLASS -->
+    <section class="section class" id="class">
+      <div class="wrap">
+        <p class="eyebrow reveal">For the class</p>
+        <h2 class="reveal">The tough bits, and how we solved them.</h2>
+        <div class="stats reveal">
+          <div><strong data-count="5757">0</strong><span>lines of Swift</span></div>
+          <div><strong data-count="41">0</strong><span>commits</span></div>
+          <div><strong data-count="12">0</strong><span>hand-picked queue places</span></div>
+          <div><strong data-count="0">0</strong><span>compiler warnings</span></div>
+        </div>
+        <div class="chips reveal" aria-label="Built with">
+          <span>Swift</span><span>UIKit</span><span>VIPER</span><span>MapKit</span><span>CoreLocation</span><span>Google Places API</span><span>Core Animation</span><span>async / await</span>
+        </div>
+        <div class="cards three problems">
+          <article class="card flip reveal" tabindex="0">
+            <h3>Crash on launch</h3>
+            <p class="what">Two saved places had the same ID, and the map choked on the duplicate.</p>
+            <p class="fix"><strong>Fix:</strong> remove duplicates when saving and loading, and make the map tolerate them.</p>
+          </article>
+          <article class="card flip reveal" tabindex="0">
+            <h3>Places that wouldn't show up</h3>
+            <p class="what">Apple's text search treats the map area as a hint, so it kept returning city-centre places everywhere.</p>
+            <p class="fix"><strong>Fix:</strong> switched to an area-based request that really searches a circle around the map.</p>
+          </article>
+          <article class="card flip reveal" tabindex="0">
+            <h3>A close button that only worked sometimes</h3>
+            <p class="what">A later view covered part of it, so only the top sliver took taps.</p>
+            <p class="fix"><strong>Fix:</strong> brought it to the front, then hit-tested four points to prove it.</p>
+          </article>
+          <article class="card flip reveal" tabindex="0">
+            <h3>Grey text you couldn't read</h3>
+            <p class="what">Secondary text was 3.15 to 1 contrast on cream. The accessibility standard needs 4.5.</p>
+            <p class="fix"><strong>Fix:</strong> a warmer, darker grey, and darker green and orange so white text reads on the pins.</p>
+          </article>
+          <article class="card flip reveal" tabindex="0">
+            <h3>A map full of malls and shops</h3>
+            <p class="what">A "food market" category dragged in supermarkets. Nobody queues for those.</p>
+            <p class="fix"><strong>Fix:</strong> food-only categories, plus a food-only filter on search.</p>
+          </article>
+          <article class="card flip reveal" tabindex="0">
+            <h3>Pins stacked like rojak</h3>
+            <p class="what">Hundreds of places in the city centre, all with queues, piled on top of each other.</p>
+            <p class="fix"><strong>Fix:</strong> overlapping pins hide until you zoom, and the list shows the shortest 40.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- DOWNLOAD -->
+    <section class="section download" id="download">
+      <div class="wrap">
+        <div class="dl-card reveal">
+          <div class="dl-icons">
+            <img class="icon-light" src="assets/icon/icon-light.png" alt="Kiasu Kakis app icon, light" width="132" height="132" loading="lazy">
+            <img class="icon-dark" src="assets/icon/icon-dark.png" alt="Kiasu Kakis app icon, dark" width="132" height="132" loading="lazy">
+          </div>
+          <div class="dl-copy">
+            <h2>Coming soon, lah.</h2>
+            <p>Kiasu Kakis isn't on the App Store yet. Want to try it now? Run it yourself from the code.</p>
+            <div class="cta-row">
+              <span class="btn btn-soon" aria-disabled="true">App Store <em>coming soon</em></span>
+              <a class="btn btn-primary" href="https://github.com/chloetzy03/kiasukakis" target="_blank" rel="noopener">View the code on GitHub</a>
+            </div>
+            <details class="run">
+              <summary>How to run it</summary>
+              <ol>
+                <li>Open <code>kiasu kakis.xcodeproj</code> in Xcode 26.</li>
+                <li>Optional: copy <code>Secrets.example.xcconfig</code> to <code>Secrets.xcconfig</code> and add a Google Places API key.</li>
+                <li>Choose an iPhone simulator and press Run.</li>
+              </ol>
+            </details>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Kiasu Kakis is a student prototype. The places are real. The queues are simulated.</p>
+    <p><a href="https://github.com/chloetzy03/kiasukakis" target="_blank" rel="noopener">GitHub</a> · <a href="#top">Back to top</a></p>
+  </footer>
+
+  <script src="assets/site.js" defer></script>
+</body>
+</html>

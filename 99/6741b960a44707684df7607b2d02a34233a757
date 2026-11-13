@@ -1,0 +1,34 @@
+"kiasu kakis/Assets.xcassets/IconDark.appiconset/Contents.json"
+  s_83605c29a5e567::t_b922bf7551c59a 1-14
+"kiasu kakis/Services/AppIconService.swift"
+  s_83605c29a5e567::t_b922bf7551c59a 1-45
+"kiasu kakis/Modules/About/AboutViewController.swift"
+  s_83605c29a5e567::t_b922bf7551c59a 6-7,40,79-101
+  s_83605c29a5e567::t_d8a1888cfa81f9 102-108
+"kiasu kakis.xcodeproj/project.pbxproj"
+  s_83605c29a5e567::t_b922bf7551c59a 253
+  s_83605c29a5e567::t_5b0ec49cc2e062 287
+"kiasu kakis/Assets.xcassets/IconLight.appiconset/Contents.json"
+  s_83605c29a5e567::t_b922bf7551c59a 1-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "996741b960a44707684df7607b2d02a34233a757",
+  "prompts": {},
+  "humans": {
+    "h_ee194195c1c2bb": {
+      "author": "chloe <chloetzy03@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_83605c29a5e567": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "1e007083-5ef8-4fa4-a40d-8019fcebb6dc",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

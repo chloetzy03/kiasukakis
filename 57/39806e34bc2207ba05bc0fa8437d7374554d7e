@@ -1,0 +1,44 @@
+"kiasu kakis/App/SceneDelegate.swift"
+  s_83605c29a5e567::t_08dc2446cf05ac 28
+"kiasu kakis/Entities/QueueTicket.swift"
+  s_83605c29a5e567::t_45d99b5f913494 30-33
+"kiasu kakis/Services/QueueService.swift"
+  s_83605c29a5e567::t_45d99b5f913494 22-23,162-172
+  s_83605c29a5e567::t_3611dd43600ca1 173
+"kiasu kakis/Services/TicketTravelUpdater.swift"
+  s_83605c29a5e567::t_45d99b5f913494 1-53
+"kiasu kakis/Modules/TicketDetail/TicketDetailInteractor.swift"
+  s_83605c29a5e567::t_08dc2446cf05ac 7,9-10,13,19-21
+"kiasu kakis/Services/TicketNotifier.swift"
+  s_83605c29a5e567::t_45d99b5f913494 37,48-50,65,69
+"kiasu kakis/Modules/TicketDetail/TicketDetailPresenter.swift"
+  s_83605c29a5e567::t_5ea37ad1200445 42-46
+  s_83605c29a5e567::t_08dc2446cf05ac 18-41,47-51,110-113
+"kiasu kakis/Services/TicketNotificationPlan.swift"
+  s_83605c29a5e567::t_45d99b5f913494 4,17-22
+"kiasu kakis/Modules/TicketDetail/TicketDetailProtocols.swift"
+  s_83605c29a5e567::t_08dc2446cf05ac 17-20,33-34,41-43
+"kiasu kakis/Modules/TicketDetail/TicketDetailViewController.swift"
+  s_83605c29a5e567::t_08dc2446cf05ac 20-23,105-123,177-178,218-226
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5739806e34bc2207ba05bc0fa8437d7374554d7e",
+  "prompts": {},
+  "humans": {
+    "h_ee194195c1c2bb": {
+      "author": "chloe <chloetzy03@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_83605c29a5e567": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "1e007083-5ef8-4fa4-a40d-8019fcebb6dc",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

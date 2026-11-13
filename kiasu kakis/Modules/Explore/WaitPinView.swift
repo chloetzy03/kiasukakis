@@ -9,11 +9,15 @@ final class WaitPinView: MKAnnotationView {
     override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
         super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
         canShowCallout = false
+        isAccessibilityElement = true
+        accessibilityTraits = .button
+        accessibilityHint = "Shows a summary of this place"
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) is not used") }
 
     func configure(with pin: VenuePinViewModel) {
+        accessibilityLabel = pin.spokenText
         if pin.isPlaceDot {
             image = Self.dotImage()
             centerOffset = .zero
@@ -34,7 +38,7 @@ final class WaitPinView: MKAnnotationView {
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
         let scale: CGFloat = selected ? 1.2 : 1
-        UIView.animate(withDuration: animated ? 0.15 : 0) {
+        UIView.animate(withDuration: animated ? Motion.duration(0.15) : 0) {
             self.transform = CGAffineTransform(scaleX: scale, y: scale)
         }
     }

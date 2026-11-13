@@ -35,6 +35,7 @@ final class VenueDetailsViewController: UIViewController {
         view.backgroundColor = Theme.background
         navigationItem.largeTitleDisplayMode = .never
         buildLayout()
+        view.enableDynamicType()
         presenter.viewDidLoad()
     }
 
@@ -48,10 +49,11 @@ final class VenueDetailsViewController: UIViewController {
     private func buildLayout() {
         nameLabel.font = .preferredFont(forTextStyle: .title1).withTraits(.traitBold)
         nameLabel.numberOfLines = 0
+        nameLabel.accessibilityTraits = .header
         categoryLabel.font = .preferredFont(forTextStyle: .subheadline)
         categoryLabel.textColor = Theme.brandText
         addressLabel.font = .preferredFont(forTextStyle: .subheadline)
-        addressLabel.textColor = .secondaryLabel
+        addressLabel.textColor = Theme.secondaryText
         addressLabel.numberOfLines = 0
 
         let header = UIStackView(arrangedSubviews: [categoryLabel, nameLabel, addressLabel])
@@ -67,7 +69,7 @@ final class VenueDetailsViewController: UIViewController {
         photoView.translatesAutoresizingMaskIntoConstraints = false
         photoView.heightAnchor.constraint(equalToConstant: 180).isActive = true
         photoCreditLabel.font = .preferredFont(forTextStyle: .caption2)
-        photoCreditLabel.textColor = .secondaryLabel
+        photoCreditLabel.textColor = Theme.secondaryText
         let photoStack = UIStackView(arrangedSubviews: [photoView, photoCreditLabel])
         photoStack.axis = .vertical
         photoStack.spacing = 4
@@ -77,9 +79,9 @@ final class VenueDetailsViewController: UIViewController {
         ratingLabel.font = .preferredFont(forTextStyle: .headline)
         openLabel.font = .preferredFont(forTextStyle: .subheadline)
         hoursLabel.font = .preferredFont(forTextStyle: .subheadline)
-        hoursLabel.textColor = .secondaryLabel
+        hoursLabel.textColor = Theme.secondaryText
         attributionLabel.font = .preferredFont(forTextStyle: .caption2)
-        attributionLabel.textColor = .secondaryLabel
+        attributionLabel.textColor = Theme.secondaryText
         for label in [ratingLabel, openLabel, hoursLabel, attributionLabel] { label.numberOfLines = 0 }
         placeCard = card([caption("ABOUT THIS PLACE"), ratingLabel, openLabel, hoursLabel, attributionLabel])
         placeCard.isHidden = true
@@ -95,8 +97,10 @@ final class VenueDetailsViewController: UIViewController {
         waitRow.spacing = 8
         waitRow.alignment = .center
         sourceLabel.font = .preferredFont(forTextStyle: .footnote)
+        sourceLabel.numberOfLines = 0
+        categoryLabel.numberOfLines = 0
         updatedLabel.font = .preferredFont(forTextStyle: .footnote)
-        updatedLabel.textColor = .secondaryLabel
+        updatedLabel.textColor = Theme.secondaryText
         updatedLabel.numberOfLines = 0
         let waitCard = card([waitTitle, waitRow, sourceLabel, updatedLabel])
 
@@ -104,7 +108,7 @@ final class VenueDetailsViewController: UIViewController {
         travelSummaryLabel.font = .preferredFont(forTextStyle: .headline)
         travelSummaryLabel.numberOfLines = 0
         travelHintLabel.font = .preferredFont(forTextStyle: .footnote)
-        travelHintLabel.textColor = .secondaryLabel
+        travelHintLabel.textColor = Theme.secondaryText
         travelHintLabel.numberOfLines = 0
         travelActionButton.configuration = .plain()
         travelActionButton.contentHorizontalAlignment = .leading
@@ -121,7 +125,7 @@ final class VenueDetailsViewController: UIViewController {
         statusTitleLabel.font = .preferredFont(forTextStyle: .headline)
         statusTitleLabel.numberOfLines = 0
         statusMessageLabel.font = .preferredFont(forTextStyle: .subheadline)
-        statusMessageLabel.textColor = .secondaryLabel
+        statusMessageLabel.textColor = Theme.secondaryText
         statusMessageLabel.numberOfLines = 0
         let statusText = UIStackView(arrangedSubviews: [statusTitleLabel, statusMessageLabel])
         statusText.axis = .vertical
@@ -150,7 +154,7 @@ final class VenueDetailsViewController: UIViewController {
 
         let disclaimer = disclaimerLabel
         disclaimer.font = .preferredFont(forTextStyle: .caption1)
-        disclaimer.textColor = .secondaryLabel
+        disclaimer.textColor = Theme.secondaryText
         disclaimer.textAlignment = .center
         disclaimer.numberOfLines = 0
 
@@ -181,7 +185,7 @@ final class VenueDetailsViewController: UIViewController {
         let label = UILabel()
         label.text = text
         label.font = .preferredFont(forTextStyle: .caption1)
-        label.textColor = .secondaryLabel
+        label.textColor = Theme.secondaryText
         return label
     }
 
@@ -230,9 +234,10 @@ extension VenueDetailsViewController: VenueDetailsViewProtocol {
         guard let model else { placeCard.isHidden = true; return }
         let detail = [model.openText, model.priceText].compactMap { $0 }.joined(separator: " · ")
         ratingLabel.text = model.ratingText
+        ratingLabel.accessibilityLabel = model.ratingText?.replacingOccurrences(of: " ★", with: " stars")
         ratingLabel.isHidden = model.ratingText == nil
         openLabel.text = detail
-        openLabel.textColor = model.isOpen == false ? .systemRed : (model.isOpen == true ? Theme.waitShort : .label)
+        openLabel.textColor = model.isOpen == false ? .systemRed : (model.isOpen == true ? Theme.waitShortText : .label)
         openLabel.isHidden = detail.isEmpty
         hoursLabel.text = model.todayHoursText
         hoursLabel.isHidden = model.todayHoursText == nil
@@ -253,10 +258,12 @@ extension VenueDetailsViewController: VenueDetailsViewProtocol {
         categoryLabel.text = model.categoryText.uppercased()
         addressLabel.text = model.address
         waitLabel.text = model.waitText
+        waitLabel.accessibilityLabel = "Current wait, " + QueueFormatting.spoken(model.waitText)
         waitLabel.textColor = .label
         waitDot.backgroundColor = model.waitColor
         sourceLabel.text = model.sourceText
         updatedLabel.text = model.updatedText
+        updatedLabel.accessibilityLabel = QueueFormatting.spoken(model.updatedText)
         statusIcon.image = UIImage(systemName: model.statusSymbol)
         statusIcon.tintColor = model.statusColor
         statusTitleLabel.text = model.statusTitle

@@ -22,6 +22,7 @@ final class JoinQueueViewController: UIViewController {
             self?.presenter.didTapClose()
         })
         buildLayout()
+        view.enableDynamicType()
         presenter.viewDidLoad()
     }
 
@@ -40,7 +41,7 @@ final class JoinQueueViewController: UIViewController {
         waitRow.alignment = .center
         aheadLabel.font = .preferredFont(forTextStyle: .subheadline)
         sourceLabel.font = .preferredFont(forTextStyle: .footnote)
-        sourceLabel.textColor = .secondaryLabel
+        sourceLabel.textColor = Theme.secondaryText
         let conditions = card([caption("QUEUE CONDITIONS"), waitRow, aheadLabel, sourceLabel])
 
         // Party size card
@@ -49,6 +50,7 @@ final class JoinQueueViewController: UIViewController {
         stepper.maximumValue = 8
         stepper.value = 1
         stepper.addTarget(self, action: #selector(stepperChanged), for: .valueChanged)
+        stepper.accessibilityLabel = "Party size"
         let partyRow = UIStackView(arrangedSubviews: [partyValueLabel, UIView(), stepper])
         partyRow.alignment = .center
         let party = card([caption("PARTY SIZE"), partyRow])
@@ -82,7 +84,7 @@ final class JoinQueueViewController: UIViewController {
         let label = UILabel()
         label.text = text
         label.font = .preferredFont(forTextStyle: .caption1)
-        label.textColor = .secondaryLabel
+        label.textColor = Theme.secondaryText
         return label
     }
 

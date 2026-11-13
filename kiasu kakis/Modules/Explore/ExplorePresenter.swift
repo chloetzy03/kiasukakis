@@ -230,7 +230,10 @@ final class ExplorePresenter: ExplorePresenterProtocol {
                                  symbolName: Self.symbolName(for: listing.venue.category),
                                  fillColor: Theme.waitColor(forMinutes: minutes),
                                  textColor: Theme.pinTextColor(forMinutes: minutes),
-                                 isPlaceDot: !listing.venue.isDemo && minutes == nil)
+                                 isPlaceDot: !listing.venue.isDemo && minutes == nil,
+                                 spokenText: "\(listing.venue.name), " + (minutes == nil
+                                    ? "no queue information"
+                                    : QueueFormatting.spoken(waitText(for: listing.snapshot)) + " wait"))
     }
 
     private static func symbolName(for category: VenueCategory) -> String {

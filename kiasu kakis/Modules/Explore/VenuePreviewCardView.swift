@@ -13,6 +13,9 @@ final class VenuePreviewCardView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = Theme.surface
+        isAccessibilityElement = true
+        accessibilityTraits = .button
+        accessibilityHint = "Opens the full details"
         layer.cornerRadius = 16
         layer.shadowColor = UIColor.black.cgColor
         layer.shadowOpacity = 0.2
@@ -20,11 +23,14 @@ final class VenuePreviewCardView: UIView {
         layer.shadowOffset = CGSize(width: 0, height: 3)
 
         nameLabel.font = .preferredFont(forTextStyle: .headline)
+        nameLabel.numberOfLines = 0
+        subtitleLabel.numberOfLines = 0
+        queueLabel.numberOfLines = 0
         subtitleLabel.font = .preferredFont(forTextStyle: .footnote)
-        subtitleLabel.textColor = .secondaryLabel
+        subtitleLabel.textColor = Theme.secondaryText
         waitLabel.font = .preferredFont(forTextStyle: .title3).bold()
         sourceLabel.font = .preferredFont(forTextStyle: .caption1)
-        sourceLabel.textColor = .secondaryLabel
+        sourceLabel.textColor = Theme.secondaryText
         sourceLabel.numberOfLines = 0
         queueLabel.font = .preferredFont(forTextStyle: .subheadline)
         queueLabel.textColor = Theme.brandText
@@ -51,6 +57,7 @@ final class VenuePreviewCardView: UIView {
         row.alignment = .center
         row.translatesAutoresizingMaskIntoConstraints = false
         addSubview(row)
+        enableDynamicType()
         NSLayoutConstraint.activate([
             row.topAnchor.constraint(equalTo: topAnchor, constant: 14),
             row.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -14),
@@ -69,6 +76,9 @@ final class VenuePreviewCardView: UIView {
         dot.backgroundColor = model.waitColor
         sourceLabel.text = model.sourceText
         queueLabel.text = model.queueText
+        // One spoken sentence for the whole card, instead of five separate stops.
+        accessibilityLabel = QueueFormatting.spoken([model.name, model.subtitle, model.waitText,
+                                                     model.sourceText, model.queueText].joined(separator: ". "))
     }
 }
 

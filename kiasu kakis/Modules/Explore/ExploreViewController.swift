@@ -40,6 +40,8 @@ final class ExploreViewController: UIViewController {
         setUpSearchAreaButton()
         setUpEmptyLabel()
         setUpResultsList()
+        searchBar.accessibilityLabel = "Search places"
+        view.enableDynamicType()
         locationManager.delegate = self
         presenter.viewDidLoad()
     }
@@ -77,11 +79,14 @@ final class ExploreViewController: UIViewController {
             chipStack.bottomAnchor.constraint(equalTo: scroll.contentLayoutGuide.bottomAnchor),
             chipStack.leadingAnchor.constraint(equalTo: scroll.contentLayoutGuide.leadingAnchor, constant: 16),
             chipStack.trailingAnchor.constraint(equalTo: scroll.contentLayoutGuide.trailingAnchor, constant: -16),
-            chipStack.heightAnchor.constraint(equalTo: scroll.frameLayoutGuide.heightAnchor)
+            chipStack.centerYAnchor.constraint(equalTo: scroll.frameLayoutGuide.centerYAnchor),
+            scroll.frameLayoutGuide.heightAnchor.constraint(greaterThanOrEqualTo: chipStack.heightAnchor),
+            scroll.frameLayoutGuide.heightAnchor.constraint(greaterThanOrEqualToConstant: 44)
         ])
-        scroll.heightAnchor.constraint(equalToConstant: 36).isActive = true
 
         infoButton.accessibilityLabel = "About Kiasu Kakis"
+        infoButton.widthAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
+        infoButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
         infoButton.addTarget(self, action: #selector(infoTapped), for: .touchUpInside)
         infoButton.setContentHuggingPriority(.required, for: .horizontal)
         let searchRow = UIStackView(arrangedSubviews: [searchBar, infoButton])
@@ -139,6 +144,8 @@ final class ExploreViewController: UIViewController {
         config.cornerStyle = .capsule
         locateButton.configuration = config
         locateButton.accessibilityLabel = "Show my location"
+        locateButton.widthAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
+        locateButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
         locateButton.addTarget(self, action: #selector(locateTapped), for: .touchUpInside)
         locateButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(locateButton)
@@ -161,6 +168,7 @@ final class ExploreViewController: UIViewController {
         searchAreaButton.translatesAutoresizingMaskIntoConstraints = false
         searchAreaButton.alpha = 0
         searchAreaButton.isHidden = true
+        searchAreaButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
         view.addSubview(searchAreaButton)
         NSLayoutConstraint.activate([
             searchAreaButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -170,7 +178,7 @@ final class ExploreViewController: UIViewController {
 
     private func setUpEmptyLabel() {
         emptyLabel.font = .preferredFont(forTextStyle: .headline)
-        emptyLabel.textColor = .secondaryLabel
+        emptyLabel.textColor = Theme.secondaryText
         emptyLabel.textAlignment = .center
         emptyLabel.numberOfLines = 0
         emptyLabel.isHidden = true
@@ -195,13 +203,13 @@ final class ExploreViewController: UIViewController {
         resultsTable.register(UITableViewCell.self, forCellReuseIdentifier: "suggestion")
 
         resultsFooter.font = .preferredFont(forTextStyle: .caption1)
-        resultsFooter.textColor = .secondaryLabel
+        resultsFooter.textColor = Theme.secondaryText
         resultsFooter.textAlignment = .center
         resultsFooter.numberOfLines = 0
         resultsFooter.adjustsFontForContentSizeCategory = true
 
         resultsEmptyLabel.font = .preferredFont(forTextStyle: .headline)
-        resultsEmptyLabel.textColor = .secondaryLabel
+        resultsEmptyLabel.textColor = Theme.secondaryText
         resultsEmptyLabel.textAlignment = .center
         resultsEmptyLabel.numberOfLines = 0
         resultsEmptyLabel.adjustsFontForContentSizeCategory = true
@@ -295,7 +303,7 @@ extension ExploreViewController: ExploreViewProtocol {
             config.title = title
             config.cornerStyle = .capsule
             config.buttonSize = .small
-            let button = UIButton(configuration: config)
+            let button = RoomyButton(configuration: config)
             button.tag = index
             // Runs whenever the button needs restyling, including when light/dark mode changes.
             button.configurationUpdateHandler = { [weak self] button in
@@ -303,6 +311,7 @@ extension ExploreViewController: ExploreViewProtocol {
                 let selected = button.tag == self.selectedChipIndex
                 button.configuration?.baseBackgroundColor = selected ? Theme.brand : Theme.surface
                 button.configuration?.baseForegroundColor = selected ? .white : .label
+                button.accessibilityTraits = selected ? [.button, .selected] : .button
             }
             button.addTarget(self, action: #selector(chipTapped(_:)), for: .touchUpInside)
             chipStack.addArrangedSubview(button)
@@ -342,7 +351,7 @@ extension ExploreViewController: ExploreViewProtocol {
         if let preview { previewCard.configure(with: preview) }
         previewHiddenConstraint.isActive = preview == nil
         previewShownConstraint.isActive = preview != nil
-        UIView.animate(withDuration: 0.25) {
+        UIView.animate(withDuration: Motion.duration(0.25)) {
             self.previewCard.alpha = preview == nil ? 0 : 1
             self.view.layoutIfNeeded()
         }
@@ -359,11 +368,15 @@ extension ExploreViewController: ExploreViewProtocol {
         }
         searchAreaButton.configuration = config
         setSearchAreaVisible(status != .hidden)
+        // The pill appears without the user touching anything, so say it out loud for VoiceOver.
+        if status == .zoomIn || status == .failed, let title = config?.title {
+            UIAccessibility.post(notification: .announcement, argument: title)
+        }
     }
 
     private func setSearchAreaVisible(_ visible: Bool) {
         if visible { searchAreaButton.isHidden = false }
-        UIView.animate(withDuration: 0.2, animations: {
+        UIView.animate(withDuration: Motion.duration(0.2), animations: {
             self.searchAreaButton.alpha = visible ? 1 : 0
         }, completion: { _ in
             self.searchAreaButton.isHidden = !visible && self.searchAreaButton.alpha == 0
@@ -496,10 +509,11 @@ extension ExploreViewController: UITableViewDataSource, UITableViewDelegate {
         var content = UIListContentConfiguration.subtitleCell()
         content.text = row.title
         content.secondaryText = row.subtitle
-        content.secondaryTextProperties.color = .secondaryLabel
+        content.secondaryTextProperties.color = Theme.secondaryText
         content.image = UIImage(systemName: row.symbolName)
         content.imageProperties.tintColor = Theme.brandText
         cell.contentConfiguration = content
+        cell.accessibilityLabel = [row.title, row.subtitle].joined(separator: ", ")
         cell.backgroundColor = Theme.surface
         return cell
     }

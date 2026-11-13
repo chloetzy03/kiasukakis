@@ -18,6 +18,7 @@ final class TicketDetailViewController: UIViewController {
     private let advanceButton = UIButton(type: .system)
     private let cancelButton = UIButton(type: .system)
     private let stepTitles = ["Waiting", "Almost", "Called", "Done"]
+    private var lastStatus: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,6 +26,7 @@ final class TicketDetailViewController: UIViewController {
         navigationItem.largeTitleDisplayMode = .never
         view.backgroundColor = Theme.background
         buildLayout()
+        view.enableDynamicType()
         presenter.viewDidLoad()
     }
 
@@ -33,7 +35,9 @@ final class TicketDetailViewController: UIViewController {
         venueLabel.textAlignment = .center
         venueLabel.numberOfLines = 0
 
-        numberLabel.font = UIFont.monospacedDigitSystemFont(ofSize: 64, weight: .bold)
+        numberLabel.font = UIFontMetrics(forTextStyle: .largeTitle)
+            .scaledFont(for: UIFont.monospacedDigitSystemFont(ofSize: 64, weight: .bold), maximumPointSize: 96)
+        numberLabel.adjustsFontForContentSizeCategory = true
         numberLabel.textAlignment = .center
         numberLabel.adjustsFontSizeToFitWidth = true
 
@@ -43,7 +47,7 @@ final class TicketDetailViewController: UIViewController {
         statusPill.layer.cornerRadius = 14
         statusPill.clipsToBounds = true
         statusPill.setContentHuggingPriority(.required, for: .horizontal)
-        statusPill.heightAnchor.constraint(equalToConstant: 28).isActive = true
+        statusPill.heightAnchor.constraint(greaterThanOrEqualToConstant: 28).isActive = true
         let pillWidth = statusPill.widthAnchor.constraint(greaterThanOrEqualToConstant: 140)
         pillWidth.isActive = true
         let pillRow = UIStackView(arrangedSubviews: [UIView(), statusPill, UIView()])
@@ -66,6 +70,9 @@ final class TicketDetailViewController: UIViewController {
             label.text = title
             label.font = .preferredFont(forTextStyle: .caption2)
             label.textAlignment = .center
+            // Long words shrink a little instead of turning into "Wai…" at large text sizes.
+            label.adjustsFontSizeToFitWidth = true
+            label.minimumScaleFactor = 0.5
             let column = UIStackView(arrangedSubviews: [bar, label])
             column.axis = .vertical
             column.spacing = 4
@@ -80,7 +87,7 @@ final class TicketDetailViewController: UIViewController {
 
         // Small, quiet control that stands in for the venue calling customers.
         var advanceConfig = UIButton.Configuration.plain()
-        advanceConfig.baseForegroundColor = .secondaryLabel
+        advanceConfig.baseForegroundColor = Theme.secondaryText
         advanceConfig.buttonSize = .small
         advanceButton.configuration = advanceConfig
         advanceButton.addTarget(self, action: #selector(advanceTapped), for: .touchUpInside)
@@ -117,7 +124,7 @@ final class TicketDetailViewController: UIViewController {
         let name = UILabel()
         name.text = title
         name.font = .preferredFont(forTextStyle: .subheadline)
-        name.textColor = .secondaryLabel
+        name.textColor = Theme.secondaryText
         value.font = .preferredFont(forTextStyle: .subheadline).withBold()
         value.textAlignment = .right
         value.numberOfLines = 0
@@ -153,6 +160,13 @@ extension TicketDetailViewController: TicketDetailViewProtocol {
         venueLabel.text = model.venueName
         numberLabel.text = model.ticketNumberText
         statusPill.text = model.statusText
+        // VoiceOver would read "#061" as "number sign zero six one".
+        if let number = Int(model.ticketNumberText.dropFirst()) { numberLabel.accessibilityLabel = "Ticket number \(number)" }
+        // The status changes by itself now, so tell VoiceOver users when it does.
+        if let lastStatus, lastStatus != model.statusText {
+            UIAccessibility.post(notification: .announcement, argument: "Your ticket is now \(model.statusText). \(model.positionText).")
+        }
+        lastStatus = model.statusText
         statusPill.backgroundColor = model.statusColor
         positionValue.text = model.positionText
         nowServingValue.text = model.nowServingText
@@ -161,10 +175,14 @@ extension TicketDetailViewController: TicketDetailViewProtocol {
         messageLabel.text = model.message
 
         stepsStack.isHidden = model.stepIndex == nil
+        // The four coloured bars read as one progress indicator.
+        stepsStack.isAccessibilityElement = true
+        stepsStack.accessibilityLabel = "Progress"
+        if let current = model.stepIndex { stepsStack.accessibilityValue = "Step \(current + 1) of \(stepTitles.count): \(stepTitles[current])" }
         if let current = model.stepIndex {
             for index in stepBars.indices {
                 stepBars[index].backgroundColor = index <= current ? model.statusColor : .systemGray5
-                stepLabels[index].textColor = index == current ? .label : .secondaryLabel
+                stepLabels[index].textColor = index == current ? .label : Theme.secondaryText
             }
         }
 

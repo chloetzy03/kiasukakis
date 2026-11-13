@@ -14,6 +14,8 @@ struct VenuePinViewModel: Equatable {
     let textColor: UIColor
     // Real places with no queue data are drawn as small grey dots instead of pills.
     let isPlaceDot: Bool
+    // What VoiceOver reads, for example "Golden Bowl, 15 min rising".
+    let spokenText: String
 }
 
 // What the bottom preview card shows.

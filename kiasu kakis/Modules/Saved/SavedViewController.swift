@@ -28,7 +28,7 @@ final class SavedViewController: UIViewController {
         let message = UILabel()
         message.text = "Tap the bookmark on a venue's page to keep it here for quick access."
         message.font = .preferredFont(forTextStyle: .body)
-        message.textColor = .secondaryLabel
+        message.textColor = Theme.secondaryText
         message.numberOfLines = 0
         message.textAlignment = .center
         [icon, heading, message].forEach(emptyView.addArrangedSubview)
@@ -78,11 +78,13 @@ extension SavedViewController: UITableViewDataSource, UITableViewDelegate {
         var content = cell.defaultContentConfiguration()
         content.text = row.name
         content.secondaryText = row.subtitle
+        content.secondaryTextProperties.color = Theme.secondaryText
         content.image = UIImage(systemName: "circle.fill")
         content.imageProperties.tintColor = row.waitColor
         content.imageProperties.maximumSize = CGSize(width: 12, height: 12)
         cell.contentConfiguration = content
         cell.accessoryType = .disclosureIndicator
+        cell.accessibilityLabel = QueueFormatting.spoken(row.name + ", " + row.subtitle)
         return cell
     }
 

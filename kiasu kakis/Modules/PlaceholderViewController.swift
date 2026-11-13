@@ -33,7 +33,7 @@ final class PlaceholderViewController: UIViewController {
         let messageLabel = UILabel()
         messageLabel.text = message
         messageLabel.font = .preferredFont(forTextStyle: .body)
-        messageLabel.textColor = .secondaryLabel
+        messageLabel.textColor = Theme.secondaryText
         messageLabel.numberOfLines = 0
         messageLabel.textAlignment = .center
 

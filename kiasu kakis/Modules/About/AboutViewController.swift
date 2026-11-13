@@ -27,7 +27,7 @@ final class AboutViewController: UIViewController {
             let bodyLabel = UILabel()
             bodyLabel.text = body
             bodyLabel.font = .preferredFont(forTextStyle: .body)
-            bodyLabel.textColor = .secondaryLabel
+            bodyLabel.textColor = Theme.secondaryText
             bodyLabel.numberOfLines = 0
             let section = UIStackView(arrangedSubviews: [headingLabel, bodyLabel])
             section.axis = .vertical
@@ -37,6 +37,7 @@ final class AboutViewController: UIViewController {
         stack.addArrangedSubview(makeSpeedSection())
         stack.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(stack)
+        stack.enableDynamicType()
         NSLayoutConstraint.activate([
             stack.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
             stack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
@@ -56,7 +57,7 @@ final class AboutViewController: UIViewController {
 
         let detail = UILabel()
         detail.font = .preferredFont(forTextStyle: .footnote)
-        detail.textColor = .secondaryLabel
+        detail.textColor = Theme.secondaryText
         detail.numberOfLines = 0
         detail.text = QueueSimulator.shared.speed.detail
 

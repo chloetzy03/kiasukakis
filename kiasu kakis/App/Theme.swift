@@ -11,9 +11,15 @@ enum Theme {
     static let surface = UIColor { $0.userInterfaceStyle == .dark ? UIColor(hex: 0x241618) : UIColor(hex: 0xFFFCF7) }
 
     // Wait-time colours. Unknown is grey so missing data is never read as "0 min".
-    static let waitShort = UIColor(hex: 0x2E9E5B)
+    // Green and orange are dark enough for white text on top (4.5:1 contrast or better).
+    static let waitShort = UIColor(hex: 0x1F7A44)
     static let waitMedium = UIColor(hex: 0xF5A623)
-    static let waitLong = UIColor(hex: 0xE8590C)
+    static let waitLong = UIColor(hex: 0xC2410C)
+    // Green used as text, which needs a lighter version on dark backgrounds.
+    static let waitShortText = UIColor { $0.userInterfaceStyle == .dark ? UIColor(hex: 0x4CC38A) : UIColor(hex: 0x1F7A44) }
+
+    // The system grey for secondary text is too faint on the cream background (3:1), so this is a warmer, darker one.
+    static let secondaryText = UIColor { $0.userInterfaceStyle == .dark ? UIColor(hex: 0xB9A9A4) : UIColor(hex: 0x6E5F5A) }
     static let waitUnknown = UIColor.systemGray
 
     static func waitColor(forMinutes minutes: Int?) -> UIColor {

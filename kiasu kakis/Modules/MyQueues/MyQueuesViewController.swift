@@ -28,7 +28,7 @@ final class MyQueuesViewController: UIViewController {
         let message = UILabel()
         message.text = "Join a queue from a venue and your ticket will show up here."
         message.font = .preferredFont(forTextStyle: .body)
-        message.textColor = .secondaryLabel
+        message.textColor = Theme.secondaryText
         message.numberOfLines = 0
         message.textAlignment = .center
         [icon, heading, message].forEach(emptyView.addArrangedSubview)
@@ -82,6 +82,7 @@ extension MyQueuesViewController: UITableViewDataSource, UITableViewDelegate {
         var content = cell.defaultContentConfiguration()
         content.text = row.title
         content.secondaryText = row.subtitle
+        content.secondaryTextProperties.color = Theme.secondaryText
         content.image = UIImage(systemName: "circle.fill")
         content.imageProperties.tintColor = row.statusColor
         content.imageProperties.maximumSize = CGSize(width: 12, height: 12)

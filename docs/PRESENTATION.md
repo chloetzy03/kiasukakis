@@ -126,7 +126,7 @@
 - Party size is capped at 8 (a demo limit). Real venues would set their own.
 - Groups ahead doesn't change with party size yet.
 - Pull-up details in the sheet are not built. Details are on their own page.
-- The Saved page has no search or filters yet.
+- The Saved page has category chips but no search yet.
 - Google needs an API key. The free tier is limited. Results are cached to stay under it.
 - The Google API key sits in a git-ignored file and ends up inside the built app. In production it should sit behind a server.
 - No push notifications ("it's your turn") yet.
@@ -134,7 +134,7 @@
 ## 10. What's next (expansion)
 
 1. **Real queue data:** implement `QueueProfileProviding` (or replace the simulator) with a venue API. Screens don't change.
-2. **Saved page:** search and category tabs, so a long list stays manageable.
+2. **Saved page:** a search bar (category chips are done).
 3. **Cuisine filters** (needs a data source for cuisine).
 4. **Pull-up details in the sheet:** wait-trend chart, rating, hours, travel time. Keep the photo on the details page to hold API costs down.
 5. **Party-size-aware queues:** "party of 2: 3 groups ahead", with different lanes for small and large tables.
@@ -175,6 +175,7 @@
 | 16 | Queue-first bottom sheet | `53b860f` |
 | – | Simulated queues for any place | `e66706d` |
 | – | Save, delete and swipe actions, polish | `57be5e8`, `0392914`, `356a7a7` |
+| – | Saved page category chips | see `git log` |
 
 ## 13. Running it
 

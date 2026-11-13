@@ -15,6 +15,40 @@ final class TicketDetailPresenter: TicketDetailPresenterProtocol {
     func viewDidLoad() {
         render()
         queueObserver = QueueChangeObserver { [weak self] in self?.render() }
+        refreshTravel(requestPermission: false)
+    }
+
+    func didTapCheckIn() {
+        interactor.checkIn()
+        render()
+    }
+
+    func didTapProximityAction() { refreshTravel(requestPermission: true) }
+
+    private func refreshTravel(requestPermission: Bool) {
+        Task { [weak self] in
+            await self?.interactor.refreshTravel(requestPermission: requestPermission)
+            self?.render()
+        }
+    }
+
+    // Compares the trip with what is left of the queue (about 5 minutes a group) so the user knows when to go.
+    private func proximity(for ticket: QueueTicket) -> (text: String?, action: String?) {
+        if ticket.arrivedAt != nil { return ("You've checked in. Enjoy your meal!", nil) }
+        guard ticket.status == .waiting || ticket.status == .almostYourTurn else { return (nil, nil) }
+        if let travel = ticket.travelMinutes {
+            let wait = ticket.position * QueueService.minutesPerGroup
+            let spare = wait - travel
+            let text = spare <= 0
+                ? "Leave now. It takes about \(travel) min to get there."
+                : "It takes about \(travel) min to get there. Leave in about \(spare) min."
+            // The demo queue runs much faster than real time, so say so.
+            return (simulator.speed == .demo ? text + " Demo mode runs faster than real life." : text, nil)
+        }
+        if interactor.locationStatus != .authorized {
+            return ("Turn on location and we'll alert you when it's time to leave.", "Allow location")
+        }
+        return (nil, nil)
     }
 
     func didTapAdvance() {
@@ -73,6 +107,9 @@ final class TicketDetailPresenter: TicketDetailPresenterProtocol {
             stepIndex: step,
             canAdvance: ticket.status.isActive,
             advanceTitle: ticket.status == .called ? "Mark as served" : "Skip ahead (demo)",
-            canCancel: ticket.status.isActive))
+            canCancel: ticket.status.isActive,
+            proximityText: proximity(for: ticket).text,
+            proximityActionTitle: proximity(for: ticket).action,
+            canCheckIn: ticket.status.isActive && ticket.arrivedAt == nil))
     }
 }

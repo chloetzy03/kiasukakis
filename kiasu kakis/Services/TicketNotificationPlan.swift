@@ -1,7 +1,7 @@
 import Foundation
 
 struct PlannedNotification: Equatable {
-    enum Kind { case almost, called }
+    enum Kind { case leaveNow, almost, called }
     let kind: Kind
     let delay: TimeInterval
 }
@@ -14,6 +14,12 @@ enum TicketNotificationPlan {
         guard ticket.status == .waiting || ticket.status == .almostYourTurn, ticket.position >= 1, interval > 0 else { return [] }
         let last = ticket.lastProgressAt ?? now
         var planned: [PlannedNotification] = []
+        // Leave when the trip takes as long as the queue still has to run. One group is about 5 minutes.
+        if let travel = ticket.travelMinutes, travel > 2, ticket.arrivedAt == nil {
+            let groupsToWait = Double(ticket.position) - Double(travel) / Double(QueueService.minutesPerGroup)
+            let when = last.addingTimeInterval(max(groupsToWait, 0) * interval)
+            planned.append(PlannedNotification(kind: .leaveNow, delay: max(1, when.timeIntervalSince(now))))
+        }
         // "Almost" means one group is ahead. A ticket that is already there only needs the final alert.
         if ticket.position >= 2 {
             planned.append(PlannedNotification(kind: .almost, delay: delay(until: last, steps: ticket.position - 1, interval: interval, now: now)))

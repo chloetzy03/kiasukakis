@@ -27,6 +27,10 @@ struct QueueTicket: Codable, Identifiable, Equatable {
     let createdAt: Date
     // When the queue last moved on its own. nil for tickets saved before the live queue existed.
     var lastProgressAt: Date?
+    // How long the user's trip to the venue takes, once their location is known. Used for the "time to leave" alert.
+    var travelMinutes: Int?
+    // Set when the user taps "I'm here" or is found near the venue.
+    var arrivedAt: Date?
 
     // People ahead of the user in the queue.
     var position: Int { max(ticketNumber - nowServing, 0) }

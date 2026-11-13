@@ -34,7 +34,7 @@ final class LocalTicketNotifier: NSObject, TicketNotifying, UNUserNotificationCe
     func sync(tickets: [QueueTicket], interval: TimeInterval, now: Date) {
         for ticket in tickets {
             let plan = TicketNotificationPlan.plan(for: ticket, interval: interval, now: now)
-            let signature = "\(ticket.status.rawValue)-\(ticket.position)-\(interval)-\(ticket.lastProgressAt?.timeIntervalSince1970 ?? 0)"
+            let signature = "\(ticket.status.rawValue)-\(ticket.position)-\(interval)-\(ticket.lastProgressAt?.timeIntervalSince1970 ?? 0)-\(ticket.travelMinutes ?? -1)-\(ticket.arrivedAt != nil)"
             guard signatures[ticket.id] != signature else { continue }
             signatures[ticket.id] = signature
             center.removePendingNotificationRequests(withIdentifiers: Self.identifiers(for: ticket.id))
@@ -45,6 +45,9 @@ final class LocalTicketNotifier: NSObject, TicketNotifying, UNUserNotificationCe
     private func schedule(_ item: PlannedNotification, for ticket: QueueTicket) {
         let content = UNMutableNotificationContent()
         switch item.kind {
+        case .leaveNow:
+            content.title = "Time to leave for \(ticket.venueName)"
+            content.body = "It takes about \(ticket.travelMinutes ?? 0) min to get there. Head off now so you arrive when you're called."
         case .almost:
             content.title = "You're next at \(ticket.venueName)"
             content.body = "One group ahead of you. Head over now."
@@ -59,11 +62,11 @@ final class LocalTicketNotifier: NSObject, TicketNotifying, UNUserNotificationCe
     }
 
     private static func identifier(_ id: UUID, _ kind: PlannedNotification.Kind) -> String {
-        "ticket-\(id.uuidString)-\(kind == .almost ? "almost" : "called")"
+        "ticket-\(id.uuidString)-\(kind)"
     }
 
     private static func identifiers(for id: UUID) -> [String] {
-        [identifier(id, .almost), identifier(id, .called)]
+        [identifier(id, .leaveNow), identifier(id, .almost), identifier(id, .called)]
     }
 
     // Show alerts as banners even while the app is open.

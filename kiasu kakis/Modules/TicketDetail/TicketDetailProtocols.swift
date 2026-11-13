@@ -14,6 +14,10 @@ struct TicketDetailViewModel {
     let canAdvance: Bool
     let advanceTitle: String
     let canCancel: Bool
+    // The "getting there" card. Hidden when there is nothing useful to say.
+    let proximityText: String?
+    let proximityActionTitle: String?
+    let canCheckIn: Bool
 }
 
 protocol TicketDetailViewProtocol: AnyObject {
@@ -26,10 +30,15 @@ protocol TicketDetailPresenterProtocol: AnyObject {
     func didTapAdvance()
     func didTapCancel()
     func didConfirmCancel()
+    func didTapCheckIn()
+    func didTapProximityAction()
 }
 
 protocol TicketDetailInteractorProtocol: AnyObject {
     var ticket: QueueTicket? { get }
     func advance()
     func cancel()
+    func checkIn()
+    var locationStatus: LocationAuthorization { get }
+    func refreshTravel(requestPermission: Bool) async
 }

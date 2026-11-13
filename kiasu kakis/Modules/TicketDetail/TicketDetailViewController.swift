@@ -17,6 +17,10 @@ final class TicketDetailViewController: UIViewController {
     private var stepLabels: [UILabel] = []
     private let advanceButton = UIButton(type: .system)
     private let cancelButton = UIButton(type: .system)
+    private let proximityLabel = UILabel()
+    private let proximityActionButton = UIButton(type: .system)
+    private let checkInButton = UIButton(type: .system)
+    private var proximityCard = UIView()
     private let stepTitles = ["Waiting", "Almost", "Called", "Done"]
     private var lastStatus: String?
 
@@ -98,7 +102,25 @@ final class TicketDetailViewController: UIViewController {
         cancelButton.configuration = cancelConfig
         cancelButton.addTarget(self, action: #selector(cancelTapped), for: .touchUpInside)
 
-        let content = UIStackView(arrangedSubviews: [ticketCard, stepsStack, messageLabel, info, cancelButton, advanceButton])
+        proximityLabel.font = .preferredFont(forTextStyle: .subheadline)
+        proximityLabel.numberOfLines = 0
+        var actionConfig = UIButton.Configuration.plain()
+        actionConfig.baseForegroundColor = Theme.brandText
+        proximityActionButton.configuration = actionConfig
+        proximityActionButton.addTarget(self, action: #selector(proximityActionTapped), for: .touchUpInside)
+        var checkInConfig = UIButton.Configuration.tinted()
+        checkInConfig.title = "I'm here"
+        checkInConfig.image = UIImage(systemName: "mappin.circle.fill")
+        checkInConfig.imagePadding = 6
+        checkInConfig.baseForegroundColor = Theme.brandText
+        checkInConfig.baseBackgroundColor = Theme.brand
+        checkInConfig.cornerStyle = .large
+        checkInButton.configuration = checkInConfig
+        checkInButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
+        checkInButton.addTarget(self, action: #selector(checkInTapped), for: .touchUpInside)
+        proximityCard = card([proximityLabel, proximityActionButton, checkInButton], alignment: .fill, spacing: 10)
+
+        let content = UIStackView(arrangedSubviews: [ticketCard, stepsStack, messageLabel, proximityCard, info, cancelButton, advanceButton])
         content.axis = .vertical
         content.spacing = 16
         content.translatesAutoresizingMaskIntoConstraints = false
@@ -152,6 +174,8 @@ final class TicketDetailViewController: UIViewController {
 
     @objc private func advanceTapped() { presenter.didTapAdvance() }
     @objc private func cancelTapped() { presenter.didTapCancel() }
+    @objc private func checkInTapped() { presenter.didTapCheckIn() }
+    @objc private func proximityActionTapped() { presenter.didTapProximityAction() }
 }
 
 extension TicketDetailViewController: TicketDetailViewProtocol {
@@ -191,6 +215,15 @@ extension TicketDetailViewController: TicketDetailViewProtocol {
         advanceButton.configuration = config
         advanceButton.isHidden = !model.canAdvance
         cancelButton.isHidden = !model.canCancel
+
+        proximityLabel.text = model.proximityText
+        proximityLabel.isHidden = model.proximityText == nil
+        var action = proximityActionButton.configuration
+        action?.title = model.proximityActionTitle
+        proximityActionButton.configuration = action
+        proximityActionButton.isHidden = model.proximityActionTitle == nil
+        checkInButton.isHidden = !model.canCheckIn
+        proximityCard.isHidden = model.proximityText == nil && !model.canCheckIn
     }
 
     func askToConfirmCancel() {

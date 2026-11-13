@@ -19,6 +19,8 @@ protocol QueueServicing: AnyObject {
     // Removes tickets from the history. Active tickets are never removed by id.
     func deleteTicket(id: UUID)
     func deleteTickets(where shouldDelete: (QueueTicket) -> Bool)
+    func setTravelMinutes(_ minutes: Int, forTicket id: UUID)
+    func checkIn(ticketID: UUID)
     @discardableResult func progressTickets(now: Date, interval: TimeInterval) -> Bool
 }
 
@@ -155,6 +157,18 @@ final class QueueService: QueueServicing {
     func deleteTickets(where shouldDelete: (QueueTicket) -> Bool) {
         let remaining = tickets.filter { !shouldDelete($0) }
         if remaining.count != tickets.count { tickets = remaining }
+    }
+
+    func setTravelMinutes(_ minutes: Int, forTicket id: UUID) {
+        guard let index = tickets.firstIndex(where: { $0.id == id }), tickets[index].status.isActive,
+              tickets[index].travelMinutes != minutes else { return }
+        tickets[index].travelMinutes = minutes
+    }
+
+    func checkIn(ticketID: UUID) {
+        guard let index = tickets.firstIndex(where: { $0.id == ticketID }), tickets[index].status.isActive,
+              tickets[index].arrivedAt == nil else { return }
+        tickets[index].arrivedAt = clock()
     }
 
     func cancel(ticketID: UUID) {

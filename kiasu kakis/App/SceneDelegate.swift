@@ -25,6 +25,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneDidBecomeActive(_ scene: UIScene) {
         _ = QueueService.shared   // Make sure it is listening before the first tick.
         QueueSimulator.shared.start()
+        Task { await TicketTravelUpdater().refreshAllActive() }
     }
 
     func sceneWillResignActive(_ scene: UIScene) {

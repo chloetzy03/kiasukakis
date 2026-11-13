@@ -1,0 +1,48 @@
+"kiasu kakis/Modules/About/AboutViewController.swift"
+  s_83605c29a5e567::t_44bd30be56987f 8
+"kiasu kakis/Modules/MyQueues/MyQueuesViewController.swift"
+  s_83605c29a5e567::t_ffd5191c0ab7eb 94-117
+"kiasu kakis/Modules/Explore/ExploreViewController.swift"
+  s_83605c29a5e567::t_44bd30be56987f 110
+"kiasu kakis/Modules/Explore/ExploreRouter.swift"
+  s_83605c29a5e567::t_44bd30be56987f 20-21
+"kiasu kakis/Modules/MyQueues/MyQueuesInteractor.swift"
+  s_83605c29a5e567::t_ffd5191c0ab7eb 6,8-9,11,15-20
+"kiasu kakis/Modules/Explore/QueueSheetView.swift"
+  s_83605c29a5e567::t_44bd30be56987f 13,52,77-78,191,196,198,202-208,229,231,320-328
+"kiasu kakis/Modules/Explore/ExploreInteractor.swift"
+  s_83605c29a5e567::t_44bd30be56987f 12,18-19,25,77-79
+  s_83605c29a5e567::t_1966d0b9baad1d 80
+"kiasu kakis/Modules/MyQueues/MyQueuesProtocols.swift"
+  s_83605c29a5e567::t_ffd5191c0ab7eb 8-10,26-27,32-34
+"kiasu kakis/Modules/MyQueues/MyQueuesPresenter.swift"
+  s_83605c29a5e567::t_ffd5191c0ab7eb 22-23,31-43,53-55
+"kiasu kakis/Modules/Explore/ExplorePresenter.swift"
+  s_83605c29a5e567::t_44bd30be56987f 148-153,338,366-367
+  s_83605c29a5e567::t_a79d3c134fb315 327
+"kiasu kakis/Modules/TicketDetail/TicketDetailPresenter.swift"
+  s_83605c29a5e567::t_44bd30be56987f 75
+"kiasu kakis/Modules/Explore/ExploreProtocols.swift"
+  s_83605c29a5e567::t_44bd30be56987f 32,110,123-124
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "57be5e80b3d30645c2640ce22028d2313e29161b",
+  "prompts": {},
+  "humans": {
+    "h_ee194195c1c2bb": {
+      "author": "chloe <chloetzy03@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_83605c29a5e567": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "1e007083-5ef8-4fa4-a40d-8019fcebb6dc",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

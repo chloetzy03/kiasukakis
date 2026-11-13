@@ -1,0 +1,33 @@
+docs/assets/site.js
+  s_83605c29a5e567::t_acfc7c4067b46f 235-236,258-263,266-267,274-277,281-291,294,298-299,310,312
+  s_83605c29a5e567::t_220bae89f73c15 237,292-293,295-297
+docs/assets/site.css
+  s_83605c29a5e567::t_c4048e41318a45 129
+  s_83605c29a5e567::t_acfc7c4067b46f 291
+  s_83605c29a5e567::t_220bae89f73c15 130,134
+  s_83605c29a5e567::t_589e7060177506 128,131-133,135-147,259
+docs/index.html
+  s_83605c29a5e567::t_220bae89f73c15 14,86,243
+  s_83605c29a5e567::t_589e7060177506 71,73-85,87
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "acaed601ad1695382b0b234fde11b397af531a58",
+  "prompts": {},
+  "humans": {
+    "h_ee194195c1c2bb": {
+      "author": "chloe <chloetzy03@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_83605c29a5e567": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "1e007083-5ef8-4fa4-a40d-8019fcebb6dc",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

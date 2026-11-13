@@ -232,7 +232,9 @@
   }
 
   var heroWrap = $('#heroWrap'), heroPhone = $('.phone-hero'), heroScreen = $('#heroScreens');
-  var heroMap = $('#heroMap'), heroSummary = $('#heroSummary'), heroCopy = $('.hero-copy'), heroTags = $$('.hero-tag');
+  var heroMap = $('#heroMap'), heroCopy = $('.hero-copy');
+  var stage = $('#zoomStage'), washG = $('#washG'), washR = $('#washR'), zcard = $('#zcard'), zbtn = $('#zbtn');
+  var zcap2 = $('#zcap2'), zcap3 = $('#zcap3'), zticket = $('#zticket'), washC = $('#washC'), zm = null;
   var pills = $$('.float-pill'), peek = $('#heroEyes');
   var problemTrack = $('#problem'), bigNum = $('#bigNum'), bigUnit = $('#bigUnit'), bigCap = $('#bigCap');
   var howTrack = $('#howTrack'), howScreens = $$('#howScreens img'), howSteps = $$('#howSteps li'), howDots = $$('#howDots i');
@@ -253,23 +255,46 @@
       center: { x: phone.left + phone.width / 2 - box.left, y: phone.top + phone.height / 2 - box.top }
     };
     heroPhone.style.transform = saved;
+    var st = stage.getBoundingClientRect(), saveCard = zcard.style.transform;
+    zcard.style.transform = 'none';
+    var card = zcard.getBoundingClientRect(), btn = zbtn.getBoundingClientRect();
+    zm = { ox: btn.left + btn.width / 2 - card.left, oy: btn.top + btn.height / 2 - card.top,
+           dx: st.left + st.width / 2 - (btn.left + btn.width / 2), dy: st.top + st.height / 2 - (btn.top + btn.height / 2) };
+    zcard.style.transform = saveCard;
   }
 
-  var ZOOM = 2.2;
+  var ZOOM = 3.2, ZOOM_BTN = 7;
+  // The phone dives into the green pin, which keeps its colour and grows into the next scene.
   function renderHero(p) {
     if (narrow() || !rest) return;
     var box = heroBox.getBoundingClientRect();
     var pin = { x: box.left + rest.pin.x, y: box.top + rest.pin.y };
     var mid = { x: box.left + rest.center.x, y: box.top + rest.center.y };
     var vp = { x: window.innerWidth / 2, y: box.top + box.height / 2 };
-    var e1 = ease(clamp(p / 0.42, 0, 1)), e2 = ease(clamp((p - 0.5) / 0.32, 0, 1));
-    var s = lerp(lerp(1, ZOOM, e1), rest.final, e2);
-    // f is the point of the phone we keep pinned to `aim` on screen: first the pin, then the phone's centre.
-    var f = { x: lerp(pin.x, mid.x, e2), y: lerp(pin.y, mid.y, e2) };
-    var aim = { x: lerp(f.x, vp.x, e1), y: lerp(f.y, vp.y, e1) };
-    var tx = aim.x - mid.x - s * (f.x - mid.x);
-    var ty = aim.y - mid.y - s * (f.y - mid.y);
+    var e = ease(clamp(p / 0.3, 0, 1)), s = lerp(1, ZOOM, e);
+    var aim = { x: lerp(pin.x, vp.x, e), y: lerp(pin.y, vp.y, e) };
+    var tx = aim.x - mid.x - s * (pin.x - mid.x);
+    var ty = aim.y - mid.y - s * (pin.y - mid.y);
     heroPhone.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + s + ')';
+  }
+
+  function paintScenes(p) {
+    if (narrow() || !zm) return;
+    var R = Math.hypot(stage.clientWidth, stage.clientHeight) * 0.55;
+    washG.style.clipPath = 'circle(' + (R * ease(clamp((p - 0.24) / 0.22, 0, 1))) + 'px at 50% 50%)';
+    washR.style.clipPath = 'circle(' + (R * ease(clamp((p - 0.7) / 0.13, 0, 1))) + 'px at 50% 50%)';
+    var appear = ease(clamp((p - 0.44) / 0.14, 0, 1)), dive = ease(clamp((p - 0.62) / 0.16, 0, 1));
+    var s = lerp(lerp(0.55, 1, appear), ZOOM_BTN, dive);
+    zcard.style.transformOrigin = zm.ox + 'px ' + zm.oy + 'px';
+    zcard.style.transform = 'translate(' + (zm.dx * dive) + 'px,' + (zm.dy * dive) + 'px) scale(' + s + ')';
+    zcard.style.opacity = p > 0.84 ? 0 : appear;
+    zcap2.style.opacity = appear * (1 - clamp((p - 0.6) / 0.06, 0, 1));
+    // Last dive: into the ticket, which opens out onto the cream page.
+    var t = ease(clamp((p - 0.84) / 0.08, 0, 1)), out = ease(clamp((p - 0.92) / 0.08, 0, 1));
+    zticket.style.opacity = t;
+    zticket.style.transform = 'scale(' + lerp(lerp(0.55, 1, t), 5, out) + ')';
+    zcap3.style.opacity = t * (1 - clamp(out * 3, 0, 1));
+    washC.style.clipPath = 'circle(' + (R * ease(clamp((p - 0.94) / 0.06, 0, 1))) + 'px at 50% 50%)';
   }
 
   var state = { hero: 0, problem: 0, how: 0 };
@@ -282,15 +307,9 @@
     heroCopy.style.transform = 'translateX(' + (-40 * ease(gone)) + 'px)';
     pills.forEach(function (el) { el.style.opacity = 1 - gone; });
     peek.style.opacity = 1 - gone;
-    var swap = ease(clamp((p - 0.38) / 0.2, 0, 1));
-    heroMap.style.opacity = 1 - swap;
-    heroSummary.style.opacity = swap;
-    var tag = clamp((p - 0.84) / 0.12, 0, 1);
-    heroTags.forEach(function (el, i) {
-      el.style.opacity = tag;
-      el.style.transform = 'translate(' + ((i ? 24 : -24) * (1 - tag)) + 'px, -50%)';
-    });
+    heroPhone.style.opacity = p > 0.5 ? 0 : 1;
     renderHero(p);
+    paintScenes(p);
   }
 
   function paintProblem(p) {

@@ -11,7 +11,7 @@
   <meta property="og:image" content="assets/screens/map.jpg">
   <link rel="icon" type="image/png" href="assets/icon/favicon.png">
   <link rel="apple-touch-icon" href="assets/icon/apple-touch-icon.png">
-  <link rel="stylesheet" href="assets/site.css?v=3">
+  <link rel="stylesheet" href="assets/site.css?v=6">
   <script>
     // Set the theme before the page paints, so there is no flash of the wrong colours.
     (function () {
@@ -62,16 +62,29 @@
         <div class="phone phone-hero">
           <div class="phone-screen" id="heroScreens">
             <img src="assets/screens/map.jpg" alt="The Kiasu Kakis map with colour-coded wait pins" id="heroMap" width="600" height="1304">
-            <img src="assets/screens/summary.jpg" alt="A place summary with the wait, groups ahead and a Join queue button" id="heroSummary" width="600" height="1304">
           </div>
         </div>
         <span class="float-pill p1 g">8 min</span>
         <span class="float-pill p2 a">15 min</span>
         <span class="float-pill p3 o">35 min</span>
       </div>
-      <p class="hero-tag left" aria-hidden="true">Tap a pin.<br>See the wait.</p>
-      <p class="hero-tag right" aria-hidden="true">Join.<br><span>Eat when it's time.</span></p>
+
     </section>
+    <div class="zoom-stage" id="zoomStage" aria-hidden="true">
+      <div class="wash wash-green" id="washG"></div>
+      <p class="zcap" id="zcap2">Tap a pin. See the wait.</p>
+      <div class="zcard" id="zcard">
+        <div class="zrow"><i class="zdot"></i><b>8 min</b></div>
+        <h3>Ya Kun Kaya Toast</h3>
+        <p>Café · Far East Square, 18 China St</p>
+        <p class="zsmall">About 2 groups ahead · Simulated</p>
+        <span class="zbtn" id="zbtn">Join queue</span>
+      </div>
+      <div class="wash wash-red" id="washR"></div>
+      <p class="zcap light" id="zcap3">Join. Eat when it's time.</p>
+      <div class="zticket" id="zticket"><small>Your ticket</small><b>#023</b><span>You're in. About 2 groups ahead.</span></div>
+      <div class="wash wash-cream" id="washC"></div>
+    </div>
     </div>
 
     <!-- TICKER -->
@@ -227,6 +240,6 @@
     <p><a href="https://github.com/chloetzy03/kiasukakis" target="_blank" rel="noopener">GitHub</a> · <a href="#top">Back to top</a></p>
   </footer>
 
-  <script src="assets/site.js?v=3" defer></script>
+  <script src="assets/site.js?v=6" defer></script>
 </body>
 </html>

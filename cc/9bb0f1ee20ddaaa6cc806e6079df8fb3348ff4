@@ -1,0 +1,25 @@
+docs/assets/site.js
+  s_83605c29a5e567::t_97011371afadd8 243-244,249,252-253,261-264,268,270-271,356
+  s_83605c29a5e567::t_64d478be206dae 251,266
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "cc9bb0f1ee20ddaaa6cc806e6079df8fb3348ff4",
+  "prompts": {},
+  "humans": {
+    "h_ee194195c1c2bb": {
+      "author": "chloe <chloetzy03@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_83605c29a5e567": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "1e007083-5ef8-4fa4-a40d-8019fcebb6dc",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

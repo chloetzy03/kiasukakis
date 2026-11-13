@@ -94,7 +94,8 @@ final class TicketDetailViewController: UIViewController {
         cancelButton.configuration = cancelConfig
         cancelButton.addTarget(self, action: #selector(cancelTapped), for: .touchUpInside)
 
-        proximityLabel.font = .preferredFont(forTextStyle: .subheadline)
+        proximityLabel.font = .preferredFont(forTextStyle: .headline)
+        proximityLabel.textAlignment = .center
         proximityLabel.numberOfLines = 0
         var actionConfig = UIButton.Configuration.plain()
         actionConfig.baseForegroundColor = Theme.brandText
@@ -173,6 +174,7 @@ extension TicketDetailViewController: TicketDetailViewProtocol {
         summaryLabel.text = model.summaryText
         footnoteLabel.text = model.footnoteText
         messageLabel.text = model.message
+        messageLabel.isHidden = model.message.isEmpty
 
         stepsStack.isHidden = model.stepIndex == nil
         // The four coloured bars read as one progress indicator.

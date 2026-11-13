@@ -29,20 +29,13 @@ final class TicketDetailPresenter: TicketDetailPresenterProtocol {
 
     // Compares the trip with what is left of the queue (about 5 minutes a group) so the user knows when to go.
     private func proximity(for ticket: QueueTicket) -> (text: String?, action: String?) {
-        if ticket.arrivedAt != nil { return ("You've checked in. Enjoy your meal!", nil) }
+        if ticket.arrivedAt != nil { return ("You're here. Enjoy!", nil) }
         guard ticket.status == .waiting || ticket.status == .almostYourTurn else { return (nil, nil) }
         if let travel = ticket.travelMinutes {
-            let wait = ticket.position * QueueService.minutesPerGroup
-            let spare = wait - travel
-            let text = spare <= 0
-                ? "Leave now. It takes about \(travel) min to get there."
-                : "It takes about \(travel) min to get there. Leave in about \(spare) min."
-            // The demo queue runs much faster than real time, so say so.
-            return (simulator.speed == .demo ? text + " Demo mode runs faster than real life." : text, nil)
+            let spare = ticket.position * QueueService.minutesPerGroup - travel
+            return (spare <= 0 ? "Leave now · \(travel) min away" : "Leave in \(spare) min · \(travel) min away", nil)
         }
-        if interactor.locationStatus != .authorized {
-            return ("Turn on location and we'll alert you when it's time to leave.", "Allow location")
-        }
+        if interactor.locationStatus != .authorized { return ("Want a leave alert?", "Turn on location") }
         return (nil, nil)
     }
 
@@ -65,17 +58,18 @@ final class TicketDetailPresenter: TicketDetailPresenterProtocol {
 
         let positionText: String
         switch ticket.status {
-        case .waiting, .almostYourTurn: positionText = position == 1 ? "1 group ahead of you" : "\(position) groups ahead of you"
+        case .waiting, .almostYourTurn: positionText = position == 1 ? "1 group ahead" : "\(position) groups ahead"
         case .called: positionText = "It's your turn"
         default: positionText = "Not in queue"
         }
 
+        // Only say something when the user needs to act. A waiting ticket speaks for itself.
         let message: String
         switch ticket.status {
-        case .waiting: message = "You're in the queue. Head over when you're close to being called."
-        case .almostYourTurn: message = "Almost your turn! Start heading to the venue."
-        case .called: message = "It's your turn! Please go to the venue now."
-        case .completed: message = "Ticket completed. Enjoy!"
+        case .waiting: message = ""
+        case .almostYourTurn: message = "You're next. Head over now."
+        case .called: message = "It's your turn. Go in now."
+        case .completed: message = "Done. Enjoy!"
         case .cancelled: message = "You left this queue."
         case .expired: message = "This ticket expired."
         }
@@ -94,8 +88,8 @@ final class TicketDetailPresenter: TicketDetailPresenterProtocol {
             ticketNumberText: String(format: "#%03d", ticket.ticketNumber),
             statusText: ticket.status.rawValue,
             statusColor: Theme.color(for: ticket.status),
-            summaryText: isWaiting ? "\(positionText) · \(simulator.speed.estimateText(groups: position))" : positionText,
-            footnoteText: String(format: "Now serving #%03d · ", ticket.nowServing) + (ticket.partySize == 1 ? "1 person" : "\(ticket.partySize) people"),
+            summaryText: isWaiting ? "\(positionText) · " + simulator.speed.estimateText(groups: position).replacingOccurrences(of: "About ", with: "~") : positionText,
+            footnoteText: String(format: "Now serving #%03d", ticket.nowServing),
             message: message,
             stepIndex: step,
             // Skipping ahead is a presentation tool, so it hides unless demo controls are on. Finishing a called ticket always shows.

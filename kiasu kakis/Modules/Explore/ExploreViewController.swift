@@ -15,6 +15,7 @@ final class ExploreViewController: UIViewController {
     private let offlineLabel = UILabel()
     private let sheet = QueueSheetView()
     private let locateButton = UIButton(type: .system)
+    private let legend = WaitLegendView()
     private let searchAreaButton = UIButton(type: .system)
     private let resultsTable = UITableView(frame: .zero, style: .plain)
     private let resultsFooter = UILabel()
@@ -215,7 +216,9 @@ final class ExploreViewController: UIViewController {
     // The locate button rides on top of the sheet, and hides when the sheet is too tall for it.
     private func updateLocateVisibility() {
         let visible = view.bounds.height - sheetTop.constant
-        locateButton.alpha = visible > view.bounds.height * 0.62 ? 0 : 1
+        let alpha: CGFloat = visible > view.bounds.height * 0.62 ? 0 : 1
+        locateButton.alpha = alpha
+        legend.alpha = alpha
     }
 
     private func availableStops() -> [SheetStop] {
@@ -287,6 +290,13 @@ final class ExploreViewController: UIViewController {
         NSLayoutConstraint.activate([
             locateButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             locateButton.bottomAnchor.constraint(equalTo: sheet.topAnchor, constant: -12)
+        ])
+        legend.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(legend)
+        NSLayoutConstraint.activate([
+            legend.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            legend.bottomAnchor.constraint(equalTo: sheet.topAnchor, constant: -12),
+            legend.trailingAnchor.constraint(lessThanOrEqualTo: locateButton.leadingAnchor, constant: -8)
         ])
     }
 

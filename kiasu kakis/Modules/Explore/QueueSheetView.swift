@@ -330,7 +330,8 @@ final class QueueSheetView: UIView {
         var config = joinButton.configuration
         config?.title = model.joinTitle
         joinButton.configuration = config
-        joinButton.isEnabled = model.canJoin
+        // A button that does nothing looks broken, so places you can't join just show their queue note.
+        joinButton.isHidden = !model.canJoin
         var bookmarkConfig = UIButton.Configuration.plain()
         bookmarkConfig.image = UIImage(systemName: model.isSaved ? "bookmark.fill" : "bookmark")
         bookmarkConfig.baseForegroundColor = Theme.brandText

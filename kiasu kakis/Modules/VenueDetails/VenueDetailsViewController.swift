@@ -274,7 +274,7 @@ extension VenueDetailsViewController: VenueDetailsViewProtocol {
         var config = joinButton.configuration
         config?.title = model.hasActiveTicket ? "View my ticket" : model.actionTitle
         joinButton.configuration = config
-        joinButton.isEnabled = model.canJoin || model.hasActiveTicket
+        joinButton.isHidden = !(model.canJoin || model.hasActiveTicket)
 
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: model.isSaved ? "bookmark.fill" : "bookmark"),

@@ -8,15 +8,18 @@ final class ExploreInteractor: ExploreInteractorProtocol {
     private let placeSearch: PlaceSearching
     private let suggester: PlaceSuggesting
     private let simulator: QueueSimulating
+    private let queueService: QueueServicing
 
     init(repository: VenueProviding = VenueRepository.shared,
          placeSearch: PlaceSearching = PlaceSearchService(),
          suggester: PlaceSuggesting = PlaceSuggestionService(),
-         simulator: QueueSimulating = QueueSimulator.shared) {
+         simulator: QueueSimulating = QueueSimulator.shared,
+         queueService: QueueServicing = QueueService.shared) {
         self.repository = repository
         self.placeSearch = placeSearch
         self.suggester = suggester
         self.simulator = simulator
+        self.queueService = queueService
     }
 
     func listings(matching query: String, category: VenueCategory?) -> [VenueListing] {
@@ -63,6 +66,10 @@ final class ExploreInteractor: ExploreInteractorProtocol {
         guard let venue = await suggester.resolve(suggestion) else { return nil }
         return repository.resolve(venue)
     }
+
+    func allListings() -> [VenueListing] { listings(matching: "", category: nil) }
+
+    func activeTicket(forVenue venueID: String) -> QueueTicket? { queueService.activeTicket(forVenue: venueID) }
 
     func listing(id: String) -> VenueListing? {
         guard let venue = repository.venue(id: id) else { return nil }

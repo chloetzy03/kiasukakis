@@ -21,6 +21,17 @@ final class ExploreRouter: ExploreRouterProtocol {
         viewController?.present(nav, animated: true)
     }
 
+    func showJoinQueue(for venue: Venue) {
+        let join = JoinQueueRouter.createModule(venue: venue) { [weak self] ticketID in
+            self?.showTicket(id: ticketID)
+        }
+        viewController?.present(join, animated: true)
+    }
+
+    func showTicket(id: UUID) {
+        (viewController?.tabBarController as? MainTabBarController)?.showTicket(id)
+    }
+
     func showVenueDetails(venueID: String, venueName: String) {
         guard let venue = VenueRepository.shared.venue(id: venueID) else { return }
         let details = VenueDetailsRouter.createModule(venue: venue)

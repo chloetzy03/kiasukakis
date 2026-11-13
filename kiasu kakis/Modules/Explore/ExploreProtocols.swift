@@ -27,6 +27,31 @@ struct VenuePreviewViewModel {
     let waitColor: UIColor
     let sourceText: String
     let queueText: String
+    let joinTitle: String
+    let canJoin: Bool
+}
+
+// One row in the sheet's list of queues.
+struct QueueRowViewModel: Equatable {
+    let name: String
+    let subtitle: String
+    let waitText: String
+    let badgeColor: UIColor
+    let badgeTextColor: UIColor
+    let spoken: String
+}
+
+struct QueueListViewModel: Equatable {
+    struct Empty: Equatable {
+        let title: String
+        let message: String
+        let buttonTitle: String?
+    }
+    let title: String
+    let subtitle: String
+    let rows: [QueueRowViewModel]
+    // Set when nothing in view has a queue.
+    let empty: Empty?
 }
 
 // One row in the search results list.
@@ -62,7 +87,7 @@ protocol ExploreViewProtocol: AnyObject {
     func showCategories(_ titles: [String], selectedIndex: Int)
     func showPins(_ pins: [VenuePinViewModel], selectedID: String?)
     func showPreview(_ preview: VenuePreviewViewModel?)
-    func showEmptyState(_ message: String?)
+    func showQueueList(_ model: QueueListViewModel)
     func showOfflineBanner(_ isVisible: Bool)
     func showAreaStatus(_ status: AreaStatus)
     func showSuggestions(_ viewModel: SuggestionsViewModel?)
@@ -73,11 +98,15 @@ protocol ExploreViewProtocol: AnyObject {
 
 protocol ExplorePresenterProtocol: AnyObject {
     func viewDidLoad()
+    func viewWillAppear()
     func didChangeSearch(_ text: String)
     func didSelectCategory(at index: Int)
     func didSelectVenue(id: String)
     func didDeselectVenue()
     func didTapPreview()
+    func didSelectQueueRow(at index: Int)
+    func didTapSheetJoin()
+    func didTapNearestQueue()
     func didChangeRegion(_ region: MKCoordinateRegion)
     func didTapRetrySearch()
     func didSelectSuggestion(at index: Int)
@@ -87,6 +116,8 @@ protocol ExplorePresenterProtocol: AnyObject {
 protocol ExploreInteractorProtocol: AnyObject {
     func listings(matching query: String, category: VenueCategory?) -> [VenueListing]
     func listing(id: String) -> VenueListing?
+    func allListings() -> [VenueListing]
+    func activeTicket(forVenue venueID: String) -> QueueTicket?
     @MainActor func discoverPlaces(in region: MKCoordinateRegion, onProgress: () -> Void) async throws
     func listings(matching query: String, category: VenueCategory?, in region: MKCoordinateRegion) -> [VenueListing]
     func localSuggestions(matching query: String, near center: CLLocationCoordinate2D) -> [PlaceSuggestion]
@@ -97,4 +128,6 @@ protocol ExploreInteractorProtocol: AnyObject {
 protocol ExploreRouterProtocol: AnyObject {
     func showVenueDetails(venueID: String, venueName: String)
     func showAbout()
+    func showJoinQueue(for venue: Venue)
+    func showTicket(id: UUID)
 }

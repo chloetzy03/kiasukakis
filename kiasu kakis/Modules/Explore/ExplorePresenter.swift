@@ -17,6 +17,7 @@ final class ExplorePresenter: ExplorePresenterProtocol {
     private var searchTask: Task<Void, Never>?
     private var suggestionTask: Task<Void, Never>?
     private var queueObserver: QueueChangeObserver?
+    private var queueRowIDs: [String] = []
     private var suggestions: [PlaceSuggestion] = []
     private static let singaporeCenter = CLLocationCoordinate2D(latitude: 1.2950, longitude: 103.8500)
     // Zoomed out further than this (about 15 km tall), a search would be too broad to be useful.
@@ -46,7 +47,7 @@ final class ExplorePresenter: ExplorePresenterProtocol {
 
     private func queueDataChanged() {
         refresh()
-        if let selectedID { view?.showPreview(interactor.listing(id: selectedID).map { Self.makePreview($0) }) }
+        if let selectedID { view?.showPreview(interactor.listing(id: selectedID).map { makePreview($0) }) }
     }
 
     // Typing shows matches we already know straight away, then adds Google or Apple Maps suggestions
@@ -98,7 +99,7 @@ final class ExplorePresenter: ExplorePresenterProtocol {
             view?.showCategories(["All"] + categories.map(\.rawValue), selectedIndex: 0)
             selectedID = venue.id
             refresh()
-            view?.showPreview(interactor.listing(id: venue.id).map { Self.makePreview($0) })
+            view?.showPreview(interactor.listing(id: venue.id).map { makePreview($0) })
             view?.focusMap(on: region)
         }
     }
@@ -126,9 +127,51 @@ final class ExplorePresenter: ExplorePresenterProtocol {
         refresh()
     }
 
+    func viewWillAppear() { queueDataChanged() }
+
+    // Tapping a row in the sheet: move the map to that place and open its summary.
+    func didSelectQueueRow(at index: Int) {
+        guard queueRowIDs.indices.contains(index) else { return }
+        focus(onVenueID: queueRowIDs[index], zoomedIn: false)
+    }
+
+    func didTapNearestQueue() {
+        let center = visibleRegion?.center ?? Self.singaporeCenter
+        let here = CLLocation(latitude: center.latitude, longitude: center.longitude)
+        let nearest = interactor.allListings()
+            .filter { $0.snapshot.waitMinutes != nil }
+            .min { here.distance(from: CLLocation(latitude: $0.venue.latitude, longitude: $0.venue.longitude))
+                 < here.distance(from: CLLocation(latitude: $1.venue.latitude, longitude: $1.venue.longitude)) }
+        if let nearest { focus(onVenueID: nearest.venue.id, zoomedIn: true) }
+    }
+
+    func didTapSheetJoin() {
+        guard let id = selectedID, let listing = interactor.listing(id: id) else { return }
+        if let ticket = interactor.activeTicket(forVenue: id) {
+            router.showTicket(id: ticket.id)
+        } else if listing.venue.queueSupport == .demoSupported {
+            router.showJoinQueue(for: listing.venue)
+        }
+    }
+
+    private func focus(onVenueID id: String, zoomedIn: Bool) {
+        guard let listing = interactor.listing(id: id) else { return }
+        category = nil
+        view?.showCategories(["All"] + categories.map(\.rawValue), selectedIndex: 0)
+        let span = zoomedIn ? MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
+                            : (visibleRegion?.span ?? MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02))
+        let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: listing.venue.latitude,
+                                                                       longitude: listing.venue.longitude), span: span)
+        visibleRegion = region
+        selectedID = id
+        refresh()
+        view?.showPreview(makePreview(listing))
+        view?.focusMap(on: region)
+    }
+
     func didSelectVenue(id: String) {
         selectedID = id
-        view?.showPreview(interactor.listing(id: id).map { Self.makePreview($0) })
+        view?.showPreview(interactor.listing(id: id).map { makePreview($0) })
     }
 
     func didDeselectVenue() {
@@ -212,9 +255,39 @@ final class ExplorePresenter: ExplorePresenterProtocol {
             view?.showPreview(nil)
         }
         view?.showPins(listings.map { Self.makePin($0) }, selectedID: selectedID)
-        // When the map is too zoomed out to search, the "Zoom in" pill already explains the empty map.
+
+        // The sheet lists only places that have a queue, shortest wait first.
+        let queues = listings
+            .filter { $0.snapshot.waitMinutes != nil }
+            .sorted { ($0.snapshot.waitMinutes ?? 0) < ($1.snapshot.waitMinutes ?? 0) }
+        queueRowIDs = queues.map(\.venue.id)
         let tooFarOut = (visibleRegion?.span.latitudeDelta ?? 0) > Self.maxSearchSpan
-        view?.showEmptyState(listings.isEmpty && !tooFarOut ? "No places found here. Try moving or zooming the map." : nil)
+        view?.showQueueList(makeQueueList(queues, tooFarOut: tooFarOut))
+    }
+
+    private func makeQueueList(_ queues: [VenueListing], tooFarOut: Bool) -> QueueListViewModel {
+        let rows = queues.map { listing -> QueueRowViewModel in
+            let minutes = listing.snapshot.waitMinutes
+            let wait = Self.waitText(for: listing.snapshot)
+            return QueueRowViewModel(name: listing.venue.name,
+                                     subtitle: "\(listing.venue.category.rawValue) · \(listing.venue.address)",
+                                     waitText: wait,
+                                     badgeColor: Theme.waitColor(forMinutes: minutes),
+                                     badgeTextColor: Theme.pinTextColor(forMinutes: minutes),
+                                     spoken: "\(listing.venue.name), " + QueueFormatting.spoken(wait) + " wait")
+        }
+        var empty: QueueListViewModel.Empty?
+        if rows.isEmpty {
+            empty = tooFarOut
+                ? QueueListViewModel.Empty(title: "Zoom in to see queues",
+                                           message: "The map is zoomed out too far to show queues.", buttonTitle: nil)
+                : QueueListViewModel.Empty(title: "No queues in this area yet",
+                                           message: "Kiasu Kakis shows places you can queue at.",
+                                           buttonTitle: "Go to nearest queue")
+        }
+        return QueueListViewModel(title: "Queues in this area",
+                                  subtitle: rows.isEmpty ? "" : (rows.count == 1 ? "1 queue" : "\(rows.count) queues"),
+                                  rows: rows, empty: empty)
     }
 
     // MARK: - Formatting
@@ -249,7 +322,7 @@ final class ExplorePresenter: ExplorePresenterProtocol {
         }
     }
 
-    private static func makePreview(_ listing: VenueListing) -> VenuePreviewViewModel {
+    private func makePreview(_ listing: VenueListing) -> VenuePreviewViewModel {
         let snapshot = listing.snapshot
         let source: String
         if snapshot.waitMinutes == nil {
@@ -263,12 +336,26 @@ final class ExplorePresenter: ExplorePresenterProtocol {
         case .closed: queue = "Queue closed"
         case .unsupported: queue = listing.venue.isDemo ? "Remote queue not supported" : "Real place · no queue data"
         }
+        let joinTitle: String
+        var canJoin = false
+        if interactor.activeTicket(forVenue: listing.venue.id) != nil {
+            joinTitle = "View my ticket"
+            canJoin = true
+        } else {
+            switch listing.venue.queueSupport {
+            case .demoSupported: joinTitle = "Join queue"; canJoin = true
+            case .closed: joinTitle = "Queue closed"
+            case .unsupported: joinTitle = listing.venue.isDemo ? "Remote queue not supported" : "No queue available"
+            }
+        }
         return VenuePreviewViewModel(id: listing.venue.id,
                                      name: listing.venue.name,
                                      subtitle: "\(listing.venue.category.rawValue) · \(listing.venue.address)",
-                                     waitText: waitText(for: snapshot),
+                                     waitText: Self.waitText(for: snapshot),
                                      waitColor: Theme.waitColor(forMinutes: snapshot.waitMinutes),
                                      sourceText: source,
-                                     queueText: queue)
+                                     queueText: queue,
+                                     joinTitle: joinTitle,
+                                     canJoin: canJoin)
     }
 }

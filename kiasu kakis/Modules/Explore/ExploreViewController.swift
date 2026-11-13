@@ -13,8 +13,7 @@ final class ExploreViewController: UIViewController {
     private let infoButton = UIButton(type: .infoLight)
     private let topOverlay = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterial))
     private let offlineLabel = UILabel()
-    private let previewCard = VenuePreviewCardView()
-    private let emptyLabel = UILabel()
+    private let sheet = QueueSheetView()
     private let locateButton = UIButton(type: .system)
     private let searchAreaButton = UIButton(type: .system)
     private let resultsTable = UITableView(frame: .zero, style: .plain)
@@ -25,8 +24,14 @@ final class ExploreViewController: UIViewController {
     private static let singaporeBounds = SingaporeBounds()
     private var annotations: [String: VenueAnnotation] = [:]
     private var selectedChipIndex = 0
-    private var previewHiddenConstraint: NSLayoutConstraint!
-    private var previewShownConstraint: NSLayoutConstraint!
+    private var sheetTop: NSLayoutConstraint!
+    private var sheetStop: SheetStop = .peek
+    // Where the sheet goes back to after a place summary is closed.
+    private var listStop: SheetStop = .peek
+    private var sheetPanStart: CGFloat = 0
+    private var isDraggingSheet = false
+
+    private enum SheetStop { case peek, half, full, detail, empty }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,15 +40,33 @@ final class ExploreViewController: UIViewController {
         view.backgroundColor = Theme.background
         setUpMap()
         setUpTopOverlay()
-        setUpPreviewCard()
+        setUpSheet()
         setUpLocateButton()
         setUpSearchAreaButton()
-        setUpEmptyLabel()
         setUpResultsList()
         searchBar.accessibilityLabel = "Search places"
         view.enableDynamicType()
         locationManager.delegate = self
         presenter.viewDidLoad()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // The map gets the whole screen. The venue details page brings the bar back when it is pushed.
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+        presenter.viewWillAppear()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        sheet.bottomInset = view.safeAreaInsets.bottom
+        if !isDraggingSheet { sheetTop.constant = top(for: sheetStop) }
+        updateLocateVisibility()
     }
 
     // MARK: - Layout
@@ -122,18 +145,117 @@ final class ExploreViewController: UIViewController {
         ])
     }
 
-    private func setUpPreviewCard() {
-        previewCard.translatesAutoresizingMaskIntoConstraints = false
-        previewCard.alpha = 0
-        previewCard.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(previewTapped)))
-        view.addSubview(previewCard)
-        previewShownConstraint = previewCard.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -12)
-        previewHiddenConstraint = previewCard.topAnchor.constraint(equalTo: view.bottomAnchor, constant: 20)
+    private func setUpSheet() {
+        sheet.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(sheet)
+        sheetTop = sheet.topAnchor.constraint(equalTo: view.topAnchor, constant: 10_000)
         NSLayoutConstraint.activate([
-            previewCard.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            previewCard.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            previewHiddenConstraint
+            sheet.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            sheet.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            sheet.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            sheetTop
         ])
+        sheet.onSelectRow = { [weak self] index in self?.presenter.didSelectQueueRow(at: index) }
+        sheet.onTapJoin = { [weak self] in self?.presenter.didTapSheetJoin() }
+        sheet.onTapDetails = { [weak self] in self?.presenter.didTapPreview() }
+        sheet.onTapEmptyAction = { [weak self] in self?.presenter.didTapNearestQueue() }
+        sheet.onClose = { [weak self] in self?.closeSummary() }
+
+        // Dragging the header moves the sheet. Tapping it opens or closes the list.
+        sheet.headerView.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(sheetPanned(_:))))
+        sheet.headerView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(sheetHeaderTapped)))
+        sheet.headerView.isAccessibilityElement = true
+        sheet.headerView.accessibilityLabel = "Queues in this area"
+        sheet.headerView.accessibilityTraits = .header
+        sheet.headerView.accessibilityCustomActions = [
+            UIAccessibilityCustomAction(name: "Show more of the list") { [weak self] _ in self?.moveSheet(toward: .full); return true },
+            UIAccessibilityCustomAction(name: "Show less of the list") { [weak self] _ in self?.moveSheet(toward: .peek); return true }
+        ]
+    }
+
+    // MARK: - Sheet positions
+
+    private func visibleHeight(for stop: SheetStop) -> CGFloat {
+        let height = view.bounds.height
+        let bottom = view.safeAreaInsets.bottom
+        switch stop {
+        case .peek: return sheet.peekHeight + bottom
+        case .half: return height * 0.5
+        case .full: return height - topOverlay.frame.maxY - 8
+        case .detail: return sheet.detailHeight(width: view.bounds.width) + bottom
+        case .empty: return sheet.emptyHeight(width: view.bounds.width) + bottom
+        }
+    }
+
+    private func top(for stop: SheetStop) -> CGFloat { view.bounds.height - visibleHeight(for: stop) }
+
+    private func setSheetStop(_ stop: SheetStop, animated: Bool) {
+        sheetStop = stop
+        if stop == .peek || stop == .half || stop == .full { listStop = stop }
+        sheetTop.constant = top(for: stop)
+        let changes = { self.view.layoutIfNeeded(); self.updateLocateVisibility() }
+        guard animated, !UIAccessibility.isReduceMotionEnabled else { changes(); return }
+        UIView.animate(withDuration: 0.35, delay: 0, usingSpringWithDamping: 0.85, initialSpringVelocity: 0.4,
+                       options: [.allowUserInteraction, .beginFromCurrentState], animations: changes)
+    }
+
+    // The locate button rides on top of the sheet, and hides when the sheet is too tall for it.
+    private func updateLocateVisibility() {
+        let visible = view.bounds.height - sheetTop.constant
+        locateButton.alpha = visible > view.bounds.height * 0.62 ? 0 : 1
+    }
+
+    private func availableStops() -> [SheetStop] {
+        switch sheet.mode {
+        case .detail: return [.detail]
+        case .list: return sheet.listModel?.empty != nil ? [.empty] : [.peek, .half, .full]
+        }
+    }
+
+    private func moveSheet(toward stop: SheetStop) {
+        guard sheet.mode == .list, sheet.listModel?.empty == nil else { return }
+        setSheetStop(stop, animated: true)
+    }
+
+    @objc private func sheetHeaderTapped() {
+        guard sheet.mode == .list, sheet.listModel?.empty == nil else { return }
+        setSheetStop(sheetStop == .peek ? .half : .peek, animated: true)
+    }
+
+    @objc private func sheetPanned(_ pan: UIPanGestureRecognizer) {
+        switch pan.state {
+        case .began:
+            isDraggingSheet = true
+            sheetPanStart = sheetTop.constant
+        case .changed:
+            let stops = availableStops()
+            let highest = stops.map { top(for: $0) }.min() ?? 0
+            let lowest = stops.map { top(for: $0) }.max() ?? 0
+            let proposed = sheetPanStart + pan.translation(in: view).y
+            // A little give past the ends, so it feels like it is attached to the finger.
+            let limited = proposed < highest ? highest - (highest - proposed) * 0.2
+                : proposed > lowest ? lowest + (proposed - lowest) * (sheet.mode == .detail ? 1 : 0.2) : proposed
+            sheetTop.constant = limited
+            view.layoutIfNeeded()
+            updateLocateVisibility()
+        case .ended, .cancelled:
+            isDraggingSheet = false
+            let velocity = pan.velocity(in: view).y
+            let projected = sheetTop.constant + velocity * 0.15
+            if sheet.mode == .detail {
+                // Pulled down far enough (or flicked down): close the summary.
+                if projected - top(for: .detail) > 90 { closeSummary() } else { setSheetStop(.detail, animated: true) }
+                return
+            }
+            let nearest = availableStops().min { abs(top(for: $0) - projected) < abs(top(for: $1) - projected) } ?? .peek
+            setSheetStop(nearest, animated: true)
+        default: break
+        }
+    }
+
+    private func closeSummary() {
+        mapView.selectedAnnotations.forEach { mapView.deselectAnnotation($0, animated: true) }
+        presenter.didDeselectVenue()
     }
 
     private func setUpLocateButton() {
@@ -151,8 +273,7 @@ final class ExploreViewController: UIViewController {
         view.addSubview(locateButton)
         NSLayoutConstraint.activate([
             locateButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            locateButton.bottomAnchor.constraint(equalTo: previewCard.topAnchor, constant: -12),
-            locateButton.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -12)
+            locateButton.bottomAnchor.constraint(equalTo: sheet.topAnchor, constant: -12)
         ])
     }
 
@@ -173,22 +294,6 @@ final class ExploreViewController: UIViewController {
         NSLayoutConstraint.activate([
             searchAreaButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             searchAreaButton.topAnchor.constraint(equalTo: topOverlay.bottomAnchor, constant: 12)
-        ])
-    }
-
-    private func setUpEmptyLabel() {
-        emptyLabel.font = .preferredFont(forTextStyle: .headline)
-        emptyLabel.textColor = Theme.secondaryText
-        emptyLabel.textAlignment = .center
-        emptyLabel.numberOfLines = 0
-        emptyLabel.isHidden = true
-        emptyLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(emptyLabel)
-        NSLayoutConstraint.activate([
-            emptyLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            emptyLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            emptyLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32),
-            emptyLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -32)
         ])
     }
 
@@ -228,8 +333,6 @@ final class ExploreViewController: UIViewController {
     @objc private func infoTapped() { presenter.didTapInfo() }
 
     @objc private func retrySearchTapped() { presenter.didTapRetrySearch() }
-
-    @objc private func previewTapped() { presenter.didTapPreview() }
 
     @objc private func chipTapped(_ sender: UIButton) {
         presenter.didSelectCategory(at: sender.tag)
@@ -354,12 +457,26 @@ extension ExploreViewController: ExploreViewProtocol {
     }
 
     func showPreview(_ preview: VenuePreviewViewModel?) {
-        if let preview { previewCard.configure(with: preview) }
-        previewHiddenConstraint.isActive = preview == nil
-        previewShownConstraint.isActive = preview != nil
-        UIView.animate(withDuration: Motion.duration(0.25)) {
-            self.previewCard.alpha = preview == nil ? 0 : 1
-            self.view.layoutIfNeeded()
+        if let preview {
+            let wasDetail = sheet.mode == .detail
+            sheet.showDetail(preview)
+            if !wasDetail || sheetStop != .detail { setSheetStop(.detail, animated: true) }
+        } else if sheet.mode == .detail {
+            sheet.showListAgain()
+            setSheetStop(sheet.listModel?.empty != nil ? .empty : listStop, animated: true)
+        }
+    }
+
+    func showQueueList(_ model: QueueListViewModel) {
+        sheet.showList(model)
+        guard sheet.mode == .list else { return }
+        if model.empty != nil, sheetStop != .empty {
+            setSheetStop(.empty, animated: true)
+        } else if model.empty == nil, sheetStop == .empty {
+            setSheetStop(listStop, animated: true)
+        } else if !isDraggingSheet {
+            // A live update can change how tall the empty state is, so keep the position in step.
+            sheetTop.constant = top(for: sheetStop)
         }
     }
 
@@ -422,10 +539,6 @@ extension ExploreViewController: ExploreViewProtocol {
         offlineLabel.isHidden = !isVisible
     }
 
-    func showEmptyState(_ message: String?) {
-        emptyLabel.text = message
-        emptyLabel.isHidden = message == nil
-    }
 }
 
 // MARK: - Map

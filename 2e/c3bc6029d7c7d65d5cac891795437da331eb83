@@ -1,0 +1,33 @@
+"kiasu kakis/Modules/Saved/SavedPresenter.swift"
+  s_83605c29a5e567::t_377b5aa04f7329 9-11,30-34,36-46,63-65
+  s_83605c29a5e567::t_bb22ceff8af196 66
+"kiasu kakis/Modules/Saved/SavedProtocols.swift"
+  s_83605c29a5e567::t_377b5aa04f7329 11-12,21
+"kiasu kakis/Modules/Saved/SavedViewController.swift"
+  s_83605c29a5e567::t_377b5aa04f7329 9-10,21-26,69-76
+  s_83605c29a5e567::t_f37cca895e2647 77
+"kiasu kakis/Modules/Shared/ChipBarView.swift"
+  s_83605c29a5e567::t_37c991323764e5 51-55
+  s_83605c29a5e567::t_377b5aa04f7329 1-50,56-86
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2ec3bc6029d7c7d65d5cac891795437da331eb83",
+  "prompts": {},
+  "humans": {
+    "h_ee194195c1c2bb": {
+      "author": "chloe <chloetzy03@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_83605c29a5e567": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "1e007083-5ef8-4fa4-a40d-8019fcebb6dc",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

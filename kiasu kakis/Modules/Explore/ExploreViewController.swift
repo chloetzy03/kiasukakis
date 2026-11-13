@@ -90,6 +90,8 @@ final class ExploreViewController: UIViewController {
     private func setUpTopOverlay() {
         searchBar.placeholder = "Search places"
         searchBar.searchBarStyle = .minimal
+        // The Cancel button beside the field already clears the text and closes the keyboard, so a second cross inside the field is redundant.
+        searchBar.searchTextField.clearButtonMode = .never
         searchBar.delegate = self
 
         chipStack.spacing = 8

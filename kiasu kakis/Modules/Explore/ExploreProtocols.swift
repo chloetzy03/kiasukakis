@@ -32,6 +32,8 @@ struct VenuePreviewViewModel {
     let joinTitle: String
     let canJoin: Bool
     let isSaved: Bool
+    // For example "About 3 groups ahead". nil when the place has no queue we can count.
+    let aheadText: String?
 }
 
 // One row in the sheet's list of queues.

@@ -339,6 +339,20 @@ final class ExplorePresenter: ExplorePresenterProtocol {
         }
     }
 
+    // Group sizes differ (a table for 2 is quicker than a table for 8), so the count is always "about".
+    private func aheadText(for listing: VenueListing) -> String? {
+        if let ticket = interactor.activeTicket(forVenue: listing.venue.id), ticket.status.isActive {
+            return "Your ticket: \(Self.groupsText(ticket.position, prefix: nil)) ahead of you"
+        }
+        guard listing.venue.queueSupport == .demoSupported, listing.snapshot.waitMinutes != nil else { return nil }
+        return Self.groupsText(QueueService.groupsAhead(for: listing.snapshot), prefix: "About") + " ahead"
+    }
+
+    private static func groupsText(_ count: Int, prefix: String?) -> String {
+        let noun = count == 1 ? "1 group" : "\(count) groups"
+        return prefix.map { "\($0) \(noun)" } ?? noun
+    }
+
     private func makePreview(_ listing: VenueListing) -> VenuePreviewViewModel {
         let snapshot = listing.snapshot
         let source: String
@@ -374,6 +388,7 @@ final class ExplorePresenter: ExplorePresenterProtocol {
                                      queueText: queue,
                                      joinTitle: joinTitle,
                                      canJoin: canJoin,
-                                     isSaved: interactor.isSaved(listing.venue.id))
+                                     isSaved: interactor.isSaved(listing.venue.id),
+                                     aheadText: aheadText(for: listing))
     }
 }

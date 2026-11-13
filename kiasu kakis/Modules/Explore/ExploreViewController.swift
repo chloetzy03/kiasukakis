@@ -158,6 +158,7 @@ final class ExploreViewController: UIViewController {
         sheet.onSelectRow = { [weak self] index in self?.presenter.didSelectQueueRow(at: index) }
         sheet.onTapJoin = { [weak self] in self?.presenter.didTapSheetJoin() }
         sheet.onTapDetails = { [weak self] in self?.presenter.didTapPreview() }
+        sheet.onTapSave = { [weak self] in self?.presenter.didTapSheetSave() }
         sheet.onTapEmptyAction = { [weak self] in self?.presenter.didTapNearestQueue() }
         sheet.onClose = { [weak self] in self?.closeSummary() }
 

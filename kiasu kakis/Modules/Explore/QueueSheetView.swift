@@ -46,6 +46,7 @@ final class QueueSheetView: UIView {
     private let waitDot = UIView()
     private let waitLabel = UILabel()
     private let sourceLabel = UILabel()
+    private let aheadLabel = UILabel()
     private let queueLabel = UILabel()
     private let joinButton = UIButton(type: .system)
     private let detailsButton = UIButton(type: .system)
@@ -177,6 +178,8 @@ final class QueueSheetView: UIView {
         sourceLabel.font = .preferredFont(forTextStyle: .caption1)
         sourceLabel.textColor = Theme.secondaryText
         sourceLabel.numberOfLines = 0
+        aheadLabel.font = UIFont.preferredFont(forTextStyle: .subheadline).withBoldTrait()
+        aheadLabel.numberOfLines = 0
         queueLabel.font = .preferredFont(forTextStyle: .subheadline)
         queueLabel.textColor = Theme.brandText
         queueLabel.numberOfLines = 0
@@ -188,24 +191,25 @@ final class QueueSheetView: UIView {
         joinButton.configuration = joinConfig
         joinButton.addAction(UIAction { [weak self] _ in self?.onTapJoin?() }, for: .touchUpInside)
 
-        var detailsConfig = UIButton.Configuration.tinted()
+        // Details is a plain text link. Save is a button, and the two sit side by side below Join queue.
+        var detailsConfig = UIButton.Configuration.plain()
         detailsConfig.title = "Details"
         detailsConfig.image = UIImage(systemName: "chevron.right")
         detailsConfig.imagePlacement = .trailing
         detailsConfig.imagePadding = 4
-        detailsConfig.cornerStyle = .large
         detailsConfig.baseForegroundColor = Theme.brandText
-        detailsConfig.baseBackgroundColor = Theme.brand
         detailsButton.configuration = detailsConfig
         detailsButton.addAction(UIAction { [weak self] _ in self?.onTapDetails?() }, for: .touchUpInside)
 
         // Save sits beside Details, away from the close button, so the two can't be tapped by mistake.
         saveButton.addAction(UIAction { [weak self] _ in self?.onTapSave?() }, for: .touchUpInside)
-        let secondaryActions = UIStackView(arrangedSubviews: [saveButton, detailsButton])
+        let secondaryActions = UIStackView(arrangedSubviews: [saveButton, UIView(), detailsButton])
         secondaryActions.spacing = 10
-        secondaryActions.distribution = .fillEqually
+        secondaryActions.alignment = .center
+        saveButton.setContentHuggingPriority(.required, for: .horizontal)
+        detailsButton.setContentHuggingPriority(.required, for: .horizontal)
 
-        let stack = UIStackView(arrangedSubviews: [nameLabel, detailSubtitle, waitRow, sourceLabel, queueLabel, joinButton, secondaryActions])
+        let stack = UIStackView(arrangedSubviews: [nameLabel, detailSubtitle, waitRow, aheadLabel, sourceLabel, queueLabel, joinButton, secondaryActions])
         stack.axis = .vertical
         stack.spacing = 6
         stack.setCustomSpacing(12, after: detailSubtitle)
@@ -310,6 +314,8 @@ final class QueueSheetView: UIView {
         waitLabel.text = model.waitText
         waitLabel.accessibilityLabel = "Current wait, " + QueueFormatting.spoken(model.waitText)
         waitDot.backgroundColor = model.waitColor
+        aheadLabel.text = model.aheadText
+        aheadLabel.isHidden = model.aheadText == nil
         sourceLabel.text = model.sourceText
         sourceLabel.accessibilityLabel = QueueFormatting.spoken(model.sourceText)
         queueLabel.text = model.queueText

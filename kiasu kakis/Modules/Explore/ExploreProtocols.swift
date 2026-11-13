@@ -29,6 +29,7 @@ struct VenuePreviewViewModel {
     let queueText: String
     let joinTitle: String
     let canJoin: Bool
+    let isSaved: Bool
 }
 
 // One row in the sheet's list of queues.
@@ -106,6 +107,7 @@ protocol ExplorePresenterProtocol: AnyObject {
     func didTapPreview()
     func didSelectQueueRow(at index: Int)
     func didTapSheetJoin()
+    func didTapSheetSave()
     func didTapNearestQueue()
     func didChangeRegion(_ region: MKCoordinateRegion)
     func didTapRetrySearch()
@@ -118,6 +120,8 @@ protocol ExploreInteractorProtocol: AnyObject {
     func listing(id: String) -> VenueListing?
     func allListings() -> [VenueListing]
     func activeTicket(forVenue venueID: String) -> QueueTicket?
+    func isSaved(_ venueID: String) -> Bool
+    func toggleSaved(_ venueID: String)
     @MainActor func discoverPlaces(in region: MKCoordinateRegion, onProgress: () -> Void) async throws
     func listings(matching query: String, category: VenueCategory?, in region: MKCoordinateRegion) -> [VenueListing]
     func localSuggestions(matching query: String, near center: CLLocationCoordinate2D) -> [PlaceSuggestion]

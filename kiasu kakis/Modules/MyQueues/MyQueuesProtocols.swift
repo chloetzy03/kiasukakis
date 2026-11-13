@@ -5,6 +5,9 @@ struct TicketRowViewModel {
     let title: String
     let subtitle: String
     let statusColor: UIColor
+    // Only finished tickets can be deleted. Any ticket's place can be saved.
+    let canDelete: Bool
+    let isSaved: Bool
 }
 
 struct TicketSectionViewModel {
@@ -20,10 +23,15 @@ protocol MyQueuesViewProtocol: AnyObject {
 protocol MyQueuesPresenterProtocol: AnyObject {
     func viewWillAppear()
     func didSelectTicket(id: UUID)
+    func didDeleteTicket(id: UUID)
+    func didToggleSaved(ticketID: UUID)
 }
 
 protocol MyQueuesInteractorProtocol: AnyObject {
     var tickets: [QueueTicket] { get }
+    func deleteTicket(id: UUID)
+    func isSaved(venueID: String) -> Bool
+    func toggleSaved(venueID: String)
 }
 
 protocol MyQueuesRouterProtocol: AnyObject {

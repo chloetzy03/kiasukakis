@@ -10,6 +10,7 @@ final class QueueSheetView: UIView {
     var onSelectRow: ((Int) -> Void)?
     var onTapJoin: (() -> Void)?
     var onTapDetails: (() -> Void)?
+    var onTapSave: (() -> Void)?
     var onClose: (() -> Void)?
     var onTapEmptyAction: (() -> Void)?
 
@@ -48,6 +49,7 @@ final class QueueSheetView: UIView {
     private let queueLabel = UILabel()
     private let joinButton = UIButton(type: .system)
     private let detailsButton = UIButton(type: .system)
+    private let saveButton = UIButton(type: .system)
     private var detailBottom: NSLayoutConstraint!
 
     private let emptyView = UIView()
@@ -72,6 +74,8 @@ final class QueueSheetView: UIView {
         buildTable()
         buildDetail()
         buildEmpty()
+        // The close button was added early, so later views (the summary) would cover part of it and eat the taps.
+        bringSubviewToFront(closeButton)
         showListFace()
         enableDynamicType()
     }
@@ -184,16 +188,24 @@ final class QueueSheetView: UIView {
         joinButton.configuration = joinConfig
         joinButton.addAction(UIAction { [weak self] _ in self?.onTapJoin?() }, for: .touchUpInside)
 
-        var detailsConfig = UIButton.Configuration.plain()
+        var detailsConfig = UIButton.Configuration.tinted()
         detailsConfig.title = "Details"
         detailsConfig.image = UIImage(systemName: "chevron.right")
         detailsConfig.imagePlacement = .trailing
         detailsConfig.imagePadding = 4
+        detailsConfig.cornerStyle = .large
         detailsConfig.baseForegroundColor = Theme.brandText
+        detailsConfig.baseBackgroundColor = Theme.brand
         detailsButton.configuration = detailsConfig
         detailsButton.addAction(UIAction { [weak self] _ in self?.onTapDetails?() }, for: .touchUpInside)
 
-        let stack = UIStackView(arrangedSubviews: [nameLabel, detailSubtitle, waitRow, sourceLabel, queueLabel, joinButton, detailsButton])
+        // Save sits beside Details, away from the close button, so the two can't be tapped by mistake.
+        saveButton.addAction(UIAction { [weak self] _ in self?.onTapSave?() }, for: .touchUpInside)
+        let secondaryActions = UIStackView(arrangedSubviews: [saveButton, detailsButton])
+        secondaryActions.spacing = 10
+        secondaryActions.distribution = .fillEqually
+
+        let stack = UIStackView(arrangedSubviews: [nameLabel, detailSubtitle, waitRow, sourceLabel, queueLabel, joinButton, secondaryActions])
         stack.axis = .vertical
         stack.spacing = 6
         stack.setCustomSpacing(12, after: detailSubtitle)
@@ -214,9 +226,9 @@ final class QueueSheetView: UIView {
             stack.trailingAnchor.constraint(equalTo: detailView.trailingAnchor, constant: -52),
             stack.bottomAnchor.constraint(lessThanOrEqualTo: detailView.bottomAnchor)
         ])
-        // The join and details buttons use the full width, so they get their own trailing edge.
+        // The buttons use the full width, so they get their own trailing edge.
         joinButton.trailingAnchor.constraint(equalTo: detailView.trailingAnchor, constant: -18).isActive = true
-        detailsButton.trailingAnchor.constraint(equalTo: detailView.trailingAnchor, constant: -18).isActive = true
+        secondaryActions.trailingAnchor.constraint(equalTo: detailView.trailingAnchor, constant: -18).isActive = true
     }
 
     private func buildEmpty() {
@@ -305,6 +317,15 @@ final class QueueSheetView: UIView {
         config?.title = model.joinTitle
         joinButton.configuration = config
         joinButton.isEnabled = model.canJoin
+        var saveConfig = UIButton.Configuration.tinted()
+        saveConfig.title = model.isSaved ? "Saved" : "Save"
+        saveConfig.image = UIImage(systemName: model.isSaved ? "bookmark.fill" : "bookmark")
+        saveConfig.imagePadding = 6
+        saveConfig.cornerStyle = .large
+        saveConfig.baseForegroundColor = Theme.brandText
+        saveConfig.baseBackgroundColor = Theme.brand
+        saveButton.configuration = saveConfig
+        saveButton.accessibilityLabel = model.isSaved ? "Remove from saved" : "Save this place"
         showDetailFace()
     }
 

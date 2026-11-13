@@ -72,7 +72,7 @@ final class TicketDetailPresenter: TicketDetailPresenterProtocol {
             message: message,
             stepIndex: step,
             canAdvance: ticket.status.isActive,
-            advanceTitle: ticket.status == .called ? "Test: mark as served" : "Test: advance queue",
+            advanceTitle: ticket.status == .called ? "Mark as served" : "Skip ahead (demo)",
             canCancel: ticket.status.isActive))
     }
 }

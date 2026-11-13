@@ -9,17 +9,20 @@ final class ExploreInteractor: ExploreInteractorProtocol {
     private let suggester: PlaceSuggesting
     private let simulator: QueueSimulating
     private let queueService: QueueServicing
+    private let savedStore: SavedVenuesStoring
 
     init(repository: VenueProviding = VenueRepository.shared,
          placeSearch: PlaceSearching = PlaceSearchService(),
          suggester: PlaceSuggesting = PlaceSuggestionService(),
          simulator: QueueSimulating = QueueSimulator.shared,
-         queueService: QueueServicing = QueueService.shared) {
+         queueService: QueueServicing = QueueService.shared,
+         savedStore: SavedVenuesStoring = SavedVenuesStore.shared) {
         self.repository = repository
         self.placeSearch = placeSearch
         self.suggester = suggester
         self.simulator = simulator
         self.queueService = queueService
+        self.savedStore = savedStore
     }
 
     func listings(matching query: String, category: VenueCategory?) -> [VenueListing] {
@@ -70,6 +73,10 @@ final class ExploreInteractor: ExploreInteractorProtocol {
     func allListings() -> [VenueListing] { listings(matching: "", category: nil) }
 
     func activeTicket(forVenue venueID: String) -> QueueTicket? { queueService.activeTicket(forVenue: venueID) }
+
+    func isSaved(_ venueID: String) -> Bool { savedStore.isSaved(venueID) }
+
+    func toggleSaved(_ venueID: String) { savedStore.toggle(venueID) }
 
     func listing(id: String) -> VenueListing? {
         guard let venue = repository.venue(id: id) else { return nil }

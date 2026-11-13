@@ -5,7 +5,7 @@ final class AboutViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "About"
+        title = "About & Settings"
         view.backgroundColor = Theme.background
         navigationItem.rightBarButtonItem = UIBarButtonItem(systemItem: .done, primaryAction: UIAction { [weak self] _ in
             self?.dismiss(animated: true)

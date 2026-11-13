@@ -19,8 +19,8 @@ final class MyQueuesPresenter: MyQueuesPresenterProtocol {
         let past = tickets.filter { !$0.status.isActive }
 
         var sections: [TicketSectionViewModel] = []
-        if !active.isEmpty { sections.append(TicketSectionViewModel(title: "Active", rows: active.map { Self.makeRow($0) })) }
-        if !past.isEmpty { sections.append(TicketSectionViewModel(title: "Past", rows: past.map { Self.makeRow($0) })) }
+        if !active.isEmpty { sections.append(TicketSectionViewModel(title: "Active", rows: active.map { makeRow($0) })) }
+        if !past.isEmpty { sections.append(TicketSectionViewModel(title: "Past", rows: past.map { makeRow($0) })) }
 
         view?.show(sections: sections)
         view?.showEmptyState(tickets.isEmpty)
@@ -28,7 +28,19 @@ final class MyQueuesPresenter: MyQueuesPresenterProtocol {
 
     func didSelectTicket(id: UUID) { router.showTicket(id: id) }
 
-    private static func makeRow(_ ticket: QueueTicket) -> TicketRowViewModel {
+    func didDeleteTicket(id: UUID) {
+        interactor.deleteTicket(id: id)
+        viewWillAppear()
+    }
+
+    // Lets people save a place they already queued at, without searching for it again.
+    func didToggleSaved(ticketID: UUID) {
+        guard let ticket = interactor.tickets.first(where: { $0.id == ticketID }) else { return }
+        interactor.toggleSaved(venueID: ticket.venueID)
+        viewWillAppear()
+    }
+
+    private func makeRow(_ ticket: QueueTicket) -> TicketRowViewModel {
         var detail = "\(ticket.status.rawValue)"
         switch ticket.status {
         case .waiting, .almostYourTurn:
@@ -38,6 +50,8 @@ final class MyQueuesPresenter: MyQueuesPresenterProtocol {
         return TicketRowViewModel(id: ticket.id,
                                   title: ticket.venueName,
                                   subtitle: "Ticket " + String(format: "#%03d", ticket.ticketNumber) + " · " + detail,
-                                  statusColor: Theme.color(for: ticket.status))
+                                  statusColor: Theme.color(for: ticket.status),
+                                  canDelete: !ticket.status.isActive,
+                                  isSaved: interactor.isSaved(venueID: ticket.venueID))
     }
 }

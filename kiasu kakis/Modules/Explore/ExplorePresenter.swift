@@ -145,6 +145,12 @@ final class ExplorePresenter: ExplorePresenterProtocol {
         if let nearest { focus(onVenueID: nearest.venue.id, zoomedIn: true) }
     }
 
+    func didTapSheetSave() {
+        guard let id = selectedID, let listing = interactor.listing(id: id) else { return }
+        interactor.toggleSaved(id)
+        view?.showPreview(makePreview(listing))
+    }
+
     func didTapSheetJoin() {
         guard let id = selectedID, let listing = interactor.listing(id: id) else { return }
         if let ticket = interactor.activeTicket(forVenue: id) {
@@ -318,6 +324,7 @@ final class ExplorePresenter: ExplorePresenterProtocol {
         case .restaurant: return "fork.knife"
         case .cafe: return "cup.and.saucer.fill"
         case .dessert: return "birthday.cake.fill"
+        case .bar: return "wineglass.fill"
         case .attraction: return "star.fill"
         }
     }
@@ -328,7 +335,7 @@ final class ExplorePresenter: ExplorePresenterProtocol {
         if snapshot.waitMinutes == nil {
             source = "No recent reports. This is not a 0-minute wait."
         } else {
-            source = "\(snapshot.source.rawValue) · \(QueueFormatting.ago(snapshot.timestamp))"
+            source = "\(snapshot.source.rawValue) · updated \(QueueFormatting.ago(snapshot.timestamp))"
         }
         let queue: String
         switch listing.venue.queueSupport {
@@ -356,6 +363,7 @@ final class ExplorePresenter: ExplorePresenterProtocol {
                                      sourceText: source,
                                      queueText: queue,
                                      joinTitle: joinTitle,
-                                     canJoin: canJoin)
+                                     canJoin: canJoin,
+                                     isSaved: interactor.isSaved(listing.venue.id))
     }
 }

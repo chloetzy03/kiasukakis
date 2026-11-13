@@ -17,7 +17,8 @@ final class ExploreRouter: ExploreRouterProtocol {
 
     func showAbout() {
         let nav = UINavigationController(rootViewController: AboutViewController())
-        nav.sheetPresentationController?.detents = [.medium(), .large()]
+        // Full height, so it reads as its own page and not a second sheet on top of the queue sheet.
+        nav.sheetPresentationController?.detents = [.large()]
         viewController?.present(nav, animated: true)
     }
 

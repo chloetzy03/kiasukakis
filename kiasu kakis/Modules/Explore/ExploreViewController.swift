@@ -107,7 +107,7 @@ final class ExploreViewController: UIViewController {
             scroll.frameLayoutGuide.heightAnchor.constraint(greaterThanOrEqualToConstant: 40)
         ])
 
-        infoButton.accessibilityLabel = "About Kiasu Kakis"
+        infoButton.accessibilityLabel = "About and settings"
         infoButton.widthAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
         infoButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
         infoButton.addTarget(self, action: #selector(infoTapped), for: .touchUpInside)

@@ -91,6 +91,30 @@ extension MyQueuesViewController: UITableViewDataSource, UITableViewDelegate {
         return cell
     }
 
+    // Swipe right to save the place. Swipe left to delete a finished ticket.
+    func tableView(_ tableView: UITableView,
+                   leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let row = sections[indexPath.section].rows[indexPath.row]
+        let action = UIContextualAction(style: .normal, title: row.isSaved ? "Unsave" : "Save") { [weak self] _, _, done in
+            self?.presenter.didToggleSaved(ticketID: row.id)
+            done(true)
+        }
+        action.image = UIImage(systemName: row.isSaved ? "bookmark.slash" : "bookmark")
+        action.backgroundColor = Theme.brand
+        return UISwipeActionsConfiguration(actions: [action])
+    }
+
+    func tableView(_ tableView: UITableView,
+                   trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let row = sections[indexPath.section].rows[indexPath.row]
+        guard row.canDelete else { return nil }
+        let delete = UIContextualAction(style: .destructive, title: "Delete") { [weak self] _, _, done in
+            self?.presenter.didDeleteTicket(id: row.id)
+            done(true)
+        }
+        return UISwipeActionsConfiguration(actions: [delete])
+    }
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         presenter.didSelectTicket(id: sections[indexPath.section].rows[indexPath.row].id)

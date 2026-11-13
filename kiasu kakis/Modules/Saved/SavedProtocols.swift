@@ -8,6 +8,8 @@ struct SavedVenueRowViewModel {
 }
 
 protocol SavedViewProtocol: AnyObject {
+    // Empty titles hide the filter bar. Otherwise the first title is "All".
+    func showFilters(titles: [String], selectedIndex: Int)
     func show(rows: [SavedVenueRowViewModel])
     func showEmptyState(_ isEmpty: Bool)
 }
@@ -16,6 +18,7 @@ protocol SavedPresenterProtocol: AnyObject {
     func viewWillAppear()
     func didSelectVenue(id: String)
     func didRemoveVenue(id: String)
+    func didSelectCategory(at index: Int)
 }
 
 protocol SavedInteractorProtocol: AnyObject {

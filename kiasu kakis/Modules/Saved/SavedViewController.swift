@@ -6,6 +6,8 @@ final class SavedViewController: UIViewController {
 
     private let tableView = UITableView(frame: .zero, style: .insetGrouped)
     private let emptyView = UIStackView()
+    private let chipBar = ChipBarView()
+    private let filterHeader = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 48))
     private var rows: [SavedVenueRowViewModel] = []
 
     override func viewDidLoad() {
@@ -16,6 +18,12 @@ final class SavedViewController: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "SavedCell")
+
+        // The filter chips scroll with the list, which keeps the large title behaving normally.
+        chipBar.frame = filterHeader.bounds
+        chipBar.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        filterHeader.addSubview(chipBar)
+        chipBar.onSelect = { [weak self] index in self?.presenter.didSelectCategory(at: index) }
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
 
@@ -57,6 +65,15 @@ final class SavedViewController: UIViewController {
 }
 
 extension SavedViewController: SavedViewProtocol {
+
+    func showFilters(titles: [String], selectedIndex: Int) {
+        if titles.isEmpty {
+            if tableView.tableHeaderView != nil { tableView.tableHeaderView = nil }
+            return
+        }
+        chipBar.setTitles(titles, selectedIndex: selectedIndex)
+        if tableView.tableHeaderView == nil { tableView.tableHeaderView = filterHeader }
+    }
 
     func show(rows: [SavedVenueRowViewModel]) {
         self.rows = rows

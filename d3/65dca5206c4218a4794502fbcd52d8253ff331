@@ -1,0 +1,47 @@
+"kiasu kakis/Services/DemoVenueData.swift"
+  s_83605c29a5e567::t_9e50eac17e9d4b 3-4,8-32
+"kiasu kakis/Services/QueueSimulator.swift"
+  s_83605c29a5e567::t_9e50eac17e9d4b 61,63-73
+"kiasu kakis/Services/VenueRepository.swift"
+  s_83605c29a5e567::t_70c3164b989efe 18-20,28
+  s_83605c29a5e567::t_ad66d51ded9895 37-44,47,57
+"kiasu kakis/App/MainTabBarController.swift"
+  s_83605c29a5e567::t_ad66d51ded9895 27
+"kiasu kakis/Modules/About/AboutViewController.swift"
+  s_83605c29a5e567::t_ad66d51ded9895 16
+"kiasu kakis/Modules/Explore/ExplorePresenter.swift"
+  s_83605c29a5e567::t_ad66d51ded9895 25-26
+"kiasu kakis/Services/PlaceSuggestionService.swift"
+  s_83605c29a5e567::t_ad66d51ded9895 53-54,115-116
+"kiasu kakis/Services/LocalStore.swift"
+  s_83605c29a5e567::t_70c3164b989efe 35-38
+"kiasu kakis/Services/PlaceSearchService.swift"
+  s_83605c29a5e567::t_9e50eac17e9d4b 14,17
+"kiasu kakis/Services/GooglePlacesService.swift"
+  s_83605c29a5e567::t_9e50eac17e9d4b 51
+"kiasu kakis/Modules/Explore/ExploreViewController.swift"
+  s_83605c29a5e567::t_ad66d51ded9895 84,306-311
+"kiasu kakis/Modules/VenueDetails/VenueDetailsPresenter.swift"
+  s_83605c29a5e567::t_ad66d51ded9895 176
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d365dca5206c4218a4794502fbcd52d8253ff331",
+  "prompts": {},
+  "humans": {
+    "h_ee194195c1c2bb": {
+      "author": "chloe <chloetzy03@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_83605c29a5e567": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "1e007083-5ef8-4fa4-a40d-8019fcebb6dc",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

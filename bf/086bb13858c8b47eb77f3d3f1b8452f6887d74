@@ -1,0 +1,30 @@
+"kiasu kakis/Modules/Saved/SavedViewController.swift"
+  s_83605c29a5e567::t_8c47905ce5a53e 15
+"kiasu kakis/Services/VenueRepository.swift"
+  s_83605c29a5e567::t_6655a34172d85f 68
+"kiasu kakis/Modules/Explore/ExplorePresenter.swift"
+  s_83605c29a5e567::t_6655a34172d85f 104
+"kiasu kakis/Modules/MyQueues/MyQueuesViewController.swift"
+  s_83605c29a5e567::t_8c47905ce5a53e 15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "bf086bb13858c8b47eb77f3d3f1b8452f6887d74",
+  "prompts": {},
+  "humans": {
+    "h_ee194195c1c2bb": {
+      "author": "chloe <chloetzy03@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_83605c29a5e567": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "1e007083-5ef8-4fa4-a40d-8019fcebb6dc",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

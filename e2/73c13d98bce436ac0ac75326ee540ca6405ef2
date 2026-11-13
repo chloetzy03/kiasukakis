@@ -1,0 +1,35 @@
+"kiasu kakis/Modules/JoinQueue/JoinQueueProtocols.swift"
+  s_83605c29a5e567::t_49d5559b1a26c5 29-30
+"kiasu kakis/Modules/JoinQueue/JoinQueueInteractor.swift"
+  s_83605c29a5e567::t_49d5559b1a26c5 17-22
+"kiasu kakis/Services/QueueService.swift"
+  s_83605c29a5e567::t_49d5559b1a26c5 6-7,12-13,31-32,71-74,84
+"kiasu kakis/Services/QueueFormatting.swift"
+  s_83605c29a5e567::t_ddb78025ed4571 14,17-19
+  s_83605c29a5e567::t_e5788c06218f29 40
+"kiasu kakis/Modules/JoinQueue/JoinQueuePresenter.swift"
+  s_83605c29a5e567::t_49d5559b1a26c5 31-32,42-43,53
+docs/PRESENTATION.md
+  s_83605c29a5e567::t_335ded967d2565 33,108,148
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e273c13d98bce436ac0ac75326ee540ca6405ef2",
+  "prompts": {},
+  "humans": {
+    "h_ee194195c1c2bb": {
+      "author": "chloe <chloetzy03@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_83605c29a5e567": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "1e007083-5ef8-4fa4-a40d-8019fcebb6dc",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

@@ -11,10 +11,10 @@ protocol PlaceSearching: AnyObject {
 final class PlaceSearchService: PlaceSearching {
 
     // One request returns at most 50 places, so food types are split across several requests.
+    // Only places where a queue is plausible. Malls, shops, parks and supermarkets are left out on purpose.
     private static let categoryGroups: [[MKPointOfInterestCategory]] = [
         [.restaurant],
-        [.cafe, .bakery],
-        [.foodMarket]
+        [.cafe, .bakery]
     ]
     private static let metersPerDegree = 111_000.0
 

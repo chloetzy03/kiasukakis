@@ -24,7 +24,7 @@ final class MainTabBarController: UITabBarController {
         guard !UserDefaults.standard.bool(forKey: key) else { return }
         UserDefaults.standard.set(true, forKey: key)
         let alert = UIAlertController(title: "Welcome to Kiasu Kakis",
-                                      message: "This is a prototype. Venues, wait times and queues are simulated for demonstration. Real places found on the map come from Apple Maps and have no queue data.",
+                                      message: "This is a prototype. The places are real, but wait times and queues are simulated for demonstration. Other food places on the map have no queue data.",
                                       preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Got it", style: .default))
         present(alert, animated: true)

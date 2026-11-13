@@ -50,6 +50,8 @@ final class PlaceSuggestionService: PlaceSuggesting {
             "input": query,
             "sessionToken": sessionToken,
             "includedRegionCodes": ["sg"],
+            // Food places only. A search for a mall returns the restaurants inside it, and shops return nothing.
+            "includedPrimaryTypes": ["restaurant", "cafe", "bakery", "coffee_shop", "food_court"],
             "locationBias": ["circle": ["center": ["latitude": center.latitude, "longitude": center.longitude],
                                         "radius": 20_000]]
         ])
@@ -110,6 +112,8 @@ final class PlaceSuggestionService: PlaceSuggesting {
         let request = MKLocalSearch.Request()
         request.naturalLanguageQuery = query
         request.region = MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 0.3, longitudeDelta: 0.3))
+        request.resultTypes = .pointOfInterest
+        request.pointOfInterestFilter = MKPointOfInterestFilter(including: [.restaurant, .cafe, .bakery])
         guard let response = try? await MKLocalSearch(request: request).start() else { return [] }
         return response.mapItems.prefix(Self.maxResults).compactMap { item in
             guard let venue = PlaceSearchService.makeVenue(from: item) else { return nil }

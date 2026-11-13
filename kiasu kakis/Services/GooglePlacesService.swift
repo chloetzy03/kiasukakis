@@ -48,8 +48,7 @@ final class GooglePlacesService: PlaceDetailsProviding {
     // MARK: - Details
 
     func details(for venue: Venue) async -> PlaceDetails? {
-        // Demo venues are made up, so Google has nothing for them.
-        guard !venue.isDemo, let apiKey else { return nil }
+        guard let apiKey else { return nil }
         if let cached = cache[venue.id], Date().timeIntervalSince(cached.fetchedAt) < Self.cacheLifetime {
             return cached.isEmpty ? nil : cached
         }

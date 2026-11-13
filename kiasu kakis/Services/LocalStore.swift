@@ -32,6 +32,10 @@ struct LocalStore {
         }
     }
 
+    func delete(_ filename: String) {
+        try? FileManager.default.removeItem(at: fileURL(filename))
+    }
+
     private func fileURL(_ filename: String) -> URL {
         directory.appendingPathComponent(filename)
     }

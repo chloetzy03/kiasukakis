@@ -81,7 +81,7 @@ final class ExploreViewController: UIViewController {
             chipStack.trailingAnchor.constraint(equalTo: scroll.contentLayoutGuide.trailingAnchor, constant: -16),
             chipStack.centerYAnchor.constraint(equalTo: scroll.frameLayoutGuide.centerYAnchor),
             scroll.frameLayoutGuide.heightAnchor.constraint(greaterThanOrEqualTo: chipStack.heightAnchor),
-            scroll.frameLayoutGuide.heightAnchor.constraint(greaterThanOrEqualToConstant: 44)
+            scroll.frameLayoutGuide.heightAnchor.constraint(greaterThanOrEqualToConstant: 40)
         ])
 
         infoButton.accessibilityLabel = "About Kiasu Kakis"
@@ -303,6 +303,12 @@ extension ExploreViewController: ExploreViewProtocol {
             config.title = title
             config.cornerStyle = .capsule
             config.buttonSize = .small
+            config.contentInsets = NSDirectionalEdgeInsets(top: 4, leading: 12, bottom: 4, trailing: 12)
+            config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { attributes in
+                var attributes = attributes
+                attributes.font = UIFontMetrics(forTextStyle: .footnote).scaledFont(for: .systemFont(ofSize: 13, weight: .semibold))
+                return attributes
+            }
             let button = RoomyButton(configuration: config)
             button.tag = index
             // Runs whenever the button needs restyling, including when light/dark mode changes.

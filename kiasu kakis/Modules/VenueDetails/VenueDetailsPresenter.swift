@@ -173,7 +173,7 @@ final class VenueDetailsPresenter: VenueDetailsPresenterProtocol {
             statusColor: status.color,
             canJoin: venue.queueSupport == .demoSupported,
             hasActiveTicket: interactor.activeTicket != nil,
-            disclaimer: venue.isDemo ? "" : "Place details from Apple Maps and Google. Queue data isn't available.",
+            disclaimer: venue.isDemo ? "The place is real. Its queue is simulated for this demo." : "Place details from Apple Maps and Google. Queue data isn't available.",
             isSaved: interactor.isSaved))
     }
 }

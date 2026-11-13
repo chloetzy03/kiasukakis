@@ -15,7 +15,9 @@ final class VenueRepository: VenueProviding {
 
     static let shared = VenueRepository()
 
-    private static let filename = "discovered_venues.json"
+    // The earlier version also saved malls and supermarkets. A new file name starts clean, so those disappear.
+    private static let filename = "discovered_venues_v2.json"
+    private static let oldFilename = "discovered_venues.json"
     private let store: LocalStore
     private var discovered: [Venue] {
         didSet { store.save(discovered, to: Self.filename) }
@@ -23,6 +25,7 @@ final class VenueRepository: VenueProviding {
 
     init(store: LocalStore = LocalStore()) {
         self.store = store
+        store.delete(Self.oldFilename)
         self.discovered = Self.unique(store.load([Venue].self, from: Self.filename) ?? [])
     }
 
@@ -31,24 +34,27 @@ final class VenueRepository: VenueProviding {
     func venue(id: String) -> Venue? { venues.first { $0.id == id } }
 
     func resolve(_ candidate: Venue) -> Venue {
-        if let existing = venue(id: candidate.id) { return existing }
-        // Apple Maps and Google can describe the same place with different ids, so match by name and distance.
+        if let existing = venue(id: candidate.id) ?? sameSpot(as: candidate) { return existing }
+        add([candidate])
+        return candidate
+    }
+
+    // Apple Maps and Google can describe the same place with different ids, and our curated queue places
+    // are also found by the map search, so match by name and distance.
+    private func sameSpot(as candidate: Venue) -> Venue? {
         let spot = CLLocation(latitude: candidate.latitude, longitude: candidate.longitude)
         let name = SearchText.normalized(candidate.name)
-        let same = venues.first { other in
+        return venues.first { other in
             let otherName = SearchText.normalized(other.name)
             return (otherName.contains(name) || name.contains(otherName))
                 && CLLocation(latitude: other.latitude, longitude: other.longitude).distance(from: spot) < 80
         }
-        if let same { return same }
-        add([candidate])
-        return candidate
     }
 
     // Returns how many were new.
     func add(_ newVenues: [Venue]) -> Int {
         var known = Set(venues.map(\.id))
-        let fresh = newVenues.filter { known.insert($0.id).inserted }
+        let fresh = newVenues.filter { known.insert($0.id).inserted && sameSpot(as: $0) == nil }
         if !fresh.isEmpty { discovered.append(contentsOf: fresh) }
         return fresh.count
     }

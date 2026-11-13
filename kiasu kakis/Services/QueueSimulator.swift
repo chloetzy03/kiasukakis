@@ -58,11 +58,19 @@ final class QueueSimulator: QueueSimulating {
     }
 
     // Only these demo venues have a live queue. The others stay at "no recent reports" on purpose.
+    // Hawker stalls have no remote queue, so their waits are labelled as community reports.
     static let profiles: [String: Profile] = [
-        "v1": Profile(base: 40, range: 25...55, source: .communityObservation),
-        "v2": Profile(base: 15, range: 6...30, source: .demoSimulation),
-        "v4": Profile(base: 8, range: 3...18, source: .demoSimulation),
-        "v6": Profile(base: 25, range: 12...45, source: .demoSimulation)
+        "v1": Profile(base: 35, range: 20...55, source: .communityObservation),   // Tian Tian
+        "v2": Profile(base: 30, range: 18...50, source: .communityObservation),   // Hawker Chan
+        "v3": Profile(base: 45, range: 30...70, source: .communityObservation),   // Tai Hwa
+        "v4": Profile(base: 15, range: 6...28, source: .demoSimulation),          // Song Fa
+        "v5": Profile(base: 25, range: 12...45, source: .demoSimulation),         // Jumbo
+        "v6": Profile(base: 30, range: 15...50, source: .demoSimulation),         // Din Tai Fung
+        "v7": Profile(base: 12, range: 4...22, source: .demoSimulation),          // Mei Heong Yuen
+        "v8": Profile(base: 10, range: 3...20, source: .demoSimulation),          // Tiong Bahru Bakery
+        "v9": Profile(base: 8, range: 3...16, source: .demoSimulation),           // Ya Kun
+        "v10": Profile(base: 15, range: 6...30, source: .demoSimulation),         // KOI
+        "v11": Profile(base: 14, range: 5...28, source: .demoSimulation)          // Birds of Paradise
     ]
 
     private struct State {

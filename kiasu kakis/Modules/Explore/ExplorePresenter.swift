@@ -22,7 +22,8 @@ final class ExplorePresenter: ExplorePresenterProtocol {
     // Zoomed out further than this (about 15 km tall), a search would be too broad to be useful.
     private static let maxSearchSpan = 0.15
     private static let searchPadding = 1.5
-    private let categories = VenueCategory.allCases
+    // Only food types, since the app is about queues for food. (Attraction stays in the data model for old saved places.)
+    private let categories = VenueCategory.allCases.filter { $0 != .attraction }
 
     init(interactor: ExploreInteractorProtocol,
          router: ExploreRouterProtocol,

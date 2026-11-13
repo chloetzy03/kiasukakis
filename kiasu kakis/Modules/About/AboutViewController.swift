@@ -3,6 +3,8 @@ import UIKit
 // Static information screen, so it doesn't need the full VIPER split.
 final class AboutViewController: UIViewController {
 
+    private let iconService: AppIconChanging = AppIconService()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "About & Settings"
@@ -35,6 +37,7 @@ final class AboutViewController: UIViewController {
             stack.addArrangedSubview(section)
         }
         stack.addArrangedSubview(makeSpeedSection())
+        if iconService.isSupported { stack.addArrangedSubview(makeIconSection()) }
         stack.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(stack)
         stack.enableDynamicType()
@@ -66,6 +69,36 @@ final class AboutViewController: UIViewController {
             let speed = SimulationSpeed.allCases[control.selectedSegmentIndex]
             QueueSimulator.shared.speed = speed
             detail?.text = speed.detail
+        }, for: .valueChanged)
+
+        let section = UIStackView(arrangedSubviews: [heading, control, detail])
+        section.axis = .vertical
+        section.spacing = 8
+        return section
+    }
+
+    // iOS shows its own "You have changed the icon" alert when this changes, which the app can't hide.
+    private func makeIconSection() -> UIView {
+        let heading = UILabel()
+        heading.text = "Home screen icon"
+        heading.font = .preferredFont(forTextStyle: .headline)
+
+        let control = UISegmentedControl(items: AppIconChoice.allCases.map(\.title))
+        control.selectedSegmentIndex = AppIconChoice.allCases.firstIndex(of: iconService.current) ?? 0
+        control.accessibilityLabel = "Home screen icon"
+
+        let detail = UILabel()
+        detail.font = .preferredFont(forTextStyle: .footnote)
+        detail.textColor = Theme.secondaryText
+        detail.numberOfLines = 0
+        detail.text = "Automatic follows your iPhone's light and dark appearance."
+
+        control.addAction(UIAction { [weak self, weak control] _ in
+            guard let self, let control else { return }
+            let choice = AppIconChoice.allCases[control.selectedSegmentIndex]
+            iconService.select(choice) { ok in
+                if !ok { control.selectedSegmentIndex = AppIconChoice.allCases.firstIndex(of: self.iconService.current) ?? 0 }
+            }
         }, for: .valueChanged)
 
         let section = UIStackView(arrangedSubviews: [heading, control, detail])

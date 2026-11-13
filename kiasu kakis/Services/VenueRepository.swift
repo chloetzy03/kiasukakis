@@ -21,19 +21,24 @@ final class VenueRepository: VenueProviding {
     private static let oldFilename = "discovered_venues.json"
     private let store: LocalStore
     private let queues: QueueProfileProviding
+    private let externalQueues: ExternalQueueProviding
+    private let curated: [Venue]
     private var discovered: [Venue] {
         didSet { store.save(discovered, to: Self.filename) }
     }
 
-    init(store: LocalStore = LocalStore(), queues: QueueProfileProviding = SimulatedQueueCatalog()) {
+    init(store: LocalStore = LocalStore(), queues: QueueProfileProviding = SimulatedQueueCatalog(),
+         externalQueues: ExternalQueueProviding = ExternalQueueDirectory()) {
         self.store = store
         self.queues = queues
+        self.externalQueues = externalQueues
+        self.curated = DemoVenueData.venues.map { Self.withQueueBehaviour($0, using: queues, external: externalQueues) }
         store.delete(Self.oldFilename)
         let saved = Self.unique(store.load([Venue].self, from: Self.filename) ?? [])
-        self.discovered = saved.map { Self.withQueueBehaviour($0, using: queues) }
+        self.discovered = saved.map { Self.withQueueBehaviour($0, using: queues, external: externalQueues) }
     }
 
-    var venues: [Venue] { DemoVenueData.venues + discovered }
+    var venues: [Venue] { curated + discovered }
 
     func venue(id: String) -> Venue? { venues.first { $0.id == id } }
 
@@ -43,13 +48,21 @@ final class VenueRepository: VenueProviding {
         return venue(id: candidate.id) ?? candidate
     }
 
-    // Marks a venue as having a simulated queue, and whether people can join it remotely, when the catalog says so.
-    private static func withQueueBehaviour(_ venue: Venue, using queues: QueueProfileProviding) -> Venue {
+    // Decides how a venue's queue works. Venues with their own system link out. Otherwise the catalog may give
+    // the venue a simulated queue, which is joinable (venue system) or community-reported (like hawker stalls).
+    private static func withQueueBehaviour(_ venue: Venue, using queues: QueueProfileProviding,
+                                           external: ExternalQueueProviding) -> Venue {
+        var result = venue
+        if let url = external.queueURL(for: venue) {
+            result.externalQueueURL = url
+            result.queueSupport = .external
+            result.isDemo = queues.profile(for: venue) != nil || venue.isDemo
+            return result
+        }
         guard let profile = queues.profile(for: venue) else { return venue }
-        var queued = venue
-        queued.isDemo = true
-        queued.queueSupport = profile.supportsRemoteJoin ? .demoSupported : .unsupported
-        return queued
+        result.isDemo = true
+        result.queueSupport = profile.supportsRemoteJoin ? .native : .crowd
+        return result
     }
 
     // Apple Maps and Google can describe the same place with different ids, and our curated queue places
@@ -70,7 +83,7 @@ final class VenueRepository: VenueProviding {
         var known = Set(venues.map(\.id))
         let fresh = newVenues
             .filter { known.insert($0.id).inserted && sameSpot(as: $0) == nil }
-            .map { Self.withQueueBehaviour($0, using: queues) }
+            .map { Self.withQueueBehaviour($0, using: queues, external: externalQueues) }
         if !fresh.isEmpty { discovered.append(contentsOf: fresh) }
         return fresh.count
     }

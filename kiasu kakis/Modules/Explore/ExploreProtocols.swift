@@ -138,4 +138,5 @@ protocol ExploreRouterProtocol: AnyObject {
     func showAbout()
     func showJoinQueue(for venue: Venue)
     func showTicket(id: UUID)
+    func openExternalQueue(_ url: URL)
 }

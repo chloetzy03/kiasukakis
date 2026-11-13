@@ -272,7 +272,7 @@ extension VenueDetailsViewController: VenueDetailsViewProtocol {
         disclaimerLabel.isHidden = model.disclaimer.isEmpty
 
         var config = joinButton.configuration
-        config?.title = model.hasActiveTicket ? "View my ticket" : (model.canJoin ? "Join queue" : model.statusTitle)
+        config?.title = model.hasActiveTicket ? "View my ticket" : model.actionTitle
         joinButton.configuration = config
         joinButton.isEnabled = model.canJoin || model.hasActiveTicket
 

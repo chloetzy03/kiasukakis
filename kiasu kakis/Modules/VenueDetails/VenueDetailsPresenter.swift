@@ -33,8 +33,11 @@ final class VenueDetailsPresenter: VenueDetailsPresenterProtocol {
             router.showTicket(ticketID: ticket.id)
             return
         }
-        guard interactor.venue.queueSupport == .demoSupported else { return }
-        router.showJoinQueue(for: interactor.venue)
+        switch interactor.venue.queueSupport {
+        case .native: router.showJoinQueue(for: interactor.venue)
+        case .external: if let url = interactor.venue.externalQueueURL { router.openExternalQueue(url) }
+        case .crowd, .closed, .unsupported: break
+        }
     }
 
     func didTapOpenInMaps() { router.openInMaps(interactor.venue) }
@@ -132,25 +135,7 @@ final class VenueDetailsPresenter: VenueDetailsPresenterProtocol {
         let snapshot = interactor.snapshot
         let hasData = snapshot.waitMinutes != nil
 
-        let status: (symbol: String, title: String, message: String, color: UIColor)
-        switch venue.queueSupport {
-        case .demoSupported:
-            status = ("checkmark.circle.fill", "Virtual queue available",
-                      "Join from your phone and track your turn without standing in line.",
-                      Theme.waitShort)
-        case .closed:
-            status = ("moon.zzz.fill", "Queue closed",
-                      "This venue isn't accepting new tickets right now.",
-                      .systemGray)
-        case .unsupported where !venue.isDemo:
-            status = ("info.circle", "No queue information",
-                      "This is a real place from Apple Maps or Google. Kiasu Kakis has no queue data for it, and remote joining isn't available.",
-                      .systemGray)
-        case .unsupported:
-            status = ("nosign", "Remote queue not supported",
-                      "This venue doesn't offer remote joining. You'd need to queue on site.",
-                      .systemGray)
-        }
+        let info = QueueSupportInfo(venue: venue)
 
         let updated: String
         if hasData {
@@ -167,11 +152,12 @@ final class VenueDetailsPresenter: VenueDetailsPresenterProtocol {
             waitColor: Theme.waitColor(forMinutes: snapshot.waitMinutes),
             sourceText: hasData ? "Source: \(snapshot.source.rawValue)" : "Source: none available",
             updatedText: updated,
-            statusSymbol: status.symbol,
-            statusTitle: status.title,
-            statusMessage: status.message,
-            statusColor: status.color,
-            canJoin: venue.queueSupport == .demoSupported,
+            statusSymbol: info.symbol,
+            statusTitle: info.title,
+            statusMessage: info.message,
+            statusColor: info.isPositive ? Theme.waitShort : .systemGray,
+            actionTitle: info.actionTitle,
+            canJoin: info.canAct,
             hasActiveTicket: interactor.activeTicket != nil,
             disclaimer: venue.isDemo ? "The place is real. Its queue is simulated for this demo." : "Place details from Apple Maps and Google. Queue data isn't available.",
             isSaved: interactor.isSaved))

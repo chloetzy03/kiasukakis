@@ -29,6 +29,10 @@ final class ExploreRouter: ExploreRouterProtocol {
         viewController?.present(join, animated: true)
     }
 
+    func openExternalQueue(_ url: URL) {
+        UIApplication.shared.open(url)
+    }
+
     func showTicket(id: UUID) {
         (viewController?.tabBarController as? MainTabBarController)?.showTicket(id)
     }

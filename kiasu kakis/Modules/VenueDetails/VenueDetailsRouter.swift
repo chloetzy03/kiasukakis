@@ -29,6 +29,10 @@ final class VenueDetailsRouter: VenueDetailsRouterProtocol {
         viewController?.present(join, animated: true)
     }
 
+    func openExternalQueue(_ url: URL) {
+        UIApplication.shared.open(url)
+    }
+
     func openSettings() {
         if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) }
     }

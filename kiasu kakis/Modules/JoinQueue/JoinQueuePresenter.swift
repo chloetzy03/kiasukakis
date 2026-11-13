@@ -40,7 +40,7 @@ final class JoinQueuePresenter: JoinQueuePresenterProtocol {
         let snapshot = interactor.snapshot
         let ahead = QueueService.groupsAhead(for: snapshot)
         let limitMessage = interactor.queueLimitMessage
-        let canJoin = venue.queueSupport == .demoSupported && limitMessage == nil
+        let canJoin = venue.queueSupport == .native && limitMessage == nil
 
         view?.show(JoinQueueViewModel(
             venueName: venue.name,

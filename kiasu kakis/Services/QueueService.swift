@@ -79,7 +79,7 @@ final class QueueService: QueueServicing {
     }
 
     func join(venue: Venue, partySize: Int) -> Result<QueueTicket, QueueError> {
-        guard venue.queueSupport == .demoSupported else { return .failure(.notAvailable) }
+        guard venue.queueSupport == .native else { return .failure(.notAvailable) }
         if let existing = activeTicket(forVenue: venue.id) { return .failure(.alreadyJoined(existing)) }
         guard activeTicketCount < maxActiveTickets else { return .failure(.tooManyActive(limit: maxActiveTickets)) }
 

@@ -13,6 +13,7 @@ struct VenueDetailsViewModel {
     let statusTitle: String
     let statusMessage: String
     let statusColor: UIColor
+    let actionTitle: String
     let canJoin: Bool
     let hasActiveTicket: Bool
     let disclaimer: String
@@ -75,4 +76,5 @@ protocol VenueDetailsRouterProtocol: AnyObject {
     func showJoinQueue(for venue: Venue)
     func showTicket(ticketID: UUID)
     func openSettings()
+    func openExternalQueue(_ url: URL)
 }

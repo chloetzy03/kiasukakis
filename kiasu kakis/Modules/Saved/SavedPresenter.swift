@@ -50,7 +50,9 @@ final class SavedPresenter: SavedPresenterProtocol {
         let wait = ExplorePresenter.waitText(for: listing.snapshot)
         let queue: String
         switch listing.venue.queueSupport {
-        case .demoSupported: queue = "Queue available"
+        case .native: queue = "Queue available"
+        case .external: queue = "Joins via restaurant"
+        case .crowd: queue = "Community report"
         case .closed: queue = "Queue closed"
         case .unsupported: queue = "No remote queue"
         }

@@ -157,8 +157,10 @@ final class ExplorePresenter: ExplorePresenterProtocol {
         guard let id = selectedID, let listing = interactor.listing(id: id) else { return }
         if let ticket = interactor.activeTicket(forVenue: id) {
             router.showTicket(id: ticket.id)
-        } else if listing.venue.queueSupport == .demoSupported {
+        } else if listing.venue.queueSupport == .native {
             router.showJoinQueue(for: listing.venue)
+        } else if listing.venue.queueSupport == .external, let url = listing.venue.externalQueueURL {
+            router.openExternalQueue(url)
         }
     }
 
@@ -344,7 +346,7 @@ final class ExplorePresenter: ExplorePresenterProtocol {
         if let ticket = interactor.activeTicket(forVenue: listing.venue.id), ticket.status.isActive {
             return "Your ticket: \(Self.groupsText(ticket.position, prefix: nil)) ahead of you"
         }
-        guard listing.venue.queueSupport == .demoSupported, listing.snapshot.waitMinutes != nil else { return nil }
+        guard listing.venue.queueSupport == .native, listing.snapshot.waitMinutes != nil else { return nil }
         return Self.groupsText(QueueService.groupsAhead(for: listing.snapshot), prefix: "About") + " ahead"
     }
 
@@ -361,24 +363,11 @@ final class ExplorePresenter: ExplorePresenterProtocol {
         } else {
             source = "\(snapshot.source.rawValue) · updated \(QueueFormatting.ago(snapshot.timestamp))"
         }
-        let queue: String
-        switch listing.venue.queueSupport {
-        case .demoSupported: queue = "Virtual queue available"
-        case .closed: queue = "Queue closed"
-        case .unsupported: queue = listing.venue.isDemo ? "Remote queue not supported" : "Real place · no queue data"
-        }
-        let joinTitle: String
-        var canJoin = false
-        if interactor.activeTicket(forVenue: listing.venue.id) != nil {
-            joinTitle = "View my ticket"
-            canJoin = true
-        } else {
-            switch listing.venue.queueSupport {
-            case .demoSupported: joinTitle = "Join queue"; canJoin = true
-            case .closed: joinTitle = "Queue closed"
-            case .unsupported: joinTitle = listing.venue.isDemo ? "Remote queue not supported" : "No queue available"
-            }
-        }
+        let info = QueueSupportInfo(venue: listing.venue)
+        let hasTicket = interactor.activeTicket(forVenue: listing.venue.id) != nil
+        let queue = info.shortText
+        let joinTitle = hasTicket ? "View my ticket" : info.actionTitle
+        let canJoin = hasTicket || info.canAct
         return VenuePreviewViewModel(id: listing.venue.id,
                                      name: listing.venue.name,
                                      subtitle: "\(listing.venue.category.rawValue) · \(listing.venue.address)",

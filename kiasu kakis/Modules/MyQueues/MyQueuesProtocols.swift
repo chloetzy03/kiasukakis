@@ -1,6 +1,6 @@
 import UIKit
 
-struct TicketRowViewModel {
+struct TicketRowViewModel: Equatable {
     let id: UUID
     let title: String
     let subtitle: String
@@ -10,7 +10,7 @@ struct TicketRowViewModel {
     let isSaved: Bool
 }
 
-struct TicketSectionViewModel {
+struct TicketSectionViewModel: Equatable {
     let title: String
     let rows: [TicketRowViewModel]
 }

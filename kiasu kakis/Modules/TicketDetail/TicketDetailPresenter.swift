@@ -1,4 +1,5 @@
 import UIKit
+import CoreLocation
 
 final class TicketDetailPresenter: TicketDetailPresenterProtocol {
 
@@ -18,15 +19,7 @@ final class TicketDetailPresenter: TicketDetailPresenterProtocol {
         refreshTravel(requestPermission: false)
     }
 
-    // The one button under the prompt: more time when called, or location for a leave alert.
-    func didTapProximityAction() {
-        if interactor.ticket?.status == .called {
-            interactor.requestMoreTime()
-            render()
-        } else {
-            refreshTravel(requestPermission: true)
-        }
-    }
+    func didTapProximityAction() { refreshTravel(requestPermission: true) }
 
     private func refreshTravel(requestPermission: Bool) {
         Task { [weak self] in
@@ -49,8 +42,30 @@ final class TicketDetailPresenter: TicketDetailPresenterProtocol {
 
     // After being called this is "I'm here". Otherwise it is the demo's skip-ahead.
     func didTapAdvance() {
-        if interactor.ticket?.status == .called { interactor.checkIn() } else { interactor.advance() }
+        guard let ticket = interactor.ticket else { return }
+        guard ticket.status == .called else {
+            interactor.advance()
+            render()
+            return
+        }
+        // Check the user's location when we can. Someone far away probably tapped by mistake, so ask once.
+        Task { [weak self] in
+            guard let self else { return }
+            if let distance = await interactor.distanceToVenue(), distance > farFromVenueMetres {
+                view?.askToConfirmCheckIn(venueName: ticket.venueName, distanceText: Self.distanceText(distance))
+            } else {
+                didConfirmCheckIn()
+            }
+        }
+    }
+
+    func didConfirmCheckIn() {
+        interactor.checkIn()
         render()
+    }
+
+    static func distanceText(_ metres: CLLocationDistance) -> String {
+        metres < 1000 ? "\(Int((metres / 50).rounded()) * 50) m" : String(format: "%.1f km", metres / 1000)
     }
 
     func didTapCancel() { view?.askToConfirmCancel() }
@@ -69,7 +84,6 @@ final class TicketDetailPresenter: TicketDetailPresenterProtocol {
 
     private func promptAction(for ticket: QueueTicket, locationAction: String?) -> String? {
         switch ticket.status {
-        case .called: return ticket.canRequestMoreTime ? "Running late? \(simulator.speed.extraTimeText)" : nil
         case .waiting: return locationAction
         default: return nil
         }

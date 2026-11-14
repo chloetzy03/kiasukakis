@@ -60,8 +60,16 @@ final class MyQueuesViewController: UIViewController {
 extension MyQueuesViewController: MyQueuesViewProtocol {
 
     func show(sections: [TicketSectionViewModel]) {
+        // The queue updates every second or so. Reloading the whole table each time would snap an open swipe shut,
+        // so only reload when the rows change, and just refresh the visible cells when only their text changed.
+        guard sections != self.sections else { return }
+        let sameRows = sections.map { $0.rows.map(\.id) } == self.sections.map { $0.rows.map(\.id) }
         self.sections = sections
-        tableView.reloadData()
+        if sameRows {
+            tableView.reconfigureRows(at: tableView.indexPathsForVisibleRows ?? [])
+        } else {
+            tableView.reloadData()
+        }
     }
 
     func showEmptyState(_ isEmpty: Bool) {

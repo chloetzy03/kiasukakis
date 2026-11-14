@@ -21,8 +21,6 @@ protocol QueueServicing: AnyObject {
     func deleteTickets(where shouldDelete: (QueueTicket) -> Bool)
     func setTravelMinutes(_ minutes: Int, forTicket id: UUID)
     func checkIn(ticketID: UUID)
-    // Gives a called ticket more time, once.
-    func requestMoreTime(ticketID: UUID)
     // Gives up on called tickets whose grace period has run out. Returns true if any changed.
     @discardableResult func expireLateTickets(now: Date, grace: TimeInterval) -> Bool
     @discardableResult func progressTickets(now: Date, interval: TimeInterval) -> Bool
@@ -186,11 +184,6 @@ final class QueueService: QueueServicing {
         tickets[index].arrivedAt = clock()
         // Arriving after being called means the user is being seated, so the ticket is done.
         if tickets[index].status == .called { tickets[index].status = .completed }
-    }
-
-    func requestMoreTime(ticketID: UUID) {
-        guard let index = tickets.firstIndex(where: { $0.id == ticketID }), tickets[index].canRequestMoreTime else { return }
-        tickets[index].lateExtensions = tickets[index].extensionCount + 1
     }
 
     @discardableResult

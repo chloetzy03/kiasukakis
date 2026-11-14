@@ -33,24 +33,12 @@ struct QueueTicket: Codable, Identifiable, Equatable {
     var arrivedAt: Date?
     // When the ticket was called. The user has a short grace period from here to arrive.
     var calledAt: Date?
-    // How many times the user asked for more time. Optional so tickets saved earlier still load.
-    var lateExtensions: Int?
 
     // People ahead of the user in the queue.
     var position: Int { max(ticketNumber - nowServing, 0) }
 
-    // A person can ask for more time once, so a no-show can't hold a table for ever.
-    static let maxExtensions = 1
-    var extensionCount: Int { lateExtensions ?? 0 }
-    var canRequestMoreTime: Bool { status == .called && extensionCount < Self.maxExtensions }
-
-    // Asking for more time adds half the normal grace period.
-    static func graceWindow(grace: TimeInterval, extensions: Int) -> TimeInterval {
-        grace * (1 + 0.5 * Double(extensions))
-    }
-
     // When a called ticket is given up on. nil until it has been called.
     func deadline(grace: TimeInterval) -> Date? {
-        calledAt.map { $0.addingTimeInterval(Self.graceWindow(grace: grace, extensions: extensionCount)) }
+        calledAt.map { $0.addingTimeInterval(grace) }
     }
 }

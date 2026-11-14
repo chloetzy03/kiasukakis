@@ -36,8 +36,6 @@ enum SimulationSpeed: String, CaseIterable {
     var graceSeconds: TimeInterval { self == .demo ? 40 : 600 }
     // How much faster than real life the clock runs, so countdowns can still be shown in real minutes.
     var displayScale: Double { self == .demo ? 15 : 1 }
-    // The extra time you get when you say you're running late, in real minutes (half the grace period).
-    var extraTimeText: String { "+\(Int(graceSeconds / 2 * displayScale / 60)) min" }
 
     func estimateText(groups: Int) -> String {
         let seconds = Double(groups) * groupInterval

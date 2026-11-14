@@ -34,7 +34,7 @@ final class LocalTicketNotifier: NSObject, TicketNotifying, UNUserNotificationCe
     func sync(tickets: [QueueTicket], interval: TimeInterval, grace: TimeInterval, now: Date) {
         for ticket in tickets {
             let plan = TicketNotificationPlan.plan(for: ticket, interval: interval, grace: grace, now: now)
-            let signature = "\(ticket.status.rawValue)-\(ticket.position)-\(interval)-\(ticket.lastProgressAt?.timeIntervalSince1970 ?? 0)-\(ticket.travelMinutes ?? -1)-\(ticket.arrivedAt != nil)-\(grace)-\(ticket.extensionCount)-\(ticket.calledAt?.timeIntervalSince1970 ?? 0)"
+            let signature = "\(ticket.status.rawValue)-\(ticket.position)-\(interval)-\(ticket.lastProgressAt?.timeIntervalSince1970 ?? 0)-\(ticket.travelMinutes ?? -1)-\(ticket.arrivedAt != nil)-\(grace)-\(ticket.calledAt?.timeIntervalSince1970 ?? 0)"
             guard signatures[ticket.id] != signature else { continue }
             signatures[ticket.id] = signature
             center.removePendingNotificationRequests(withIdentifiers: Self.identifiers(for: ticket))

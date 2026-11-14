@@ -1,6 +1,6 @@
 import UIKit
 
-struct SavedVenueRowViewModel {
+struct SavedVenueRowViewModel: Equatable {
     let id: String
     let name: String
     let subtitle: String

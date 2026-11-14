@@ -5,10 +5,14 @@ protocol TicketTravelUpdating: AnyObject {
     // Works out how far the user is from the venue and stores it on the ticket. Never asks for permission unless told to.
     func refresh(ticketID: UUID, requestPermission: Bool) async
     func refreshAllActive() async
+    // How far the user is from the venue, or nil if their location isn't available. Never asks for permission.
+    func distanceToVenue(ticketID: UUID) async -> CLLocationDistance?
 }
 
 // How close counts as "already there" (metres). Within this, the ticket is checked in automatically.
 let arrivalRadiusMetres: CLLocationDistance = 100
+// Farther than this and "I'm here" asks the user to confirm, because they probably haven't arrived.
+let farFromVenueMetres: CLLocationDistance = 300
 
 final class TicketTravelUpdater: TicketTravelUpdating {
 
@@ -33,6 +37,12 @@ final class TicketTravelUpdater: TicketTravelUpdating {
         for ticket in service.tickets where ticket.status.isActive && ticket.arrivedAt == nil {
             await refresh(ticketID: ticket.id, requestPermission: false)
         }
+    }
+
+    func distanceToVenue(ticketID: UUID) async -> CLLocationDistance? {
+        guard let ticket = service.ticket(id: ticketID), let venue = venues.venue(id: ticket.venueID),
+              location.authorization == .authorized, let here = try? await location.currentLocation() else { return nil }
+        return here.distance(from: CLLocation(latitude: venue.latitude, longitude: venue.longitude))
     }
 
     func refresh(ticketID: UUID, requestPermission: Bool) async {

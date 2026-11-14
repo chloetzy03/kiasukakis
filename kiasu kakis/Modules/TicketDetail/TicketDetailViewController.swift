@@ -210,6 +210,17 @@ extension TicketDetailViewController: TicketDetailViewProtocol {
         proximityActionButton.isHidden = model.promptActionTitle == nil
     }
 
+    func askToConfirmCheckIn(venueName: String, distanceText: String) {
+        let alert = UIAlertController(title: "Are you at \(venueName)?",
+                                      message: "You look about \(distanceText) away. Only check in once you've arrived.",
+                                      preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Not yet", style: .cancel))
+        alert.addAction(UIAlertAction(title: "I'm here", style: .default) { [weak self] _ in
+            self?.presenter.didConfirmCheckIn()
+        })
+        present(alert, animated: true)
+    }
+
     func askToConfirmCancel() {
         let alert = UIAlertController(title: "Leave this queue?",
                                       message: "Your ticket will be cancelled.",

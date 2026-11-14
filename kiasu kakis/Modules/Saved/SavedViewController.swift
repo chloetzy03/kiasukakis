@@ -77,8 +77,15 @@ extension SavedViewController: SavedViewProtocol {
     }
 
     func show(rows: [SavedVenueRowViewModel]) {
+        // Waits change every few seconds. A full reload would snap an open swipe shut, so only reload when the list changes.
+        guard rows != self.rows else { return }
+        let sameRows = rows.map(\.id) == self.rows.map(\.id)
         self.rows = rows
-        tableView.reloadData()
+        if sameRows {
+            tableView.reconfigureRows(at: tableView.indexPathsForVisibleRows ?? [])
+        } else {
+            tableView.reloadData()
+        }
     }
 
     func showEmptyState(_ isEmpty: Bool) {

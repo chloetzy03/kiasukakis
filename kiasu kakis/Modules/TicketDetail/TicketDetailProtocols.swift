@@ -1,4 +1,5 @@
 import UIKit
+import CoreLocation
 
 struct TicketDetailViewModel {
     let venueName: String
@@ -23,6 +24,7 @@ struct TicketDetailViewModel {
 protocol TicketDetailViewProtocol: AnyObject {
     func show(_ viewModel: TicketDetailViewModel)
     func askToConfirmCancel()
+    func askToConfirmCheckIn(venueName: String, distanceText: String)
 }
 
 protocol TicketDetailPresenterProtocol: AnyObject {
@@ -30,6 +32,7 @@ protocol TicketDetailPresenterProtocol: AnyObject {
     func didTapAdvance()
     func didTapCancel()
     func didConfirmCancel()
+    func didConfirmCheckIn()
     func didTapProximityAction()
 }
 
@@ -37,8 +40,8 @@ protocol TicketDetailInteractorProtocol: AnyObject {
     var ticket: QueueTicket? { get }
     func advance()
     func cancel()
-    func requestMoreTime()
     func checkIn()
+    func distanceToVenue() async -> CLLocationDistance?
     var locationStatus: LocationAuthorization { get }
     func refreshTravel(requestPermission: Bool) async
 }

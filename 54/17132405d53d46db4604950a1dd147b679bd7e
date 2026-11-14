@@ -1,0 +1,38 @@
+"kiasu kakis/Entities/VenueQueueConfig.swift"
+  s_83605c29a5e567::t_17dd51f75ce092 1-32
+"kiasu kakis/Entities/QueueTicket.swift"
+  s_83605c29a5e567::t_17dd51f75ce092 36-37
+"kiasu kakis/Services/QueueService.swift"
+  s_83605c29a5e567::t_17dd51f75ce092 8-9,41-44,59,66,71,112-114,116-118,127
+"kiasu kakis/Modules/JoinQueue/JoinQueuePresenter.swift"
+  s_83605c29a5e567::t_17dd51f75ce092 31-32
+  s_83605c29a5e567::t_adfe42bcee886c 42-48,59-60
+"kiasu kakis/Modules/JoinQueue/JoinQueueProtocols.swift"
+  s_83605c29a5e567::t_adfe42bcee886c 10-12,32
+"kiasu kakis/Services/VenueConfigProviding.swift"
+  s_83605c29a5e567::t_d1b68ca7338717 14,46
+  s_83605c29a5e567::t_17dd51f75ce092 1-13,15-45,47-52
+"kiasu kakis/Modules/JoinQueue/JoinQueueViewController.swift"
+  s_83605c29a5e567::t_adfe42bcee886c 14,51,57-59,126-128
+"kiasu kakis/venue_configs.json"
+  s_83605c29a5e567::t_17dd51f75ce092 1-25
+"kiasu kakis/Modules/JoinQueue/JoinQueueInteractor.swift"
+  s_83605c29a5e567::t_adfe42bcee886c 8,10-11,15,18
+  s_83605c29a5e567::t_9b2919eba3aea6 19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5417132405d53d46db4604950a1dd147b679bd7e",
+  "prompts": {},
+  "sessions": {
+    "s_83605c29a5e567": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "1e007083-5ef8-4fa4-a40d-8019fcebb6dc",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

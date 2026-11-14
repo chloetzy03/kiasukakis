@@ -1,0 +1,65 @@
+"kiasu kakis/Modules/TicketDetail/TicketDetailViewController.swift"
+  s_83605c29a5e567::t_925e4d85cbcf48 224-229
+"kiasu kakis/Modules/TicketDetail/TicketDetailInteractor.swift"
+  s_83605c29a5e567::t_925e4d85cbcf48 21
+"kiasu kakis/Modules/MyQueues/MyQueuesPresenter.swift"
+  s_83605c29a5e567::t_24cc13cf791a8a 52
+"kiasu kakis/Modules/VenueDetails/VenueDetailsRouter.swift"
+  s_83605c29a5e567::t_5bb0a6c2bfb078 36-47
+"kiasu kakis/Modules/Shared/TrackingPrompts.swift"
+  s_83605c29a5e567::t_9e7ed77fb3afa5 1-56
+"kiasu kakis/Modules/Explore/ExploreProtocols.swift"
+  s_83605c29a5e567::t_5bb0a6c2bfb078 135,143-145
+"kiasu kakis/Modules/Explore/ExploreInteractor.swift"
+  s_83605c29a5e567::t_5bb0a6c2bfb078 28-31
+"kiasu kakis/Entities/QueueTicket.swift"
+  s_83605c29a5e567::t_11fb050168cee1 36-37,42
+  s_83605c29a5e567::t_f895971bda8456 43
+"kiasu kakis/Modules/TicketDetail/TicketDetailProtocols.swift"
+  s_83605c29a5e567::t_925e4d85cbcf48 27,37,46
+"kiasu kakis/Services/QueueService.swift"
+  s_83605c29a5e567::t_11fb050168cee1 26-28,127-128,130-150,153-155,173-174,225
+  s_83605c29a5e567::t_9e7ed77fb3afa5 8-9,129
+"kiasu kakis/Services/TicketNotificationPlan.swift"
+  s_83605c29a5e567::t_9e7ed77fb3afa5 4,16,24-29
+  s_83605c29a5e567::t_bd4a5c85623d92 30-31
+"kiasu kakis/Modules/Explore/ExplorePresenter.swift"
+  s_83605c29a5e567::t_5bb0a6c2bfb078 163-166,176-183
+  s_83605c29a5e567::t_df76ecf8b2ac5b 184-186
+"kiasu kakis/Modules/JoinQueue/JoinQueuePresenter.swift"
+  s_83605c29a5e567::t_9e7ed77fb3afa5 29
+"kiasu kakis/Modules/VenueDetails/VenueDetailsInteractor.swift"
+  s_83605c29a5e567::t_5bb0a6c2bfb078 36-39
+"kiasu kakis/Modules/Explore/ExploreRouter.swift"
+  s_83605c29a5e567::t_5bb0a6c2bfb078 36-47
+"kiasu kakis/Modules/VenueDetails/VenueDetailsPresenter.swift"
+  s_83605c29a5e567::t_5bb0a6c2bfb078 38-43,52-59
+  s_83605c29a5e567::t_65d2964f9bff29 60-62
+"kiasu kakis/Modules/VenueDetails/VenueDetailsProtocols.swift"
+  s_83605c29a5e567::t_5bb0a6c2bfb078 73,81-83
+"kiasu kakis/Modules/TicketDetail/TicketDetailPresenter.swift"
+  s_83605c29a5e567::t_925e4d85cbcf48 46-50,67-71,95-103,129,151-152,156-158
+"kiasu kakis/Services/TicketNotifier.swift"
+  s_83605c29a5e567::t_9e7ed77fb3afa5 51-53,81
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "477a861e8e2c713ecf49c77b1b379753c767b4a2",
+  "prompts": {},
+  "humans": {
+    "h_ee194195c1c2bb": {
+      "author": "chloe <chloetzy03@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_83605c29a5e567": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "1e007083-5ef8-4fa4-a40d-8019fcebb6dc",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

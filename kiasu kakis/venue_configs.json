@@ -1,0 +1,25 @@
+{
+  "default": {
+    "tableTypes": [
+      { "id": "small",  "name": "1–2 people", "minParty": 1, "maxParty": 2, "waitFactor": 0.8 },
+      { "id": "medium", "name": "3–4 people", "minParty": 3, "maxParty": 4, "waitFactor": 1.0 },
+      { "id": "large",  "name": "5–8 people", "minParty": 5, "maxParty": 8, "waitFactor": 1.4 }
+    ]
+  },
+  "venues": {
+    "v5": {
+      "tableTypes": [
+        { "id": "small",  "name": "1–2 people",  "minParty": 1, "maxParty": 2,  "waitFactor": 0.7 },
+        { "id": "medium", "name": "3–4 people",  "minParty": 3, "maxParty": 4,  "waitFactor": 1.0 },
+        { "id": "round",  "name": "5–8 people",  "minParty": 5, "maxParty": 8,  "waitFactor": 1.5 },
+        { "id": "banquet","name": "9–12 people", "minParty": 9, "maxParty": 12, "waitFactor": 2.2 }
+      ]
+    },
+    "v7": {
+      "tableTypes": [
+        { "id": "small",  "name": "1–2 people", "minParty": 1, "maxParty": 2, "waitFactor": 0.9 },
+        { "id": "medium", "name": "3–4 people", "minParty": 3, "maxParty": 4, "waitFactor": 1.3 }
+      ]
+    }
+  }
+}

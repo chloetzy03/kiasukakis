@@ -5,6 +5,8 @@ enum QueueError: Error {
     case alreadyJoined(QueueTicket)
     // You can only be in a few queues at once, so nobody can hold a place in every queue.
     case tooManyActive(limit: Int)
+    // The venue has no table for a group this big.
+    case partyTooLarge(max: Int)
 }
 
 protocol QueueServicing: AnyObject {
@@ -36,8 +38,10 @@ final class QueueService: QueueServicing {
     static let maxActiveTickets = 2
 
     // Groups ahead of a new ticket, derived from the venue's demo wait time.
-    static func groupsAhead(for snapshot: QueueSnapshot) -> Int {
-        max(2, (snapshot.waitMinutes ?? 10) / minutesPerGroup)
+    static func groupsAhead(for snapshot: QueueSnapshot) -> Int { groupsAhead(forWait: snapshot.waitMinutes) }
+
+    static func groupsAhead(forWait minutes: Int?) -> Int {
+        max(2, (minutes ?? 10) / minutesPerGroup)
     }
 
     private static let filename = "tickets.json"
@@ -52,16 +56,19 @@ final class QueueService: QueueServicing {
 
     private let simulator: QueueSimulating
     private let notifier: TicketNotifying
+    private let configs: VenueConfigProviding
     private let clock: () -> Date
     private var tickObserver: NSObjectProtocol?
 
     init(store: LocalStore = LocalStore(),
          simulator: QueueSimulating = QueueSimulator.shared,
          notifier: TicketNotifying = LocalTicketNotifier.shared,
+         configs: VenueConfigProviding = BundledVenueConfigs.shared,
          clock: @escaping () -> Date = Date.init) {
         self.store = store
         self.simulator = simulator
         self.notifier = notifier
+        self.configs = configs
         self.clock = clock
         self.tickets = store.load([QueueTicket].self, from: Self.filename) ?? []
         // Every simulator tick, move the user's tickets forward and tell the screens if anything changed.
@@ -102,9 +109,13 @@ final class QueueService: QueueServicing {
         if let existing = activeTicket(forVenue: venue.id) { return .failure(.alreadyJoined(existing)) }
         guard activeTicketCount < maxActiveTickets else { return .failure(.tooManyActive(limit: maxActiveTickets)) }
 
+        // Each table type has its own line, so the wait and the number of groups ahead depend on the party size.
+        let config = configs.config(for: venue)
+        guard let table = config.tableType(forParty: partySize) else { return .failure(.partyTooLarge(max: config.maxPartySize)) }
         let nowServing = Int.random(in: 20..<60)
-        let ahead = Self.groupsAhead(for: simulator.snapshot(for: venue))
-        let ticket = QueueTicket(id: UUID(),
+        let wait = config.waitMinutes(base: simulator.snapshot(for: venue).waitMinutes, partySize: partySize)
+        let ahead = Self.groupsAhead(forWait: wait)
+        var ticket = QueueTicket(id: UUID(),
                                  venueID: venue.id,
                                  venueName: venue.name,
                                  partySize: partySize,
@@ -113,6 +124,7 @@ final class QueueService: QueueServicing {
                                  status: .waiting,
                                  createdAt: clock(),
                                  lastProgressAt: clock())
+        ticket.tableTypeName = table.name
         tickets.insert(ticket, at: 0)
         // Ask when the user first joins, so the reason for the question is clear.
         notifier.requestPermissionIfNeeded()

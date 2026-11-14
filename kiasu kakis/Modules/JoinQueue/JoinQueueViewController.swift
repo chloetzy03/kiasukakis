@@ -11,6 +11,7 @@ final class JoinQueueViewController: UIViewController {
     private let sourceLabel = UILabel()
     private let partyValueLabel = UILabel()
     private let stepper = UIStepper()
+    private let tableLabel = UILabel()
     private let warningLabel = UILabel()
     private let confirmButton = UIButton(type: .system)
 
@@ -47,13 +48,15 @@ final class JoinQueueViewController: UIViewController {
         // Party size card
         partyValueLabel.font = .preferredFont(forTextStyle: .body)
         stepper.minimumValue = 1
-        stepper.maximumValue = 8
+        stepper.maximumValue = 8 // Replaced by the venue's own limit as soon as the screen shows.
         stepper.value = 1
         stepper.addTarget(self, action: #selector(stepperChanged), for: .valueChanged)
         stepper.accessibilityLabel = "Party size"
         let partyRow = UIStackView(arrangedSubviews: [partyValueLabel, UIView(), stepper])
         partyRow.alignment = .center
-        let party = card([caption("PARTY SIZE"), partyRow])
+        tableLabel.font = .preferredFont(forTextStyle: .footnote)
+        tableLabel.textColor = Theme.secondaryText
+        let party = card([caption("PARTY SIZE"), partyRow, tableLabel])
 
         warningLabel.font = .preferredFont(forTextStyle: .subheadline)
         warningLabel.textColor = .systemRed
@@ -120,6 +123,9 @@ extension JoinQueueViewController: JoinQueueViewProtocol {
         aheadLabel.text = model.aheadText
         sourceLabel.text = model.sourceText
         partyValueLabel.text = model.partySizeText
+        stepper.maximumValue = Double(model.maxPartySize)
+        tableLabel.text = model.tableText
+        tableLabel.isHidden = model.tableText.isEmpty
         confirmButton.isEnabled = model.canJoin
         warningLabel.text = model.unavailableMessage
         warningLabel.isHidden = model.unavailableMessage == nil

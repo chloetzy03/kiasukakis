@@ -5,12 +5,17 @@ final class JoinQueueInteractor: JoinQueueInteractorProtocol {
     let venue: Venue
     private let service: QueueServicing
     private let simulator: QueueSimulating
+    private let configs: VenueConfigProviding
 
-    init(venue: Venue, service: QueueServicing = QueueService.shared, simulator: QueueSimulating = QueueSimulator.shared) {
+    init(venue: Venue, service: QueueServicing = QueueService.shared, simulator: QueueSimulating = QueueSimulator.shared,
+         configs: VenueConfigProviding = BundledVenueConfigs.shared) {
         self.venue = venue
         self.service = service
         self.simulator = simulator
+        self.configs = configs
     }
+
+    var config: VenueQueueConfig { configs.config(for: venue) }
 
     var snapshot: QueueSnapshot { simulator.snapshot(for: venue) }
 

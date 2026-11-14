@@ -5,6 +5,8 @@ enum QueueError: Error {
     case alreadyJoined(QueueTicket)
     // You can only be in a few queues at once, so nobody can hold a place in every queue.
     case tooManyActive(limit: Int)
+    // A tracked number must be higher than the number now being served.
+    case invalidNumbers
 }
 
 protocol QueueServicing: AnyObject {
@@ -21,6 +23,9 @@ protocol QueueServicing: AnyObject {
     func deleteTickets(where shouldDelete: (QueueTicket) -> Bool)
     func setTravelMinutes(_ minutes: Int, forTicket id: UUID)
     func checkIn(ticketID: UUID)
+    // The user took a number at a venue with its own queue system and wants to follow it here.
+    func track(venue: Venue, ticketNumber: Int, nowServing: Int) -> Result<QueueTicket, QueueError>
+    func updateNowServing(_ number: Int, forTicket id: UUID)
     // Gives up on called tickets whose grace period has run out. Returns true if any changed.
     @discardableResult func expireLateTickets(now: Date, grace: TimeInterval) -> Bool
     @discardableResult func progressTickets(now: Date, interval: TimeInterval) -> Bool
@@ -119,9 +124,35 @@ final class QueueService: QueueServicing {
         return .success(ticket)
     }
 
+    func track(venue: Venue, ticketNumber: Int, nowServing: Int) -> Result<QueueTicket, QueueError> {
+        guard venue.queueSupport == .external else { return .failure(.notAvailable) }
+        guard ticketNumber > nowServing, nowServing >= 0 else { return .failure(.invalidNumbers) }
+        if let existing = activeTicket(forVenue: venue.id) { return .failure(.alreadyJoined(existing)) }
+        guard activeTicketCount < maxActiveTickets else { return .failure(.tooManyActive(limit: maxActiveTickets)) }
+        var ticket = QueueTicket(id: UUID(), venueID: venue.id, venueName: venue.name, partySize: 1,
+                                 ticketNumber: ticketNumber, nowServing: nowServing, status: .waiting,
+                                 createdAt: clock(), lastProgressAt: clock())
+        ticket.trackedFromVenue = true
+        ticket.status = Self.status(for: ticket)
+        tickets.insert(ticket, at: 0)
+        notifier.requestPermissionIfNeeded()
+        return .success(ticket)
+    }
+
+    // Only the venue knows which number is being served, so the user types it in. Numbers never go backwards.
+    func updateNowServing(_ number: Int, forTicket id: UUID) {
+        guard let index = tickets.firstIndex(where: { $0.id == id }), tickets[index].isTracked, tickets[index].status.isActive,
+              number > tickets[index].nowServing else { return }
+        tickets[index].nowServing = min(number, tickets[index].ticketNumber)
+        tickets[index].lastProgressAt = clock()
+        tickets[index].status = Self.status(for: tickets[index])
+    }
+
     // Demo control: moves the queue forward by one, or completes a called ticket.
     func advance(ticketID: UUID) {
-        guard let index = tickets.firstIndex(where: { $0.id == ticketID }), tickets[index].status.isActive else { return }
+        guard let index = tickets.firstIndex(where: { $0.id == ticketID }), tickets[index].status.isActive,
+              // A tracked number moves only when the user says so, apart from finishing it once called.
+              !tickets[index].isTracked || tickets[index].status == .called else { return }
         if tickets[index].status == .called {
             tickets[index].status = .completed
             return
@@ -139,7 +170,8 @@ final class QueueService: QueueServicing {
     func progressTickets(now: Date, interval: TimeInterval) -> Bool {
         var updated = tickets
         var changed = false
-        for index in updated.indices where updated[index].status == .waiting || updated[index].status == .almostYourTurn {
+        for index in updated.indices where !updated[index].isTracked
+            && (updated[index].status == .waiting || updated[index].status == .almostYourTurn) {
             guard let last = updated[index].lastProgressAt else {
                 updated[index].lastProgressAt = now
                 changed = true
@@ -190,7 +222,7 @@ final class QueueService: QueueServicing {
     func expireLateTickets(now: Date, grace: TimeInterval) -> Bool {
         var updated = tickets
         var changed = false
-        for index in updated.indices where updated[index].status == .called {
+        for index in updated.indices where updated[index].status == .called && !updated[index].isTracked {
             // Tickets called before grace periods existed get one starting now.
             if updated[index].calledAt == nil { updated[index].calledAt = now; changed = true; continue }
             guard let deadline = updated[index].deadline(grace: grace), now >= deadline else { continue }

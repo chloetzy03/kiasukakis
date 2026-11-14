@@ -33,6 +33,10 @@ final class VenueDetailsInteractor: VenueDetailsInteractorProtocol {
     var isSaved: Bool { store.isSaved(venue.id) }
     func toggleSaved() { store.toggle(venue.id) }
 
+    func trackTicket(yourNumber: Int, nowServing: Int) -> Result<QueueTicket, QueueError> {
+        queueService.track(venue: venue, ticketNumber: yourNumber, nowServing: nowServing)
+    }
+
     func submitReport(minutes: Int) { simulator.submitReport(minutes: minutes, for: venue) }
 
     func loadPlaceDetails() async -> PlaceDetails? { await places.details(for: venue) }

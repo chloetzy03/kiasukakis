@@ -33,9 +33,13 @@ struct QueueTicket: Codable, Identifiable, Equatable {
     var arrivedAt: Date?
     // When the ticket was called. The user has a short grace period from here to arrive.
     var calledAt: Date?
+    // True when the user took a number from the restaurant's own system and is tracking it here by hand.
+    var trackedFromVenue: Bool?
 
     // People ahead of the user in the queue.
     var position: Int { max(ticketNumber - nowServing, 0) }
+
+    var isTracked: Bool { trackedFromVenue ?? false }
 
     // When a called ticket is given up on. nil until it has been called.
     func deadline(grace: TimeInterval) -> Date? {

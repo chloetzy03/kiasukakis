@@ -26,7 +26,7 @@ final class JoinQueuePresenter: JoinQueuePresenterProtocol {
         case .failure(.alreadyJoined(let existing)):
             // Never create a duplicate: open the ticket the user already has.
             router.finish(withTicketID: existing.id)
-        case .failure(.notAvailable):
+        case .failure(.notAvailable), .failure(.invalidNumbers):
             view?.showError("This queue isn't accepting tickets right now.")
         case .failure(.tooManyActive):
             view?.showError(interactor.queueLimitMessage ?? "You're already in the most queues allowed.")

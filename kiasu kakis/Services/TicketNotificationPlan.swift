@@ -1,7 +1,7 @@
 import Foundation
 
 struct PlannedNotification: Equatable {
-    enum Kind { case leaveNow, almost, called, lastCall, expired }
+    enum Kind { case leaveNow, almost, called, lastCall, expired, checkBoard }
     let kind: Kind
     let delay: TimeInterval
 }
@@ -13,11 +13,20 @@ enum TicketNotificationPlan {
 
     static func plan(for ticket: QueueTicket, interval: TimeInterval, grace: TimeInterval = 600, now: Date) -> [PlannedNotification] {
         guard interval > 0, grace > 0 else { return [] }
+        if ticket.isTracked { return trackedPlan(for: ticket) }
         switch ticket.status {
         case .waiting, .almostYourTurn: return waitingPlan(for: ticket, interval: interval, grace: grace, now: now)
         case .called: return latePlan(calledAt: ticket.calledAt ?? now, for: ticket, grace: grace, now: now)
         case .completed, .cancelled, .expired: return []
         }
+    }
+
+    // A tracked number only moves when the user updates it, so we can't predict the queue.
+    // Instead, nudge them to check the board about halfway to when they'd need to leave.
+    private static func trackedPlan(for ticket: QueueTicket) -> [PlannedNotification] {
+        guard ticket.status == .waiting, ticket.position >= 2 else { return [] }
+        let minutesLeft = Double(ticket.position * QueueService.minutesPerGroup) - Double(ticket.travelMinutes ?? 0)
+        return [PlannedNotification(kind: .checkBoard, delay: max(60, minutesLeft * 60 / 2))]
     }
 
     private static func waitingPlan(for ticket: QueueTicket, interval: TimeInterval, grace: TimeInterval, now: Date) -> [PlannedNotification] {

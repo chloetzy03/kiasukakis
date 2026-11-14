@@ -48,6 +48,9 @@ final class LocalTicketNotifier: NSObject, TicketNotifying, UNUserNotificationCe
         case .leaveNow:
             content.title = "Time to leave for \(ticket.venueName)"
             content.body = "It takes about \(ticket.travelMinutes ?? 0) min to get there. Head off now so you arrive when you're called."
+        case .checkBoard:
+            content.title = "Check your number at \(ticket.venueName)"
+            content.body = "Look at the board and update the number now serving."
         case .lastCall:
             content.title = "Last call at \(ticket.venueName)"
             content.body = "Your spot will be given away soon. Go in now."
@@ -75,7 +78,7 @@ final class LocalTicketNotifier: NSObject, TicketNotifying, UNUserNotificationCe
     private static func identifiers(for ticket: QueueTicket) -> [String] {
         let kinds: [PlannedNotification.Kind] = ticket.status == .called
             ? [.lastCall, .expired]
-            : [.leaveNow, .almost, .called, .lastCall, .expired]
+            : [.leaveNow, .almost, .called, .lastCall, .expired, .checkBoard]
         return kinds.map { identifier(ticket.id, $0) }
     }
 

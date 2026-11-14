@@ -24,6 +24,7 @@ struct TicketDetailViewModel {
 protocol TicketDetailViewProtocol: AnyObject {
     func show(_ viewModel: TicketDetailViewModel)
     func askToConfirmCancel()
+    func askForNowServing(current: Int)
     func askToConfirmCheckIn(venueName: String, distanceText: String)
 }
 
@@ -33,6 +34,7 @@ protocol TicketDetailPresenterProtocol: AnyObject {
     func didTapCancel()
     func didConfirmCancel()
     func didConfirmCheckIn()
+    func didEnterNowServing(_ number: Int)
     func didTapProximityAction()
 }
 
@@ -41,6 +43,7 @@ protocol TicketDetailInteractorProtocol: AnyObject {
     func advance()
     func cancel()
     func checkIn()
+    func updateNowServing(_ number: Int)
     func distanceToVenue() async -> CLLocationDistance?
     var locationStatus: LocationAuthorization { get }
     func refreshTravel(requestPermission: Bool) async

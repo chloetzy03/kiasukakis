@@ -43,6 +43,11 @@ final class TicketDetailPresenter: TicketDetailPresenterProtocol {
     // After being called this is "I'm here". Otherwise it is the demo's skip-ahead.
     func didTapAdvance() {
         guard let ticket = interactor.ticket else { return }
+        // A number from the restaurant's own system: update it by hand while waiting, and finish it once it's up.
+        if ticket.isTracked {
+            if ticket.status == .called { interactor.advance(); render() } else { view?.askForNowServing(current: ticket.nowServing) }
+            return
+        }
         guard ticket.status == .called else {
             interactor.advance()
             render()
@@ -57,6 +62,11 @@ final class TicketDetailPresenter: TicketDetailPresenterProtocol {
                 didConfirmCheckIn()
             }
         }
+    }
+
+    func didEnterNowServing(_ number: Int) {
+        interactor.updateNowServing(number)
+        render()
     }
 
     func didConfirmCheckIn() {
@@ -80,6 +90,15 @@ final class TicketDetailPresenter: TicketDetailPresenterProtocol {
         guard let deadline = ticket.deadline(grace: simulator.speed.graceSeconds) else { return "Your turn" }
         let left = deadline.timeIntervalSinceNow * simulator.speed.displayScale
         return "Your turn · \(QueueFormatting.remaining(left)) left"
+    }
+
+    private func advanceTitle(for ticket: QueueTicket) -> String {
+        switch (ticket.isTracked, ticket.status) {
+        case (true, .called): return "Done"
+        case (true, _): return "Update now serving"
+        case (false, .called): return "I'm here"
+        default: return "Skip ahead (demo)"
+        }
     }
 
     private func promptAction(for ticket: QueueTicket, locationAction: String?) -> String? {
@@ -107,7 +126,7 @@ final class TicketDetailPresenter: TicketDetailPresenterProtocol {
         switch ticket.status {
         case .waiting: message = prompt.text ?? ""
         case .almostYourTurn: message = ticket.arrivedAt == nil ? "You're next. Head over now." : "You're here. You're next!"
-        case .called: message = calledMessage(for: ticket)
+        case .called: message = ticket.isTracked ? "Your number's up. Go in now." : calledMessage(for: ticket)
         case .completed: message = "Done. Enjoy!"
         case .cancelled: message = "You left this queue."
         case .expired: message = "You missed your turn. Spot released."
@@ -129,14 +148,14 @@ final class TicketDetailPresenter: TicketDetailPresenterProtocol {
             statusColor: Theme.color(for: ticket.status),
             positionText: positionText,
             nowServingText: String(format: "#%03d", ticket.nowServing),
-            estimateText: isWaiting ? simulator.speed.estimateText(groups: position) : "-",
-            partyText: ticket.partySize == 1 ? "1 person" : "\(ticket.partySize) people",
+            estimateText: !isWaiting ? "-" : (ticket.isTracked ? "About \(position * QueueService.minutesPerGroup) min" : simulator.speed.estimateText(groups: position)),
+            partyText: ticket.isTracked ? "-" : (ticket.partySize == 1 ? "1 person" : "\(ticket.partySize) people"),
             message: message,
             stepIndex: step,
             // Skipping ahead is a presentation tool, so it hides unless demo controls are on. "I'm here" always shows once called.
-            canAdvance: ticket.status == .called || (ticket.status.isActive && DemoControls.isEnabled),
-            advanceTitle: ticket.status == .called ? "I'm here" : "Skip ahead (demo)",
-            advanceIsPrimary: ticket.status == .called,
+            canAdvance: ticket.status == .called || (ticket.status.isActive && (DemoControls.isEnabled || ticket.isTracked)),
+            advanceTitle: advanceTitle(for: ticket),
+            advanceIsPrimary: ticket.status == .called || ticket.isTracked,
             canCancel: ticket.status.isActive,
             promptActionTitle: promptAction(for: ticket, locationAction: prompt.action)))
     }

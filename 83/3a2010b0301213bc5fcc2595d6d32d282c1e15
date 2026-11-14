@@ -1,0 +1,33 @@
+"kiasu kakis/Modules/Explore/ExplorePresenter.swift"
+  s_83605c29a5e567::t_9ae815d625f5e3 163
+"kiasu kakis/Modules/JoinQueue/JoinQueuePresenter.swift"
+  s_83605c29a5e567::t_e3d10a6e6df1a3 29
+"kiasu kakis/Modules/MyQueues/MyQueuesPresenter.swift"
+  s_83605c29a5e567::t_d2aef7843664c3 52
+"kiasu kakis/Modules/TicketDetail/TicketDetailPresenter.swift"
+  s_83605c29a5e567::t_4abfb8becf4adb 110,132-133,137-139
+"kiasu kakis/Modules/VenueDetails/VenueDetailsPresenter.swift"
+  s_83605c29a5e567::t_de60b66566d5f2 38
+"kiasu kakis/Services/QueueService.swift"
+  s_83605c29a5e567::t_5c4453f7c1e83f 124,142,193
+"kiasu kakis/Services/TicketNotificationPlan.swift"
+  s_83605c29a5e567::t_c4072bc61be2c7 4
+"kiasu kakis/Services/TicketNotifier.swift"
+  s_83605c29a5e567::t_264753ec1f34b0 78
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "833a2010b0301213bc5fcc2595d6d32d282c1e15",
+  "prompts": {},
+  "sessions": {
+    "s_83605c29a5e567": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "1e007083-5ef8-4fa4-a40d-8019fcebb6dc",
+        "model": "unknown"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}

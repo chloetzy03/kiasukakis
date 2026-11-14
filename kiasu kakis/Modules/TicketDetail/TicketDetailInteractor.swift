@@ -18,7 +18,6 @@ final class TicketDetailInteractor: TicketDetailInteractorProtocol {
     func advance() { service.advance(ticketID: ticketID) }
     func cancel() { service.cancel(ticketID: ticketID) }
     func checkIn() { service.checkIn(ticketID: ticketID) }
-    func updateNowServing(_ number: Int) { service.updateNowServing(number, forTicket: ticketID) }
     func distanceToVenue() async -> CLLocationDistance? { await travel.distanceToVenue(ticketID: ticketID) }
     var locationStatus: LocationAuthorization { travel.locationStatus }
     func refreshTravel(requestPermission: Bool) async { await travel.refresh(ticketID: ticketID, requestPermission: requestPermission) }

@@ -33,18 +33,6 @@ final class VenueDetailsRouter: VenueDetailsRouterProtocol {
         CrowdReportSheet.present(on: viewController, venueName: venueName, onPick: onPick)
     }
 
-    func showExternalOptions(venueName: String, onOpen: @escaping () -> Void, onTrack: @escaping () -> Void) {
-        TrackingPrompts.chooseExternalAction(on: viewController, venueName: venueName, onOpen: onOpen, onTrack: onTrack)
-    }
-
-    func showTrackPrompt(venueName: String, onSubmit: @escaping (Int, Int) -> Void) {
-        TrackingPrompts.askForNumbers(on: viewController, venueName: venueName, onSubmit: onSubmit)
-    }
-
-    func showMessage(title: String, text: String) {
-        TrackingPrompts.message(on: viewController, title: title, text: text)
-    }
-
     func openExternalQueue(_ url: URL) {
         UIApplication.shared.open(url)
     }

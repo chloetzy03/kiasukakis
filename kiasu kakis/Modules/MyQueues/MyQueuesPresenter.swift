@@ -49,7 +49,7 @@ final class MyQueuesPresenter: MyQueuesPresenterProtocol {
         }
         return TicketRowViewModel(id: ticket.id,
                                   title: ticket.venueName,
-                                  subtitle: (ticket.isTracked ? "Number " : "Ticket ") + String(format: "#%03d", ticket.ticketNumber) + " · " + detail,
+                                  subtitle: "Ticket " + String(format: "#%03d", ticket.ticketNumber) + " · " + detail,
                                   statusColor: Theme.color(for: ticket.status),
                                   canDelete: !ticket.status.isActive,
                                   isSaved: interactor.isSaved(venueID: ticket.venueID))

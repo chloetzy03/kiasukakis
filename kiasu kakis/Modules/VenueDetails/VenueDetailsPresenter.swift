@@ -35,28 +35,12 @@ final class VenueDetailsPresenter: VenueDetailsPresenterProtocol {
         }
         switch interactor.venue.queueSupport {
         case .native: router.showJoinQueue(for: interactor.venue)
-        case .external:
-            guard let url = interactor.venue.externalQueueURL else { return }
-            let name = interactor.venue.name
-            router.showExternalOptions(venueName: name, onOpen: { [weak self] in self?.router.openExternalQueue(url) }, onTrack: { [weak self] in
-                self?.router.showTrackPrompt(venueName: name) { yours, serving in self?.track(yours: yours, serving: serving) }
-            })
+        case .external: if let url = interactor.venue.externalQueueURL { router.openExternalQueue(url) }
         case .crowd:
             router.showReportOptions(venueName: interactor.venue.name) { [weak self] option in
                 self?.interactor.submitReport(minutes: option.minutes)
             }
         case .closed, .unsupported: break
-        }
-    }
-
-    private func track(yours: Int, serving: Int) {
-        switch interactor.trackTicket(yourNumber: yours, nowServing: serving) {
-        case .success(let ticket): router.showTicket(ticketID: ticket.id)
-        case .failure(.alreadyJoined(let existing)): router.showTicket(ticketID: existing.id)
-        case .failure(.tooManyActive(let limit)):
-            router.showMessage(title: "You're in \(limit) queues already", text: "Leave one before tracking another.")
-        case .failure(.notAvailable), .failure(.invalidNumbers):
-            router.showMessage(title: "Couldn't track that number", text: "Your number must be higher than the number now serving.")
         }
     }
 

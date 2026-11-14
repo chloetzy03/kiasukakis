@@ -221,12 +221,6 @@ extension TicketDetailViewController: TicketDetailViewProtocol {
         present(alert, animated: true)
     }
 
-    func askForNowServing(current: Int) {
-        TrackingPrompts.askForNowServing(on: self, current: current) { [weak self] number in
-            self?.presenter.didEnterNowServing(number)
-        }
-    }
-
     func askToConfirmCancel() {
         let alert = UIAlertController(title: "Leave this queue?",
                                       message: "Your ticket will be cancelled.",

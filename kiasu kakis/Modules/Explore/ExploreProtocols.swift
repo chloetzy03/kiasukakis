@@ -132,7 +132,6 @@ protocol ExploreInteractorProtocol: AnyObject {
     func remoteSuggestions(for query: String, near center: CLLocationCoordinate2D) async -> [PlaceSuggestion]
     func resolve(_ suggestion: PlaceSuggestion) async -> Venue?
     func submitReport(minutes: Int, for venue: Venue)
-    func trackTicket(venue: Venue, yourNumber: Int, nowServing: Int) -> Result<QueueTicket, QueueError>
 }
 
 protocol ExploreRouterProtocol: AnyObject {
@@ -140,9 +139,6 @@ protocol ExploreRouterProtocol: AnyObject {
     func showAbout()
     func showJoinQueue(for venue: Venue)
     func showTicket(id: UUID)
-    func showExternalOptions(venueName: String, onOpen: @escaping () -> Void, onTrack: @escaping () -> Void)
-    func showTrackPrompt(venueName: String, onSubmit: @escaping (Int, Int) -> Void)
-    func showMessage(title: String, text: String)
     func openExternalQueue(_ url: URL)
     func showReportOptions(venueName: String, onPick: @escaping (CrowdReportOption) -> Void)
 }

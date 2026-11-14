@@ -70,7 +70,6 @@ protocol VenueDetailsInteractorProtocol: AnyObject {
     func loadPlaceDetails() async -> PlaceDetails?
     func loadPhoto(for details: PlaceDetails) async -> Data?
     func submitReport(minutes: Int)
-    func trackTicket(yourNumber: Int, nowServing: Int) -> Result<QueueTicket, QueueError>
 }
 
 protocol VenueDetailsRouterProtocol: AnyObject {
@@ -78,9 +77,6 @@ protocol VenueDetailsRouterProtocol: AnyObject {
     func showJoinQueue(for venue: Venue)
     func showTicket(ticketID: UUID)
     func openSettings()
-    func showExternalOptions(venueName: String, onOpen: @escaping () -> Void, onTrack: @escaping () -> Void)
-    func showTrackPrompt(venueName: String, onSubmit: @escaping (Int, Int) -> Void)
-    func showMessage(title: String, text: String)
     func openExternalQueue(_ url: URL)
     func showReportOptions(venueName: String, onPick: @escaping (CrowdReportOption) -> Void)
 }

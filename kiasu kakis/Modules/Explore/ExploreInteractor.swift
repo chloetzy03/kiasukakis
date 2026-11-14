@@ -25,10 +25,6 @@ final class ExploreInteractor: ExploreInteractorProtocol {
         self.savedStore = savedStore
     }
 
-    func trackTicket(venue: Venue, yourNumber: Int, nowServing: Int) -> Result<QueueTicket, QueueError> {
-        queueService.track(venue: venue, ticketNumber: yourNumber, nowServing: nowServing)
-    }
-
     func submitReport(minutes: Int, for venue: Venue) { simulator.submitReport(minutes: minutes, for: venue) }
 
     func listings(matching query: String, category: VenueCategory?) -> [VenueListing] {

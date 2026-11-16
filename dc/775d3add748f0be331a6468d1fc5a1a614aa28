@@ -1,0 +1,99 @@
+website/src/components/Magnetic.tsx
+  s_e6d7893d667e05::t_f27b570b75aa12 1-24
+website/src/main.tsx
+  s_e6d7893d667e05::t_9117ebe08915ec 1-8
+website/src/components/Hero.tsx
+  s_e6d7893d667e05::t_7fe97134033f31 1-16,18-72
+  s_e6d7893d667e05::t_2ecb836034f2ba 17
+docs/assets/Phone3D-8z1kUpOl.js
+  s_e6d7893d667e05::t_c19f9fd4c40e0c 1-4236
+website/.gitignore
+  s_e6d7893d667e05::t_8e8af8d918d8a7 1-2
+website/src/components/Phone.tsx
+  s_e6d7893d667e05::t_9117ebe08915ec 1-18
+website/src/components/Nav.tsx
+  s_e6d7893d667e05::t_f27b570b75aa12 1-29
+website/src/components/Cta.tsx
+  s_e6d7893d667e05::t_f27b570b75aa12 1-15
+website/src/components/Features.tsx
+  s_e6d7893d667e05::t_d05e429645ee15 1-24
+website/src/sound.ts
+  s_e6d7893d667e05::t_f27b570b75aa12 1-20
+website/tsconfig.json
+  s_e6d7893d667e05::t_8e8af8d918d8a7 1-8
+website/src/components/Scenery.tsx
+  s_e6d7893d667e05::t_c220b7b6bdc3f4 1-65,70-85
+  s_e6d7893d667e05::t_a3bb99bc1c0816 66-69
+website/package.json
+  s_e6d7893d667e05::t_95ce2cda579493 1-29
+website/src/launch.ts
+  s_e6d7893d667e05::t_8e8af8d918d8a7 1-11
+website/src/hooks.ts
+  s_e6d7893d667e05::t_9117ebe08915ec 1-24
+website/src/components/QueueScene.tsx
+  s_e6d7893d667e05::t_772e5a7b200f97 48-49,70-71,90
+  s_e6d7893d667e05::t_28020a9030f51c 58
+  s_e6d7893d667e05::t_39be8444a6e2e6 1-47,50-57,59-69,72-89,91-102
+website/src/content.ts
+  s_e6d7893d667e05::t_371df83cb68dc6 22-25
+  s_e6d7893d667e05::t_8e8af8d918d8a7 1-5,10-21,26
+  s_e6d7893d667e05::t_f27b570b75aa12 6-9
+docs/index.html
+  s_e6d7893d667e05::t_c19f9fd4c40e0c 3-22
+website/src/components/Demo.tsx
+  s_e6d7893d667e05::t_d5e2739a2ddfa1 3,117
+  s_e6d7893d667e05::t_0e8d735b0cdd93 1-2,4-116,118-129
+docs/assets/index-BN1oLihh.css
+  s_e6d7893d667e05::t_c19f9fd4c40e0c 1
+website/index.html
+  s_e6d7893d667e05::t_8e8af8d918d8a7 1-22
+website/src/components/Intro.tsx
+  s_e6d7893d667e05::t_f27b570b75aa12 1-13,17-29
+  s_e6d7893d667e05::t_2ecb836034f2ba 14-16
+website/src/App.tsx
+  s_e6d7893d667e05::t_d05e429645ee15 1-36
+website/src/components/Final.tsx
+  s_e6d7893d667e05::t_d05e429645ee15 1-45
+website/src/vite-env.d.ts
+  s_e6d7893d667e05::t_d5e2739a2ddfa1 1
+docs/assets/index-wMhiCImY.js
+  s_e6d7893d667e05::t_c19f9fd4c40e0c 1-9
+website/src/components/Waiting.tsx
+  s_e6d7893d667e05::t_c220b7b6bdc3f4 1-74
+website/src/components/Walkthrough.tsx
+  s_e6d7893d667e05::t_9eaa38c216c7f6 1-13,19-86,88-96
+  s_e6d7893d667e05::t_15fdb4efc13c54 14-18,87
+website/src/styles.css
+  s_e6d7893d667e05::t_392e3f8f3182c5 217-219
+  s_e6d7893d667e05::t_69493e88ebcc86 1-74,79-112,120-203,205-207,210-216,220-250,252-253
+  s_e6d7893d667e05::t_772e5a7b200f97 113-118
+  s_e6d7893d667e05::t_15fdb4efc13c54 75-78
+  s_e6d7893d667e05::t_44921403372ae3 119,251
+  s_e6d7893d667e05::t_62e24444ce708b 204,208-209
+  s_e6d7893d667e05::t_371df83cb68dc6 254
+website/src/components/Phone3D.tsx
+  s_e6d7893d667e05::t_b8156e118bf1b7 24,29-30,40,43,48-49
+  s_e6d7893d667e05::t_75d023187e3426 1-23,25-28,31-39,41-42,44-47,50-69
+website/vite.config.ts
+  s_e6d7893d667e05::t_8e8af8d918d8a7 1-9
+website/README.md
+  s_e6d7893d667e05::t_72c0aea98a5b35 1-64
+website/package-lock.json
+  s_e6d7893d667e05::t_5d621c92e5c087 1-1751
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "dc775d3add748f0be331a6468d1fc5a1a614aa28",
+  "prompts": {},
+  "sessions": {
+    "s_e6d7893d667e05": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "1cb814f5-aed0-42c5-8a63-b4e3b0a2e6f3",
+        "model": "openrouter/OpenRouter 3/anthropic/claude-sonnet-5.5"
+      },
+      "human_author": "chloe <chloetzy03@gmail.com>"
+    }
+  }
+}
